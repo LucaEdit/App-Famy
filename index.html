@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Impegni Clarissa & Carola</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --text:#1f2430; --muted:#6b7280; --line:#e3e5ea;
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){ --bg:#15171c; --card:#1e2128; --text:#e8e9ec; --muted:#9aa0ac; --line:#2c2f38; }
+  }
+  :root[data-theme="dark"]{ --bg:#15171c; --card:#1e2128; --text:#e8e9ec; --muted:#9aa0ac; --line:#2c2f38; }
+  *{box-sizing:border-box}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;padding:16px;}
+  h1{font-size:1.25rem;margin:0 0 4px;}
+  .sub{color:var(--muted);font-size:.85rem;margin:0 0 16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;}
+  .card h2{font-size:1rem;margin:0 0 12px;}
+  form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  @media (min-width:640px){ form{grid-template-columns:repeat(4,1fr);} }
+  label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:3px;}
+  input,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:.9rem;}
+  .full{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  button{cursor:pointer;border:none;border-radius:8px;padding:10px 16px;font-size:.9rem;font-weight:bold;background:#2F5597;color:#fff;}
+  button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:normal;}
+  button.secondary{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:normal;padding:4px 10px;font-size:.75rem;}
+  button:hover{opacity:.9;}
+  .warn{background:#fde2e1;color:#9c1c1c;border-radius:8px;padding:10px 14px;font-size:.85rem;margin-bottom:14px;display:none;}
+  .warn.show{display:block;}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-bottom:10px;align-items:center;}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+
+  .people-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+  .chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:20px;background:var(--bg);border:1px solid var(--line);font-size:.8rem;}
+  .chip .sw{width:10px;height:10px;border-radius:50%;}
+  .chip button{background:none;border:none;color:var(--muted);font-size:.85rem;padding:0 0 0 4px;font-weight:bold;}
+  .addPerson{display:flex;gap:6px;align-items:center;}
+  .addPerson input{width:140px;padding:6px 8px;font-size:.8rem;}
+  .addPerson button{padding:6px 12px;font-size:.8rem;}
+
+  .nav{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .nav .range{font-weight:bold;font-size:.95rem;}
+  .nav button{padding:6px 12px;font-size:.85rem;}
+
+  .cal-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--line);}
+  .cal{display:grid;grid-template-columns:56px repeat(7, minmax(var(--daymin,200px),1fr));}
+  .day-head{color:#fff;text-align:center;font-size:.78rem;font-weight:bold;padding:6px 2px;}
+  .day-head small{display:block;font-weight:normal;opacity:.85;font-size:.65rem;}
+  .subhead{display:grid;font-size:.58rem;color:#fff;text-align:center;opacity:.9;}
+  .subhead div{padding:2px 1px;border-top:1px solid rgba(255,255,255,.3);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .time-col{display:flex;flex-direction:column;background:var(--card);border-right:1px solid var(--line);}
+  .time-cell{height:40px;font-size:.65rem;color:var(--muted);text-align:right;padding-right:6px;border-top:1px solid var(--line);display:flex;align-items:flex-start;justify-content:flex-end;}
+  .day-body{position:relative;border-left:1px solid var(--line);}
+  .subgrid{position:relative;height:560px;display:grid;}
+  .sub-track{position:relative;border-left:1px dashed var(--line);cursor:pointer;}
+  .sub-track:first-child{border-left:none;}
+  .hline{position:absolute;left:0;right:0;border-top:1px solid var(--line);}
+  .ev{position:absolute;left:2px;right:2px;border-radius:6px;color:#fff;font-size:.6rem;line-height:1.15;padding:3px 4px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.15);cursor:pointer;}
+  .ev b{display:block;font-size:.62rem;}
+  .ev .who{opacity:.9;}
+  .ev.tentative{outline:2px dashed rgba(255,255,255,.85);outline-offset:-2px;}
+  .ev.conflict{outline:2px solid #ff4d4f;outline-offset:-2px;}
+  .rec-icon{position:absolute;top:2px;right:3px;font-size:.6rem;opacity:.85;}
+
+  .agenda-mobile{display:none;}
+  .ag-day{margin-bottom:14px;}
+  .ag-day:last-child{margin-bottom:0;}
+  .ag-day-head{color:#fff;font-weight:bold;font-size:.85rem;padding:8px 10px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;}
+  .ag-events{border:1px solid var(--line);border-top:none;border-radius:0 0 8px 8px;}
+  .ag-ev{display:flex;gap:8px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line);}
+  .ag-ev:last-child{border-bottom:none;}
+  .ag-ev .sw{width:4px;align-self:stretch;border-radius:2px;flex-shrink:0;}
+  .ag-ev .time{font-size:.75rem;font-weight:bold;color:var(--muted);min-width:82px;}
+  .ag-ev .info{flex:1;font-size:.82rem;}
+  .ag-ev .info b{display:block;}
+  .ag-ev .info small{color:var(--muted);}
+  .ag-ev .ag-actions{display:flex;flex-direction:column;gap:4px;}
+  .ag-ev .ag-actions button{padding:5px 10px;font-size:.7rem;white-space:nowrap;}
+  .ag-ev.conflict{background:#fde2e1;}
+  .ag-empty{padding:10px;color:var(--muted);font-size:.8rem;text-align:center;}
+
+  @media (max-width: 760px){
+    .cal-desktop{display:none;}
+    .agenda-mobile{display:block;}
+    form{grid-template-columns:1fr 1fr;}
+  }
+
+  table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;}
+  th{color:var(--muted);font-weight:normal;font-size:.72rem;text-transform:uppercase;}
+  tr.conflict-row{background:#fde2e1;}
+  .badge{display:inline-block;padding:1px 8px;border-radius:20px;font-size:.68rem;font-weight:bold;color:#fff;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .gear{background:none;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:1rem;color:var(--text);}
+
+  .lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .lock-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 22px;max-width:340px;width:100%;text-align:center;}
+  .lock-box h2{margin:0 0 6px;font-size:1.1rem;}
+  .lock-box p{color:var(--muted);font-size:.82rem;margin:0 0 16px;}
+  .lock-box input{text-align:center;font-size:1.3rem;letter-spacing:4px;margin-bottom:10px;}
+  .lock-box button{width:100%;margin-top:4px;}
+  .lock-error{color:#c0392b;font-size:.78rem;min-height:1.1em;margin-bottom:4px;}
+
+  .settings-panel{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90;display:none;align-items:flex-start;justify-content:center;padding:16px;}
+  .settings-panel.show{display:flex;}
+  .settings-box{background:var(--card);border-radius:14px;padding:20px;max-width:380px;width:100%;margin-top:40px;}
+  .settings-box h2{margin:0 0 14px;font-size:1rem;}
+  .settings-box .row{margin-bottom:14px;}
+  .settings-box .close-row{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;}
+  .settings-msg{font-size:.78rem;color:var(--muted);min-height:1.1em;}
+</style>
+</head>
+<body>
+<h1>📅 Impegni Clarissa & Carola</h1>
+<div class="topbar">
+  <p class="sub">Aggiungi un impegno: viene distribuito automaticamente sul calendario, con controllo conflitti. Naviga tra le settimane senza limiti.</p>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span id="syncStatus" style="font-size:.72rem;color:var(--muted);white-space:nowrap;">🔄 Connessione...</span>
+    <button type="button" class="gear" id="refreshBtn" title="Aggiorna dati">🔄</button>
+    <button type="button" class="gear" id="openSettings" title="Impostazioni protezione">⚙️</button>
+  </div>
+</div>
+
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-box">
+    <h2 id="lockTitle">🔒 Calendario protetto</h2>
+    <p id="lockText">Inserisci il PIN per accedere.</p>
+    <input type="password" id="lockInput" inputmode="numeric" placeholder="PIN" maxlength="12">
+    <div class="lock-error" id="lockError"></div>
+    <button type="button" id="lockSubmit">Sblocca</button>
+  </div>
+</div>
+
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-box">
+    <h2>Protezione con PIN</h2>
+    <div class="row" id="pinCurrentRow" style="display:none;">
+      <label>PIN attuale</label>
+      <input type="password" id="pinCurrent" inputmode="numeric" placeholder="PIN attuale">
+    </div>
+    <div class="row">
+      <label id="pinNewLabel">Imposta un nuovo PIN</label>
+      <input type="password" id="pinNew" inputmode="numeric" placeholder="Nuovo PIN (min 4 cifre)">
+    </div>
+    <div class="settings-msg" id="settingsMsg"></div>
+    <div class="close-row">
+      <button type="button" class="ghost" id="removePinBtn">Rimuovi protezione</button>
+      <button type="button" id="savePinBtn">Salva</button>
+      <button type="button" class="ghost" id="closeSettings">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div id="warnBox" class="warn"></div>
+
+<div class="card">
+  <h2>Persone sul calendario</h2>
+  <div class="people-row" id="peopleChips"></div>
+  <div class="addPerson">
+    <input type="text" id="newPersonName" placeholder="es. Veronica, Roberta, tata...">
+    <button type="button" id="addPersonBtn">+ Aggiungi persona</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2 id="formTitle">Aggiungi impegno</h2>
+  <form id="form">
+    <div>
+      <label>Chi</label>
+      <select name="figlia" id="figliaSelect" required></select>
+    </div>
+    <div>
+      <label>Data (per impegno singolo)</label>
+      <input type="date" name="data">
+    </div>
+    <div>
+      <label>Ora inizio</label>
+      <input type="time" name="oraInizio" required value="09:00">
+    </div>
+    <div>
+      <label>Ora fine</label>
+      <input type="time" name="oraFine" required value="10:00">
+    </div>
+    <div>
+      <label>Attività</label>
+      <input type="text" name="attivita" placeholder="es. SCUOLA" required>
+    </div>
+    <div>
+      <label>Responsabile (chi gestisce l'attività)</label>
+      <input type="text" name="responsabile" list="respList" placeholder="scegli o scrivi un nome">
+      <datalist id="respList"></datalist>
+    </div>
+    <div>
+      <label><input type="checkbox" name="ricorrente" style="width:auto;vertical-align:middle;"> Si ripete ogni settimana (ignora la data, usa il giorno)</label>
+    </div>
+    <div>
+      <label><input type="checkbox" name="tentativo" style="width:auto;vertical-align:middle;"> Da confermare</label>
+    </div>
+    <div>
+      <label>Giorno (per impegno ricorrente)</label>
+      <select name="giornoSettimana">
+        <option value="0">Lunedì</option><option value="1">Martedì</option><option value="2">Mercoledì</option>
+        <option value="3">Giovedì</option><option value="4">Venerdì</option><option value="5">Sabato</option><option value="6">Domenica</option>
+      </select>
+    </div>
+    <div class="full" style="grid-column:1/-1;">
+      <label>Note</label>
+      <input type="text" name="note" placeholder="opzionale">
+    </div>
+    <div class="full">
+      <button type="submit" id="submitBtn">+ Aggiungi al calendario</button>
+      <button type="button" class="ghost" id="cancelEdit" style="display:none;">Annulla modifica</button>
+    </div>
+  </form>
+</div>
+
+<div class="legend" id="legendDots"></div>
+<div class="legend">
+  <span>🔁 = ricorrente ogni settimana</span>
+  <span>Bordo tratteggiato = da confermare</span>
+  <span>Bordo rosso = conflitto</span>
+  <span>Clic su un impegno per modificarlo</span>
+</div>
+
+<div class="nav">
+  <button class="ghost" id="prevWeek">← Settimana prec.</button>
+  <button class="ghost" id="todayBtn">Oggi</button>
+  <button class="ghost" id="nextWeek">Settimana succ. →</button>
+  <span class="range" id="weekRange"></span>
+</div>
+
+<div class="card cal-desktop" style="padding:0;overflow:hidden;">
+  <div class="cal-wrap"><div class="cal" id="cal"></div></div>
+</div>
+
+<div class="card agenda-mobile" id="agenda"></div>
+
+<div class="card">
+  <h2>Riepilogo ore — settimana visualizzata</h2>
+  <div style="overflow-x:auto;"><table id="riep"><thead><tr><th>Responsabile</th><th>Ore Clarissa</th><th>Ore Carola</th><th>Ore totali</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="card">
+  <h2>Elenco impegni — settimana visualizzata</h2>
+  <div style="overflow-x:auto;"><table id="list"><thead><tr><th>Chi</th><th>Giorno</th><th>Orario</th><th>Attività</th><th>Responsabile</th><th>Note</th><th></th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script id="app-data" type="application/json">
+{
+ "persone": [
+  "Clarissa",
+  "Carola",
+  "Mamma",
+  "Papà",
+  "Veronica",
+  "Roberta",
+  "Nonna"
+ ],
+ "eventi": [
+  {
+   "id": 1,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 0,
+   "data": null,
+   "oraInizio": "08:00",
+   "oraFine": "12:00",
+   "attivita": "SCUOLA",
+   "responsabile": "Carol e/o Luca",
+   "note": "Possibilità di aumentare l'orario",
+   "tentativo": false
+  },
+  {
+   "id": 2,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 0,
+   "data": null,
+   "oraInizio": "16:30",
+   "oraFine": "18:30",
+   "attivita": "VIOLA con mamma",
+   "responsabile": "Mamma",
+   "note": "",
+   "tentativo": false
+  },
+  {
+   "id": 3,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 1,
+   "data": null,
+   "oraInizio": "09:00",
+   "oraFine": "13:00",
+   "attivita": "DH",
+   "responsabile": "Veronica",
+   "note": "Poi forse 8:45 - da confermare",
+   "tentativo": false
+  },
+  {
+   "id": 4,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 2,
+   "data": null,
+   "oraInizio": "10:00",
+   "oraFine": "12:00",
+   "attivita": "SCUOLA",
+   "responsabile": "Luca",
+   "note": "Possibilità di aumentare l'orario",
+   "tentativo": false
+  },
+  {
+   "id": 5,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 3,
+   "data": null,
+   "oraInizio": "09:00",
+   "oraFine": "13:00",
+   "attivita": "DH",
+   "responsabile": "Roberta",
+   "note": "Poi forse 8:45 - da confermare",
+   "tentativo": false
+  },
+  {
+   "id": 6,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 3,
+   "data": null,
+   "oraInizio": "14:00",
+   "oraFine": "17:00",
+   "attivita": "Laboratorio",
+   "responsabile": "",
+   "note": "Forse possibilità - orario indicativo",
+   "tentativo": true
+  },
+  {
+   "id": 7,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 4,
+   "data": null,
+   "oraInizio": "10:00",
+   "oraFine": "12:00",
+   "attivita": "SCUOLA",
+   "responsabile": "Carol e/o Luca",
+   "note": "Possibilità di aumentare l'orario",
+   "tentativo": false
+  },
+  {
+   "id": 8,
+   "figlia": "Carola",
+   "ricorrente": true,
+   "giornoSettimana": 4,
+   "data": null,
+   "oraInizio": "13:30",
+   "oraFine": "17:30",
+   "attivita": "VIOLA con mamma",
+   "responsabile": "Mamma",
+   "note": "",
+   "tentativo": false
+  },
+  {
+   "id": 9,
+   "figlia": "Papà",
+   "ricorrente": true,
+   "giornoSettimana": 0,
+   "data": null,
+   "oraInizio": "09:00",
+   "oraFine": "18:00",
+   "attivita": "Lavoro",
+   "responsabile": "",
+   "note": "",
+   "tentativo": false
+  },
+  {
+   "id": 10,
+   "figlia": "Clarissa",
+   "ricorrente": true,
+   "giornoSettimana": 0,
+   "data": null,
+   "oraInizio": "08:00",
+   "oraFine": "13:00",
+   "attivita": "Scuola",
+   "responsabile": "",
+   "note": "",
+   "tentativo": false
+  }
+ ],
+ "pin": null
+}
+</script>
+
+<script>
+const DAY_NAMES = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
+const DAY_COLORS = ["#4472C4","#548235","#BF8F00","#C55A11","#7030A0","#C00000","#404040"];
+const PERSON_PALETTE = ["#D6336C","#0B7285","#B98B00","#3454D1","#2F9E44","#9C36B5","#E8590C","#1098AD","#5C940D","#A61E4D"];
+const START_MIN = 7*60, END_MIN = 21*60, RANGE = END_MIN-START_MIN, TRACK_H = 560;
+
+const raw = JSON.parse(document.getElementById('app-data').textContent);
+let persone = raw.persone;
+let state = raw.eventi;
+let pin = raw.pin || null;
+let nextId = Math.max(0, ...state.map(e=>e.id)) + 1;
+let editingId = null;
+
+// ---- Sincronizzazione in tempo reale (Firebase Realtime Database) ----
+const firebaseConfig = {
+  apiKey: "AIzaSyApWFZfDgj-COjbD9e7NL7qDW4PKIqimXU",
+  authDomain: "app-famy.firebaseapp.com",
+  databaseURL: "https://app-famy-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "app-famy",
+  storageBucket: "app-famy.firebasestorage.app",
+  messagingSenderId: "889441482025",
+  appId: "1:889441482025:web:cf9ebc731e61ca0d93f338"
+};
+firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref('impegniCalendario/state');
+let applyingRemote = false;
+let firstSnapshot = true;
+
+function initSync(){
+  const el = document.getElementById('syncStatus');
+  dbRef.on('value', (snap)=>{
+    const data = snap.val();
+    if(!data){
+      // primo avvio: nessun dato online ancora, carico i dati locali come base
+      if(firstSnapshot){ dbRef.set({persone, pin, eventi: state}); }
+      firstSnapshot = false;
+      return;
+    }
+    firstSnapshot = false;
+    applyingRemote = true;
+    persone = data.persone || persone;
+    state = data.eventi || state;
+    pin = data.pin ?? pin;
+    nextId = Math.max(0, ...state.map(e=>e.id), nextId) + 1;
+    document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
+    renderPeopleChips(); render(); checkLock();
+    if(el) el.textContent = '☁️ Sincronizzato';
+    applyingRemote = false;
+  }, (err)=>{
+    console.warn('Sincronizzazione non disponibile:', err);
+    if(el) el.textContent = '⚠️ Sincronizzazione non disponibile, uso i dati salvati su questo dispositivo.';
+  });
+}
+
+async function syncPush(){
+  if(applyingRemote) return; // evita di riscrivere ciò che è appena arrivato dal server
+  const el = document.getElementById('syncStatus');
+  try{
+    await dbRef.set({persone, pin, eventi: state});
+    if(el) el.textContent = '☁️ Salvato e sincronizzato';
+  }catch(err){
+    console.warn('Salvataggio online fallito:', err);
+    if(el) el.textContent = '⚠️ Salvataggio online fallito, riprova.';
+  }
+}
+function syncPull(showStatus){
+  const el = document.getElementById('syncStatus');
+  if(showStatus && el) el.textContent = '☁️ Già sincronizzato in tempo reale';
+}
+
+// ---- Protezione PIN ----
+function isUnlocked(){
+  try{ return localStorage.getItem('calPinUnlocked')==='1'; }catch(e){ return false; }
+}
+function setUnlocked(){
+  try{ localStorage.setItem('calPinUnlocked','1'); }catch(e){}
+}
+function clearUnlocked(){
+  try{ localStorage.removeItem('calPinUnlocked'); }catch(e){}
+}
+function showLock(){
+  const ov = document.getElementById('lockOverlay');
+  const isFirstSetup = !pin;
+  document.getElementById('lockTitle').textContent = isFirstSetup ? '🔒 Nessun PIN impostato' : '🔒 Calendario protetto';
+  document.getElementById('lockText').textContent = isFirstSetup ? 'Non hai ancora impostato un PIN: chiunque abbia il link può accedere. Vai su ⚙️ per proteggerlo.' : 'Inserisci il PIN per accedere.';
+  document.getElementById('lockInput').style.display = isFirstSetup ? 'none' : 'block';
+  document.getElementById('lockSubmit').style.display = isFirstSetup ? 'none' : 'block';
+  ov.style.display = 'flex';
+}
+function hideLock(){ document.getElementById('lockOverlay').style.display = 'none'; }
+function checkLock(){
+  if(!pin){ hideLock(); return; } // nessun PIN impostato: accesso libero
+  if(isUnlocked()){ hideLock(); return; }
+  showLock();
+}
+document.getElementById('lockSubmit').addEventListener('click', ()=>{
+  const val = document.getElementById('lockInput').value.trim();
+  if(val === pin){ setUnlocked(); hideLock(); document.getElementById('lockError').textContent=''; }
+  else { document.getElementById('lockError').textContent = 'PIN errato, riprova.'; }
+});
+document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('lockSubmit').click(); });
+
+// ---- Pannello impostazioni ----
+function openSettings(){
+  document.getElementById('pinCurrentRow').style.display = pin ? 'block' : 'none';
+  document.getElementById('pinNewLabel').textContent = pin ? 'Nuovo PIN' : 'Imposta un nuovo PIN';
+  document.getElementById('pinCurrent').value='';
+  document.getElementById('pinNew').value='';
+  document.getElementById('settingsMsg').textContent='';
+  document.getElementById('removePinBtn').style.display = pin ? 'inline-block' : 'none';
+  document.getElementById('settingsPanel').classList.add('show');
+}
+document.getElementById('openSettings').addEventListener('click', openSettings);
+document.getElementById('refreshBtn').addEventListener('click', ()=>syncPull(true));
+document.getElementById('closeSettings').addEventListener('click', ()=>document.getElementById('settingsPanel').classList.remove('show'));
+
+document.getElementById('savePinBtn').addEventListener('click', ()=>{
+  const msg = document.getElementById('settingsMsg');
+  if(pin){
+    const cur = document.getElementById('pinCurrent').value.trim();
+    if(cur !== pin){ msg.textContent = 'PIN attuale errato.'; msg.style.color='#c0392b'; return; }
+  }
+  const nw = document.getElementById('pinNew').value.trim();
+  if(nw.length < 4){ msg.textContent = 'Il PIN deve avere almeno 4 caratteri.'; msg.style.color='#c0392b'; return; }
+  pin = nw;
+  setUnlocked();
+  persist();
+  msg.style.color = 'var(--muted)';
+  msg.textContent = 'PIN salvato.';
+  setTimeout(()=>document.getElementById('settingsPanel').classList.remove('show'), 700);
+});
+
+document.getElementById('removePinBtn').addEventListener('click', ()=>{
+  if(!confirm('Rimuovere la protezione? Chiunque abbia il link potrà accedere senza PIN.')) return;
+  pin = null;
+  clearUnlocked();
+  persist();
+  document.getElementById('settingsPanel').classList.remove('show');
+});
+
+function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
+function slug(name){ return name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function colorOf(name){ const i = persone.indexOf(name); return PERSON_PALETTE[i>=0 ? i % PERSON_PALETTE.length : 0]; }
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function ddmm(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+
+function mondayOf(date){
+  const d = new Date(date);
+  const wd = (d.getDay()+6)%7;
+  d.setDate(d.getDate()-wd);
+  d.setHours(0,0,0,0);
+  return d;
+}
+let currentWeekStart = mondayOf(new Date());
+function weekDates(){
+  const out=[];
+  for(let i=0;i<7;i++){ const d=new Date(currentWeekStart); d.setDate(d.getDate()+i); out.push(d); }
+  return out;
+}
+
+function eventsForWeek(){
+  const dates = weekDates();
+  const out = [];
+  state.forEach(ev=>{
+    if(ev.ricorrente){
+      out.push(Object.assign({}, ev, {dataEff: fmtDate(dates[ev.giornoSettimana]), weekdayIdx: ev.giornoSettimana}));
+    } else if(ev.data){
+      const idx = dates.findIndex(x=>fmtDate(x)===ev.data);
+      if(idx>=0) out.push(Object.assign({}, ev, {dataEff: ev.data, weekdayIdx: idx}));
+    }
+  });
+  return out;
+}
+
+function involved(ev){
+  const s = new Set([ev.figlia.trim().toLowerCase()]);
+  if(ev.responsabile) ev.responsabile.split(/[,/]| e\/o /i).forEach(p=>{ p=p.trim().toLowerCase(); if(p) s.add(p); });
+  return s;
+}
+function overlaps(a,b){
+  if(a.weekdayIdx!==b.weekdayIdx) return false;
+  if(toMin(a.oraInizio)>=toMin(b.oraFine) || toMin(b.oraInizio)>=toMin(a.oraFine)) return false;
+  const sa=involved(a), sb=involved(b);
+  for(const p of sa) if(sb.has(p)) return true;
+  return false;
+}
+function findConflicts(list){
+  const c = new Set();
+  for(let i=0;i<list.length;i++) for(let j=i+1;j<list.length;j++) if(overlaps(list[i],list[j])){ c.add(list[i].id); c.add(list[j].id); }
+  return c;
+}
+
+function renderPeopleChips(){
+  document.documentElement.style.setProperty('--daymin', Math.max(200, persone.length*55)+'px');
+  const box = document.getElementById('peopleChips');
+  box.innerHTML = persone.map((p,i)=>{
+    const used = state.some(e=>e.figlia===p);
+    return `<span class="chip"><span class="sw" style="background:${colorOf(p)}"></span>${p}
+      <button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button></span>`;
+  }).join('');
+
+  const legend = document.getElementById('legendDots');
+  legend.innerHTML = persone.map(p=>`<span><span class="dot" style="background:${colorOf(p)}"></span>${p}</span>`).join('');
+
+  const sel = document.getElementById('figliaSelect');
+  const prevVal = sel.value;
+  sel.innerHTML = persone.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(persone.includes(prevVal)) sel.value = prevVal;
+
+  document.getElementById('respList').innerHTML = persone.map(p=>`<option value="${p}">`).join('');
+}
+
+function addPerson(){
+  const input = document.getElementById('newPersonName');
+  const name = input.value.trim();
+  if(!name) return;
+  if(persone.some(p=>p.toLowerCase()===name.toLowerCase())){ alert('Questa persona è già presente.'); return; }
+  persone.push(name);
+  input.value='';
+  renderPeopleChips(); render(); persist();
+}
+document.getElementById('addPersonBtn').addEventListener('click', addPerson);
+document.getElementById('newPersonName').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addPerson(); } });
+
+function removePerson(name){
+  if(state.some(e=>e.figlia===name)){ alert('Questa persona ha impegni sul calendario: elimina prima quelli, poi puoi rimuoverla.'); return; }
+  persone = persone.filter(p=>p!==name);
+  renderPeopleChips(); render(); persist();
+}
+window.removePerson = removePerson;
+
+function buildCalendarSkeleton(dates){
+  const cal = document.getElementById('cal');
+  cal.innerHTML = '';
+  cal.appendChild(document.createElement('div'));
+  dates.forEach((d,i)=>{
+    const head = document.createElement('div');
+    head.className='day-head'; head.style.background=DAY_COLORS[i];
+    const sub = document.createElement('div'); sub.className='subhead';
+    sub.style.gridTemplateColumns = `repeat(${persone.length},1fr)`;
+    sub.innerHTML = persone.map(p=>`<div>${p}</div>`).join('');
+    head.innerHTML = DAY_NAMES[i]+`<small>${ddmm(d)}</small>`;
+    head.appendChild(sub);
+    cal.appendChild(head);
+  });
+  const timeCol = document.createElement('div'); timeCol.className='time-col';
+  for(let m=START_MIN;m<END_MIN;m+=60){
+    const c=document.createElement('div'); c.className='time-cell';
+    c.textContent = String(Math.floor(m/60)).padStart(2,'0')+':00';
+    timeCol.appendChild(c);
+  }
+  cal.appendChild(timeCol);
+
+  dates.forEach((d,i)=>{
+    const body = document.createElement('div'); body.className='day-body';
+    const grid = document.createElement('div'); grid.className='subgrid'; grid.style.height=TRACK_H+'px';
+    grid.style.gridTemplateColumns = `repeat(${persone.length},1fr)`;
+    for(let m=START_MIN;m<=END_MIN;m+=60){
+      const hl = document.createElement('div'); hl.className='hline'; hl.style.top=((m-START_MIN)/RANGE*100)+'%';
+      grid.appendChild(hl);
+    }
+    persone.forEach(p=>{
+      const track=document.createElement('div'); track.className='sub-track'; track.dataset.idx=i; track.dataset.who=slug(p);
+      track.title='Clic per aggiungere un impegno qui';
+      track.addEventListener('click', (e)=>{ if(e.target===track) quickAdd(i, p); });
+      grid.appendChild(track);
+    });
+    body.appendChild(grid);
+    cal.appendChild(body);
+  });
+}
+
+function quickAdd(dayIdx, personName){
+  const f = document.getElementById('form');
+  f.figlia.value = personName;
+  f.data.value = fmtDate(weekDates()[dayIdx]);
+  f.ricorrente.checked = false;
+  f.attivita.focus();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderAgenda(dates, weekEvents, conflicts){
+  const box = document.getElementById('agenda');
+  box.innerHTML = dates.map((d,i)=>{
+    const evs = weekEvents.filter(e=>e.weekdayIdx===i).sort((a,b)=>toMin(a.oraInizio)-toMin(b.oraInizio));
+    const rows = evs.map(ev=>`
+      <div class="ag-ev ${conflicts.has(ev.id)?'conflict':''}">
+        <span class="sw" style="background:${colorOf(ev.figlia)}"></span>
+        <span class="time">${ev.oraInizio}<br>${ev.oraFine}</span>
+        <span class="info">
+          <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}</b>
+          <small>${ev.figlia}${ev.responsabile?' · '+ev.responsabile:''}${ev.note?' · '+ev.note:''}</small>
+        </span>
+        <span class="ag-actions">
+          <button type="button" class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
+          <button type="button" class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>
+        </span>
+      </div>`).join('') || '<div class="ag-empty">Nessun impegno</div>';
+    return `<div class="ag-day">
+      <div class="ag-day-head" style="background:${DAY_COLORS[i]}"><span>${DAY_NAMES[i]}</span><span>${ddmm(d)}</span></div>
+      <div class="ag-events">${rows}</div>
+    </div>`;
+  }).join('');
+}
+
+function render(){
+  const dates = weekDates();
+  document.getElementById('weekRange').textContent =
+    `Settimana dal ${ddmm(dates[0])} al ${ddmm(dates[6])}/${dates[6].getFullYear()}`;
+
+  const weekEvents = eventsForWeek();
+  const conflicts = findConflicts(weekEvents);
+  buildCalendarSkeleton(dates);
+  renderAgenda(dates, weekEvents, conflicts);
+
+  weekEvents.forEach(ev=>{
+    const track = document.querySelector(`.sub-track[data-idx="${ev.weekdayIdx}"][data-who="${slug(ev.figlia)}"]`);
+    if(!track) return;
+    const s = Math.max(toMin(ev.oraInizio), START_MIN), e = Math.min(toMin(ev.oraFine), END_MIN);
+    if(e<=s) return;
+    const top=(s-START_MIN)/RANGE*TRACK_H, h=Math.max((e-s)/RANGE*TRACK_H,16);
+    const div = document.createElement('div');
+    div.className = 'ev '+(ev.tentativo?' tentative':'')+(conflicts.has(ev.id)?' conflict':'');
+    div.style.top=top+'px'; div.style.height=h+'px'; div.style.background=DAY_COLORS[ev.weekdayIdx];
+    div.style.borderLeft = `4px solid ${colorOf(ev.figlia)}`;
+    div.title = ev.note||'';
+    div.innerHTML = `${ev.ricorrente?'<span class="rec-icon">🔁</span>':''}<b>${ev.attivita}</b>${ev.responsabile?`<span class="who">${ev.responsabile}</span>`:''}<span class="who">${ev.oraInizio}-${ev.oraFine}</span>`;
+    div.addEventListener('click', ()=>startEdit(ev.id));
+    track.appendChild(div);
+  });
+
+  const warnBox = document.getElementById('warnBox');
+  if(conflicts.size>0){
+    const rows = weekEvents.filter(e=>conflicts.has(e.id));
+    warnBox.className='warn show';
+    warnBox.innerHTML = `⚠️ ${conflicts.size} impegni in conflitto in questa settimana:<br>`+
+      rows.map(r=>`${DAY_NAMES[r.weekdayIdx]}: <b>${r.figlia}</b> ${r.oraInizio}-${r.oraFine} (${r.attivita}${r.responsabile?', '+r.responsabile:''})`).join(' · ');
+  } else { warnBox.className='warn'; warnBox.innerHTML=''; }
+
+  const ore = {};
+  weekEvents.forEach(ev=>{
+    if(!ev.responsabile) return;
+    const k = ev.responsabile.trim();
+    ore[k] = ore[k] || {Clarissa:0, Carola:0};
+    ore[k][ev.figlia] = (ore[k][ev.figlia]||0) + (toMin(ev.oraFine)-toMin(ev.oraInizio))/60;
+  });
+  document.querySelector('#riep tbody').innerHTML = Object.keys(ore).sort().map(k=>{
+    const tot = (ore[k].Clarissa||0)+(ore[k].Carola||0);
+    return `<tr><td>${k}</td><td>${(ore[k].Clarissa||0).toFixed(1)}</td><td>${(ore[k].Carola||0).toFixed(1)}</td><td><b>${tot.toFixed(1)}</b></td></tr>`;
+  }).join('') || '<tr><td colspan="4" style="color:var(--muted)">Nessun dato</td></tr>';
+
+  const sorted = [...weekEvents].sort((a,b)=> a.weekdayIdx-b.weekdayIdx || toMin(a.oraInizio)-toMin(b.oraInizio));
+  document.querySelector('#list tbody').innerHTML = sorted.map(ev=>{
+    return `<tr class="${conflicts.has(ev.id)?'conflict-row':''}">
+      <td><span class="badge" style="background:${colorOf(ev.figlia)}">${ev.figlia}</span></td>
+      <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
+      <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
+      <td>${ev.attivita}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
+      <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
+          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Nessun impegno in questa settimana</td></tr>';
+}
+
+async function persist(){
+  document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
+  await syncPush();
+}
+
+function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
+window.removeEvent = removeEvent;
+
+function startEdit(id){
+  const ev = state.find(e=>e.id===id); if(!ev) return;
+  editingId = id;
+  const f = document.getElementById('form');
+  f.figlia.value = ev.figlia;
+  f.data.value = ev.data || '';
+  f.oraInizio.value = ev.oraInizio;
+  f.oraFine.value = ev.oraFine;
+  f.attivita.value = ev.attivita;
+  f.responsabile.value = ev.responsabile || '';
+  f.note.value = ev.note || '';
+  f.ricorrente.checked = !!ev.ricorrente;
+  f.tentativo.checked = !!ev.tentativo;
+  f.giornoSettimana.value = ev.giornoSettimana ?? 0;
+  document.getElementById('formTitle').textContent = 'Modifica impegno';
+  document.getElementById('submitBtn').textContent = 'Salva modifiche';
+  document.getElementById('cancelEdit').style.display = 'inline-block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+window.startEdit = startEdit;
+
+function cancelEdit(){
+  editingId = null;
+  document.getElementById('form').reset();
+  document.getElementById('formTitle').textContent = 'Aggiungi impegno';
+  document.getElementById('submitBtn').textContent = '+ Aggiungi al calendario';
+  document.getElementById('cancelEdit').style.display = 'none';
+}
+document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
+
+document.getElementById('form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const ricorrente = fd.get('ricorrente')==='on';
+  const data = fd.get('data');
+  if(!ricorrente && !data){ alert('Inserisci una data, oppure spunta "si ripete ogni settimana".'); return; }
+  const payload = {
+    figlia: fd.get('figlia'),
+    ricorrente,
+    giornoSettimana: ricorrente ? Number(fd.get('giornoSettimana')) : (data ? (parseDate(data).getDay()+6)%7 : 0),
+    data: ricorrente ? null : data,
+    oraInizio: fd.get('oraInizio'),
+    oraFine: fd.get('oraFine'),
+    attivita: fd.get('attivita').trim(),
+    responsabile: (fd.get('responsabile')||'').trim(),
+    note: (fd.get('note')||'').trim(),
+    tentativo: fd.get('tentativo')==='on'
+  };
+  if(toMin(payload.oraFine)<=toMin(payload.oraInizio)){ alert("L'ora fine deve essere dopo l'ora inizio."); return; }
+
+  if(editingId){
+    const idx = state.findIndex(e=>e.id===editingId);
+    state[idx] = Object.assign({id: editingId}, payload);
+    cancelEdit();
+  } else {
+    state.push(Object.assign({id: nextId++}, payload));
+    e.target.reset();
+  }
+  render(); persist();
+});
+
+document.getElementById('prevWeek').addEventListener('click', ()=>{ currentWeekStart.setDate(currentWeekStart.getDate()-7); render(); });
+document.getElementById('nextWeek').addEventListener('click', ()=>{ currentWeekStart.setDate(currentWeekStart.getDate()+7); render(); });
+document.getElementById('todayBtn').addEventListener('click', ()=>{ currentWeekStart = mondayOf(new Date()); render(); });
+
+renderPeopleChips();
+render();
+checkLock();
+initSync();
+</script>
+</body>
+</html>
