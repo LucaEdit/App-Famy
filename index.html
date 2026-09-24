@@ -746,7 +746,15 @@ document.getElementById('removePinBtn').addEventListener('click', ()=>{
 function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
 function slug(name){ return name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,''); }
 function colorOf(name){ const i = persone.indexOf(name); return PERSON_PALETTE[i>=0 ? i % PERSON_PALETTE.length : 0]; }
-function fmtDate(d){ return d.toISOString().slice(0,10); }
+function fmtDate(d){
+  // Data del calendario in formato locale YYYY-MM-DD.
+  // NON usare toISOString(), perché in Italia può spostare la data
+  // al giorno precedente a causa del fuso orario.
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function ddmm(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
 
