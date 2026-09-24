@@ -261,6 +261,77 @@
   .calendar-focus-note{display:none}
 }
 
+
+/* ===== V4: CALENDARIO + AGENDA COMPLETA ===== */
+.calendar-focus{margin-top:18px!important}
+.calendar-focus-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}
+.calendar-focus-head h2{margin:2px 0 0;font-size:1.25rem;font-weight:850}
+.calendar-focus-note{font-size:.82rem;color:var(--muted,#64748b);font-weight:650}
+.calendar-agenda-layout{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(320px,.9fr);gap:16px;align-items:start}
+.calendar-pane,.week-agenda-pane{min-width:0}
+.pane-label{font-size:.72rem;letter-spacing:.08em;font-weight:850;color:var(--muted,#64748b);margin:0 0 8px 2px}
+.calendar-pane .cal-desktop{min-height:540px}
+.week-agenda-pane{border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;padding:10px;max-height:590px;overflow:auto}
+.agenda-day-block{margin-bottom:10px;border:1px solid var(--line,#e2e8f0);border-radius:11px;overflow:hidden;background:#fff}
+.agenda-day-block:last-child{margin-bottom:0}
+.agenda-day-banner{display:flex;align-items:center;gap:8px;padding:8px 10px;color:#fff;background:var(--day-color);font-size:.82rem;font-weight:850}
+.agenda-day-banner b{margin-left:auto;font-size:.76rem}
+.agenda-day-banner em{font-style:normal;font-size:.63rem;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.22)}
+.agenda-day-events{padding:2px 0}
+.agenda-row{display:grid;grid-template-columns:76px 1fr;gap:9px;padding:9px 8px;border-bottom:1px solid #edf1f5;cursor:pointer;transition:.15s ease}
+.agenda-row:last-child{border-bottom:0}
+.agenda-row:hover{background:#f8fafc}
+.agenda-row.agenda-conflict{background:#fff5f5}
+.agenda-time{font-size:.72rem;font-weight:800;color:#334155;white-space:nowrap;display:flex;gap:3px;align-items:center;align-content:center;flex-wrap:wrap}
+.agenda-time span{color:#94a3b8}
+.agenda-main{min-width:0}
+.agenda-topline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.15}
+.agenda-topline strong{font-size:.78rem;color:#172033}
+.person-banner{display:inline-flex;align-items:center;min-height:20px;padding:2px 7px;border-radius:6px;color:#fff;font-size:.66rem;font-weight:850;white-space:nowrap}
+.mini-tag{font-size:.68rem}
+.agenda-resp,.agenda-note{margin-top:4px;font-size:.68rem;color:var(--muted,#64748b);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agenda-today{box-shadow:0 0 0 2px rgba(37,99,235,.18)}
+.week-agenda-empty{padding:24px 12px;text-align:center;color:var(--muted,#64748b);font-size:.85rem}
+.next-events{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))!important}
+.activity-banner{display:inline-block;margin-top:4px;padding:4px 8px;border-radius:6px;color:#fff;font-size:.76rem;font-weight:850;line-height:1.1}
+.calendar-focus .agenda-mobile{display:none!important}
+@media(max-width:1050px){
+  .calendar-agenda-layout{grid-template-columns:1fr}
+  .week-agenda-pane{max-height:520px}
+}
+@media(max-width:760px){
+  .calendar-focus{margin-top:14px!important}
+  .calendar-focus-head{align-items:flex-start;flex-direction:column;gap:3px}
+  .calendar-focus-note{display:none}
+  .calendar-agenda-layout{grid-template-columns:1fr}
+  .calendar-pane .cal-desktop{min-height:0}
+  .week-agenda-pane{max-height:none;overflow:visible}
+  .agenda-row{grid-template-columns:82px 1fr}
+}
+
+
+/* ===== V5: COLORI PER ATTIVITÀ ===== */
+.activity-banner{
+  background:var(--activity-color,#2563eb);
+}
+.person-banner{
+  background:#eef2f7;
+  color:#334155;
+  border:1px solid #d8e0ea;
+}
+.activity-name{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:3px 8px;
+  border-radius:6px;
+  background:color-mix(in srgb, var(--activity-color) 12%, white);
+  color:var(--activity-color);
+  border-left:4px solid var(--activity-color);
+  font-size:.76rem;
+  font-weight:850;
+}
+
 </style>
 </head>
 
@@ -327,24 +398,34 @@
   <div class="calendar-focus-head">
     <div>
       <div class="eyebrow">SETTIMANA</div>
-      <h2>📆 Calendario</h2>
+      <h2>📆 Calendario + Agenda completa</h2>
     </div>
-    <div class="calendar-focus-note">Vista completa degli impegni</div>
+    <div class="calendar-focus-note">Calendario a colpo d'occhio · tutti gli impegni ordinati a destra</div>
   </div>
-    <div class="nav">
-      <button class="ghost" id="prevWeek">← Settimana prec.</button>
-      <button class="ghost" id="todayBtn">Oggi</button>
-      <button class="ghost" id="nextWeek">Settimana succ. →</button>
-      <span class="range" id="weekRange"></span>
-    </div>
-  
-    <div class="card cal-desktop" style="padding:0;overflow:hidden;">
-      <div class="cal-wrap"><div class="cal" id="cal"></div></div>
-    </div>
-  
-    <div class="card agenda-mobile" id="agenda"></div>
-</section>
 
+  <div class="nav">
+    <button class="ghost" id="prevWeek">← Settimana prec.</button>
+    <button class="ghost" id="todayBtn">Oggi</button>
+    <button class="ghost" id="nextWeek">Settimana succ. →</button>
+    <span class="range" id="weekRange"></span>
+  </div>
+
+  <div class="calendar-agenda-layout">
+    <div class="calendar-pane">
+      <div class="pane-label">CALENDARIO SETTIMANALE</div>
+      <div class="cal-desktop">
+        <div class="cal-wrap"><div class="cal" id="cal"></div></div>
+      </div>
+    </div>
+
+    <aside class="week-agenda-pane">
+      <div class="pane-label">TUTTI GLI IMPEGNI · ORDINATI PER ORA</div>
+      <div id="weekAgenda"></div>
+    </aside>
+  </div>
+
+  <div class="card agenda-mobile" id="agenda" style="display:none;"></div>
+</section>
 
   <section class="card">
     <div class="section-title">
@@ -745,7 +826,30 @@ document.getElementById('removePinBtn').addEventListener('click', ()=>{
 
 function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
 function slug(name){ return name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,''); }
-function colorOf(name){ const i = persone.indexOf(name); return PERSON_PALETTE[i>=0 ? i % PERSON_PALETTE.length : 0]; }
+const ACTIVITY_PALETTE = [
+  "#2563EB", "#0891B2", "#16A34A", "#7C3AED", "#DB2777",
+  "#EA580C", "#CA8A04", "#DC2626", "#0F766E", "#4F46E5",
+  "#9333EA", "#C2410C"
+];
+const activityColors = {};
+
+function activityKey(name){
+  return String(name || "").trim().toLowerCase().replace(/\s+/g," ");
+}
+function activityColor(name){
+  const key = activityKey(name);
+  if(!key) return ACTIVITY_PALETTE[0];
+  if(!activityColors[key]){
+    const used = Object.keys(activityColors).length;
+    activityColors[key] = ACTIVITY_PALETTE[used % ACTIVITY_PALETTE.length];
+  }
+  return activityColors[key];
+}
+function personColor(name){
+  const i = persone.indexOf(name);
+  return PERSON_PALETTE[i>=0 ? i % PERSON_PALETTE.length : 0];
+}
+function colorOf(name){ return personColor(name); }
 function fmtDate(d){
   // Data del calendario in formato locale YYYY-MM-DD.
   // NON usare toISOString(), perché in Italia può spostare la data
@@ -941,23 +1045,73 @@ function renderTodaySummary(){
     return;
   }
 
-  box.innerHTML = todayEvents.slice(0,3).map(ev => `
-    <div class="next-event" style="border-left-color:${colorOf(ev.figlia)}" onclick="startEdit(${ev.id})">
+  box.innerHTML = todayEvents.map(ev => `
+    <div class="next-event" style="border-left-color:${activityColor(ev.attivita)}" onclick="startEdit(${ev.id})">
       <div class="time">${ev.oraInizio} → ${ev.oraFine}</div>
-      <div class="who" style="color:${colorOf(ev.figlia)}">${ev.figlia}</div>
-      <div class="activity">${ev.attivita}${ev.ricorrente?' 🔁':''}${ev.tentativo?' ⚠️':''}</div>
+      <div class="who">${ev.figlia}</div>
+      <div class="activity-banner" style="background:${activityColor(ev.attivita)}">${ev.attivita}${ev.ricorrente?' 🔁':''}${ev.tentativo?' ⚠️':''}</div>
       <div class="meta">${ev.responsabile ? '👤 '+ev.responsabile : ''}${ev.note ? (ev.responsabile?' · ':'')+ev.note : ''}</div>
     </div>
   `).join('');
+}
 
-  if(todayEvents.length > 3){
-    box.insertAdjacentHTML('beforeend',
-      `<div class="next-event" onclick="document.getElementById('agenda').scrollIntoView({behavior:'smooth'})">
-        <div class="time">+${todayEvents.length-3}</div>
-        <div class="activity">Altri impegni di oggi</div>
-        <div class="meta">Scorri al calendario</div>
-      </div>`);
+
+function renderWeekAgenda(weekEvents, conflicts){
+  const box = document.getElementById('weekAgenda');
+  if(!box) return;
+
+  const sorted = [...weekEvents].sort((a,b)=>
+    a.weekdayIdx-b.weekdayIdx ||
+    toMin(a.oraInizio)-toMin(b.oraInizio) ||
+    toMin(a.oraFine)-toMin(b.oraFine)
+  );
+
+  if(!sorted.length){
+    box.innerHTML = '<div class="week-agenda-empty">Nessun impegno nella settimana visualizzata.</div>';
+    return;
   }
+
+  const dates = weekDates();
+  const grouped = [];
+  sorted.forEach(ev=>{
+    let group = grouped.find(g=>g.idx===ev.weekdayIdx);
+    if(!group){ group={idx:ev.weekdayIdx,events:[]}; grouped.push(group); }
+    group.events.push(ev);
+  });
+
+  box.innerHTML = grouped.map(group=>{
+    const date = dates[group.idx];
+    const isToday = fmtDate(date) === fmtDate(new Date());
+
+    const rows = group.events.map(ev=>{
+      const activityCol = activityColor(ev.attivita);
+      const conflict = conflicts.has(ev.id);
+      return `
+        <div class="agenda-row ${conflict?'agenda-conflict':''}" onclick="startEdit(${ev.id})">
+          <div class="agenda-time">${ev.oraInizio}<span>→</span>${ev.oraFine}</div>
+          <div class="agenda-main">
+            <div class="agenda-topline">
+              <span class="person-banner">${ev.figlia}</span>
+              <span class="activity-name" style="--activity-color:${activityCol}">${ev.attivita}</span>
+              ${ev.ricorrente ? '<span class="mini-tag">🔁</span>' : ''}
+              ${ev.tentativo ? '<span class="mini-tag">⚠️</span>' : ''}
+            </div>
+            ${ev.responsabile ? `<div class="agenda-resp">👤 ${ev.responsabile}</div>` : ''}
+            ${ev.note ? `<div class="agenda-note">${ev.note}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <section class="agenda-day-block ${isToday?'agenda-today':''}">
+        <div class="agenda-day-banner" style="--day-color:${DAY_COLORS[group.idx]}">
+          <span>${DAY_NAMES[group.idx]}</span>
+          <b>${ddmm(date)}</b>
+          ${isToday ? '<em>OGGI</em>' : ''}
+        </div>
+        <div class="agenda-day-events">${rows}</div>
+      </section>`;
+  }).join('');
 }
 
 function render(){
@@ -970,6 +1124,7 @@ function render(){
   const conflicts = findConflicts(weekEvents);
   buildCalendarSkeleton(dates);
   renderAgenda(dates, weekEvents, conflicts);
+  renderWeekAgenda(weekEvents, conflicts);
 
   weekEvents.forEach(ev=>{
     const track = document.querySelector(`.sub-track[data-idx="${ev.weekdayIdx}"][data-who="${slug(ev.figlia)}"]`);
