@@ -375,6 +375,55 @@
   .edit-modal-body{padding:14px}
 }
 
+
+/* ===== V10: COLONNE CALENDARIO LEGGIBILI ANCHE SU MOBILE ===== */
+@media (max-width:760px){
+  /* Manteniamo il vero calendario anche su smartphone: si scorre orizzontalmente. */
+  .calendar-pane .cal-desktop{
+    display:block!important;
+    min-height:0!important;
+  }
+  .calendar-focus .agenda-mobile{display:none!important;}
+  .calendar-pane .cal-wrap{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto!important;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;
+    scrollbar-width:thin;
+  }
+  .calendar-pane .cal{
+    min-width:1020px!important;
+    width:max-content;
+    grid-template-columns:54px repeat(7,138px)!important;
+  }
+  .calendar-pane .day-head{
+    font-size:.92rem!important;
+    padding:11px 4px!important;
+    white-space:nowrap;
+  }
+  .calendar-pane .day-head small{
+    font-size:.72rem!important;
+  }
+  .calendar-pane .time-col{
+    font-size:.68rem!important;
+  }
+  .calendar-pane .ev{
+    font-size:.76rem!important;
+    line-height:1.18!important;
+    padding:6px 7px!important;
+    border-radius:8px;
+  }
+  .calendar-pane .ev b{font-size:.82rem!important;}
+  .calendar-pane .ev .who{font-size:.70rem!important;}
+  .calendar-pane .subgrid{min-height:760px;}
+  .calendar-pane .pane-label{font-size:.72rem;}
+  /* Indicatore discreto: invita a scorrere senza coprire il calendario. */
+  .calendar-pane .cal-wrap{position:relative;}
+  .calendar-pane .cal-wrap::-webkit-scrollbar{height:7px;}
+}
 </style>
 </head>
 
