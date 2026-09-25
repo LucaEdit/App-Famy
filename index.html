@@ -1362,7 +1362,11 @@ function escListV6(v){
 }
 function renderCompleteListV6(){
   const tbody=document.querySelector('#list tbody');if(!tbody)return;
-  const rows=allPlannedOccurrencesV6();
+  const scope=document.getElementById('filterDateScopeV8')?.value || 'future';
+  const todayKey=fmtDate(new Date());
+  let rows=allPlannedOccurrencesV6();
+  if(scope==='future') rows=rows.filter(ev=>ev._listDate>=todayKey);
+  else if(scope==='past') rows=rows.filter(ev=>ev._listDate<todayKey);
   tbody.innerHTML=rows.map(ev=>{
     const d=ev._listDateObj,dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`,dayLabel=DAY_NAMES[(d.getDay()+6)%7];
     const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
@@ -1728,6 +1732,26 @@ initSync();
         if(typeof applyDateScopeV8==='function') applyDateScopeV8();
       });
     }
+  });
+})();
+</script>
+<script>/* V9 date safety */
+
+// ===== V9: data odierna + futuri come visualizzazione predefinita =====
+(function(){
+  function applyDefaultFutureScopeV9(){
+    const s=document.getElementById('filterDateScopeV8');
+    if(s && !s.dataset.userChanged) s.value='future';
+    if(typeof renderFilteredList==='function') renderFilteredList();
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const s=document.getElementById('filterDateScopeV8');
+    if(s){
+      s.value='future';
+      s.dataset.userChanged='';
+      s.addEventListener('change',()=>{s.dataset.userChanged='1';});
+    }
+    applyDefaultFutureScopeV9();
   });
 })();
 </script>
