@@ -416,7 +416,7 @@
 @media print{
   body.printing-weekly-v11 > *:not(#printOnlyWeeklyV11){display:none!important}
   body.printing-weekly-v11 #printOnlyWeeklyV11{display:block!important;position:static!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
-  #printOnlyWeeklyV11 .weekly-print-actions-v11{display:none!important}
+  #printOnlyWeeklyV11 .weekly-print-actions-v11,#printOnlyWeeklyV11 .weekly-print-actions-v12{display:none!important}
   #printOnlyWeeklyV11 .card,#printOnlyWeeklyV11 .panel{box-shadow:none!important;border:0!important;margin:0!important;max-width:none!important}
   #printOnlyWeeklyV11 table{width:100%!important;min-width:0!important;font-size:11pt!important}
   #printOnlyWeeklyV11 th,#printOnlyWeeklyV11 td{padding:7px 6px!important}
@@ -425,6 +425,23 @@
   #printOnlyWeeklyV11 *{break-inside:avoid}
 }
 @page{size:A4;margin:12mm}
+
+/* V12 - stampa sempre visibile */
+.weekly-print-actions-v12{
+  display:flex!important;
+  gap:10px!important;
+  margin:12px 0 18px!important;
+  flex-wrap:wrap!important;
+}
+.weekly-print-actions-v12 .print-main-v12{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:44px!important;
+  padding:10px 16px!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -464,10 +481,7 @@
   <div class="lock-overlay" id="lockOverlay">
     <div class="lock-box">
       <h2 id="lockTitle">🔒 Calendario protetto</h2>
-<div class="weekly-print-actions-v11">
-  <button type="button" class="secondary" id="printWeeklyV11">🖨️ Stampa</button>
-  <button type="button" class="secondary" id="printWeeklyPdfV11">📄 PDF</button>
-</div>
+
       <p id="lockText">Inserisci il PIN per accedere.</p>
       <input type="password" id="lockInput" inputmode="numeric" placeholder="PIN" maxlength="12">
       <div class="lock-error" id="lockError"></div>
@@ -538,6 +552,11 @@
     <button class="ghost" id="prevWeek">← Settimana prec.</button>
     <button class="ghost" id="todayBtn">Oggi</button>
     <button class="ghost" id="nextWeek">Settimana succ. →</button>
+<div class="weekly-print-actions-v12">
+  <button type="button" class="secondary print-main-v12" id="printWeeklyV11">🖨️ STAMPA PIANO</button>
+  <button type="button" class="secondary print-main-v12" id="printWeeklyPdfV11">📄 PDF</button>
+</div>
+
     <span class="range" id="weekRange"></span>
   </div>
 
