@@ -442,6 +442,86 @@
   font-weight:800!important;
   cursor:pointer!important;
 }
+
+/* V13 - impaginazione professionale A4 */
+#printWeeklyProfessionalV13{display:none}
+
+@media print{
+  body.printing-professional-weekly-v13 > *:not(#printWeeklyProfessionalV13){
+    display:none!important;
+  }
+  body.printing-professional-weekly-v13 #printWeeklyProfessionalV13{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+    color:#172033!important;
+    font-family:Arial,Helvetica,sans-serif!important;
+  }
+  #printWeeklyProfessionalV13 .print-v13-title{
+    border-bottom:2px solid #172033!important;
+    padding:0 0 8mm!important;
+    margin-bottom:7mm!important;
+  }
+  #printWeeklyProfessionalV13 .print-v13-main-title{
+    font-size:24pt!important;
+    font-weight:800!important;
+    line-height:1.05!important;
+  }
+  #printWeeklyProfessionalV13 .print-v13-week{
+    font-size:12pt!important;
+    margin-top:3mm!important;
+    font-weight:600!important;
+  }
+  #printWeeklyProfessionalV13 .print-v13-footer{
+    margin-top:6mm!important;
+    padding-top:3mm!important;
+    border-top:1px solid #bbb!important;
+    font-size:8pt!important;
+    color:#666!important;
+  }
+
+  /* Compact the cloned agenda into a clean printable report. */
+  #printWeeklyProfessionalV13 table{
+    width:100%!important;
+    min-width:0!important;
+    border-collapse:collapse!important;
+    font-size:9.5pt!important;
+  }
+  #printWeeklyProfessionalV13 th{
+    font-size:8pt!important;
+    text-transform:uppercase!important;
+    letter-spacing:.4px!important;
+    padding:5px 4px!important;
+    border-bottom:1.5px solid #555!important;
+  }
+  #printWeeklyProfessionalV13 td{
+    padding:6px 4px!important;
+    border-bottom:1px solid #ddd!important;
+    vertical-align:top!important;
+  }
+
+  /* If the agenda is card-based, make each day a clean section. */
+  #printWeeklyProfessionalV13 .day-card,
+  #printWeeklyProfessionalV13 .day-section,
+  #printWeeklyProfessionalV13 [class*="day"]{
+    break-inside:avoid!important;
+  }
+  #printWeeklyProfessionalV13 button,
+  #printWeeklyProfessionalV13 input,
+  #printWeeklyProfessionalV13 select{
+    display:none!important;
+  }
+  #printWeeklyProfessionalV13 *{
+    box-shadow:none!important;
+  }
+}
+
+@page{
+  size:A4 portrait;
+  margin:12mm 12mm 14mm 12mm;
+}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -1828,54 +1908,103 @@ initSync();
 })();
 </script>
 <script>
-// ===== V11: stampa del solo piano settimanale =====
+
+// ===== V13: stampa professionale del piano settimanale =====
 (function(){
-  function findWeeklyContainerV11(){
-    const buttons=document.querySelectorAll('#printWeeklyV11,#printWeeklyPdfV11');
-    if(!buttons.length)return null;
-    let el=buttons[0];
-    // climb to the nearest card/container that contains the weekly calendar/agenda
-    for(let i=0;i<6 && el;i++,el=el.parentElement){
-      if(el.classList && (el.classList.contains('card') || el.classList.contains('panel'))) return el;
-    }
-    return buttons[0].parentElement?.parentElement || null;
+  function getWeekPrintData(){
+    // Use the same currently rendered weekly data if available.
+    const source=document.querySelector('.weekly-grid, .calendar-week, #weeklyCalendar, .week-calendar');
+    return source;
   }
 
-  function buildPrintV11(){
-    const source=findWeeklyContainerV11();
-    if(!source)return null;
-    const clone=source.cloneNode(true);
-
-    // Remove the print controls from the printed copy.
-    clone.querySelectorAll('.weekly-print-actions-v11').forEach(x=>x.remove());
+  function buildProfessionalWeeklyPrint(){
+    const old=document.getElementById('printWeeklyProfessionalV13');
+    if(old) old.remove();
 
     const wrapper=document.createElement('div');
-    wrapper.id='printOnlyWeeklyV11';
-    wrapper.innerHTML=`
-      <div class="print-title-v11">Piano settimanale</div>
-      <div class="print-meta-v11">${new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
-    `;
-    wrapper.appendChild(clone);
+    wrapper.id='printWeeklyProfessionalV13';
+
+    const title=document.createElement('div');
+    title.className='print-v13-title';
+    title.innerHTML='<div class="print-v13-main-title">Piano settimanale</div>';
+
+    const weekTitle=document.querySelector('[id*="week"], .week-title, h2, h3');
+    let weekText='';
+    const bodyText=document.body.innerText;
+    const m=bodyText.match(/Settimana dal\s+Lunedì\s+\d{2}\/\d{2}\/\d{4}\s+al\s+Domenica\s+\d{2}\/\d{2}\/\d{4}/i);
+    weekText=m?m[0]:'Settimana corrente';
+    title.innerHTML += '<div class="print-v13-week">'+weekText+'</div>';
+    wrapper.appendChild(title);
+
+    const sourceCard = document.querySelector('.calendar-agenda, .weekly-card, .card:has(.weekly-grid)');
+    // Build from the visible weekly agenda rows, which are the most readable data source.
+    const dayBlocks=[];
+    document.querySelectorAll('h3,h4').forEach(h=>{
+      const t=h.textContent.trim();
+      if(/^(Lunedì|Martedì|Mercoledì|Giovedì|Venerdì|Sabato|Domenica)\s+\d{2}\/\d{2}\/\d{4}/.test(t)){
+        let container=h.parentElement;
+        for(let i=0;i<3 && container;i++,container=container.parentElement){
+          if(container.querySelectorAll && container.querySelectorAll('button').length>=0){
+            const txt=container.innerText||'';
+            if(txt.includes(t) && txt.length<5000){ dayBlocks.push({h,container}); break; }
+          }
+        }
+      }
+    });
+
+    // Safer fallback: clone the weekly agenda card and remove navigation/actions.
+    const agenda = document.querySelector('.weekly-agenda, #weeklyAgenda, .agenda-week, .card');
+    if(!dayBlocks.length && agenda){
+      const clone=agenda.cloneNode(true);
+      clone.querySelectorAll('button,.weekly-print-actions-v12,.weekly-print-actions-v11').forEach(x=>x.remove());
+      wrapper.appendChild(clone);
+    }else{
+      // Use the existing agenda card but style it specifically for print.
+      const candidates=[...document.querySelectorAll('div,section,article')].filter(el=>{
+        const t=(el.innerText||'');
+        return t.includes('TUTTI GLI IMPEGNI') && t.includes('Lunedì 21/09/2026');
+      }).sort((a,b)=>a.innerText.length-b.innerText.length);
+      const card=candidates[0];
+      if(card){
+        const clone=card.cloneNode(true);
+        clone.querySelectorAll('button,.weekly-print-actions-v12,.weekly-print-actions-v11').forEach(x=>x.remove());
+        wrapper.appendChild(clone);
+      }
+    }
+
+    // Add a compact footer.
+    const footer=document.createElement('div');
+    footer.className='print-v13-footer';
+    footer.textContent='App-Famy · Piano settimanale';
+    wrapper.appendChild(footer);
+
     document.body.appendChild(wrapper);
     return wrapper;
   }
 
-  function doPrintV11(){
-    const wrapper=buildPrintV11();
+  function printProfessionalWeeklyV13(){
+    const wrapper=buildProfessionalWeeklyPrint();
     if(!wrapper)return;
-    document.body.classList.add('printing-weekly-v11');
+    document.body.classList.add('printing-professional-weekly-v13');
     setTimeout(()=>{
       window.print();
       setTimeout(()=>{
-        document.body.classList.remove('printing-weekly-v11');
+        document.body.classList.remove('printing-professional-weekly-v13');
         wrapper.remove();
-      },500);
-    },50);
+      },700);
+    },80);
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
-    document.getElementById('printWeeklyV11')?.addEventListener('click',doPrintV11);
-    document.getElementById('printWeeklyPdfV11')?.addEventListener('click',doPrintV11);
+    const a=document.getElementById('printWeeklyV11');
+    const b=document.getElementById('printWeeklyPdfV11');
+    if(a){
+      a.removeEventListener('click',window.__oldPrintV11||(()=>{}));
+      a.onclick=printProfessionalWeeklyV13;
+    }
+    if(b){
+      b.onclick=printProfessionalWeeklyV13;
+    }
   });
 })();
 </script>
