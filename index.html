@@ -150,24 +150,22 @@
 
   /* Calendar */
   .cal-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
-  .cal{display:grid;grid-template-columns:60px repeat(7,minmax(var(--daymin,220px),1fr))}
-  .day-head{color:#fff;text-align:center;font-size:.84rem;font-weight:800;padding:10px 3px}
-  .day-head small{display:block;font-weight:500;opacity:.9;font-size:.65rem;margin-top:2px}
-  .subhead{display:grid;font-size:.58rem;color:#fff;text-align:center;opacity:.95}
-  .subhead div{padding:4px 1px 2px;border-top:1px solid rgba(255,255,255,.28);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .cal{display:grid;grid-template-columns:72px repeat(7,minmax(250px,1fr));min-width:1820px}
+  .day-head{color:#fff;text-align:center;font-size:1rem;font-weight:850;padding:12px 5px}
+  .day-head small{display:block;font-weight:700;opacity:.95;font-size:.76rem;margin-top:3px}
+  .subhead{display:none}
   .time-col{display:flex;flex-direction:column;background:var(--card);border-right:1px solid var(--line)}
-  .time-cell{height:50px;font-size:.68rem;color:var(--muted);text-align:right;padding-right:6px;border-top:1px solid var(--line);display:flex;align-items:flex-start;justify-content:flex-end}
-  .day-body{position:relative;border-left:1px solid var(--line)}
-  .subgrid{position:relative;height:700px;display:grid}
-  .sub-track{position:relative;border-left:1px dashed var(--line);cursor:pointer}
-  .sub-track:first-child{border-left:none}
+  .time-cell{height:50px;font-size:.82rem;color:var(--muted);font-weight:750;text-align:right;padding-right:8px;border-top:1px solid var(--line);display:flex;align-items:flex-start;justify-content:flex-end}
+  .day-body{position:relative;border-left:1px solid var(--line);background:#fff}
+  .subgrid{position:relative;height:700px;display:block}
+  .sub-track{position:absolute;inset:0;cursor:pointer}
   .hline{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
   .ev{
-    position:absolute;left:4px;right:4px;border-radius:8px;color:#fff;font-size:.68rem;line-height:1.2;
-    padding:4px 5px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.12);cursor:pointer
+    position:absolute;border-radius:9px;color:#fff;font-size:.82rem;line-height:1.25;
+    padding:7px 8px;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,.14);cursor:pointer;box-sizing:border-box
   }
-  .ev b{display:block;font-size:.72rem}
-  .ev .who{opacity:.92;font-size:.66rem}
+  .ev b{display:block;font-size:.9rem;font-weight:900}
+  .ev .who{display:block;opacity:.95;font-size:.78rem;margin-top:2px}
   .ev.tentative{outline:2px dashed rgba(255,255,255,.9);outline-offset:-2px}
   .ev.conflict{outline:2px solid #ff4d4f;outline-offset:-2px}
   .rec-icon{position:absolute;top:2px;right:3px;font-size:.6rem;opacity:.9}
@@ -267,11 +265,11 @@
 .calendar-focus-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}
 .calendar-focus-head h2{margin:2px 0 0;font-size:1.25rem;font-weight:850}
 .calendar-focus-note{font-size:.82rem;color:var(--muted,#64748b);font-weight:650}
-.calendar-agenda-layout{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(320px,.9fr);gap:16px;align-items:start}
+.calendar-agenda-layout{display:grid;grid-template-columns:minmax(0,2.35fr) minmax(330px,.85fr);gap:16px;align-items:start}
 .calendar-pane,.week-agenda-pane{min-width:0}
 .pane-label{font-size:.72rem;letter-spacing:.08em;font-weight:850;color:var(--muted,#64748b);margin:0 0 8px 2px}
-.calendar-pane .cal-desktop{min-height:700px}
-.week-agenda-pane{border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;padding:10px;max-height:590px;overflow:auto}
+.calendar-pane .cal-desktop{min-height:760px}
+.week-agenda-pane{border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;padding:10px;max-height:640px;overflow:auto}
 .agenda-day-block{margin-bottom:10px;border:1px solid var(--line,#e2e8f0);border-radius:11px;overflow:hidden;background:#fff}
 .agenda-day-block:last-child{margin-bottom:0}
 .agenda-day-banner{display:flex;align-items:center;gap:8px;padding:8px 10px;color:#fff;background:var(--day-color);font-size:.82rem;font-weight:850}
@@ -330,6 +328,14 @@
   border-left:4px solid var(--activity-color);
   font-size:.76rem;
   font-weight:850;
+}
+
+
+/* ===== V7: CALENDARIO CLASSICO AMPLIATO ===== */
+@media(min-width:1051px){
+  .calendar-pane .cal-desktop{overflow:visible}
+  .calendar-pane .cal-wrap{box-shadow:0 3px 14px rgba(15,23,42,.08)}
+  .calendar-pane .day-body:nth-child(8n+1){background:#fbfdff}
 }
 
 </style>
@@ -954,11 +960,7 @@ function buildCalendarSkeleton(dates){
   dates.forEach((d,i)=>{
     const head = document.createElement('div');
     head.className='day-head'; head.style.background=DAY_COLORS[i];
-    const sub = document.createElement('div'); sub.className='subhead';
-    sub.style.gridTemplateColumns = `repeat(${persone.length},1fr)`;
-    sub.innerHTML = persone.map(p=>`<div>${p}</div>`).join('');
     head.innerHTML = DAY_NAMES[i]+`<small>${ddmm(d)}</small>`;
-    head.appendChild(sub);
     cal.appendChild(head);
   });
   const timeCol = document.createElement('div'); timeCol.className='time-col';
@@ -972,17 +974,14 @@ function buildCalendarSkeleton(dates){
   dates.forEach((d,i)=>{
     const body = document.createElement('div'); body.className='day-body';
     const grid = document.createElement('div'); grid.className='subgrid'; grid.style.height=TRACK_H+'px';
-    grid.style.gridTemplateColumns = `repeat(${persone.length},1fr)`;
     for(let m=START_MIN;m<=END_MIN;m+=60){
       const hl = document.createElement('div'); hl.className='hline'; hl.style.top=((m-START_MIN)/RANGE*100)+'%';
       grid.appendChild(hl);
     }
-    persone.forEach(p=>{
-      const track=document.createElement('div'); track.className='sub-track'; track.dataset.idx=i; track.dataset.who=slug(p);
-      track.title='Clic per aggiungere un impegno qui';
-      track.addEventListener('click', (e)=>{ if(e.target===track) quickAdd(i, p); });
-      grid.appendChild(track);
-    });
+    const track=document.createElement('div'); track.className='sub-track'; track.dataset.idx=i; track.dataset.who='__day__';
+    track.title='Clic per aggiungere un impegno qui';
+    track.addEventListener('click', (e)=>{ if(e.target===track) quickAdd(i, persone[0] || ''); });
+    grid.appendChild(track);
     body.appendChild(grid);
     cal.appendChild(body);
   });
@@ -1126,21 +1125,38 @@ function render(){
   renderAgenda(dates, weekEvents, conflicts);
   renderWeekAgenda(weekEvents, conflicts);
 
-  weekEvents.forEach(ev=>{
-    const track = document.querySelector(`.sub-track[data-idx="${ev.weekdayIdx}"][data-who="${slug(ev.figlia)}"]`);
-    if(!track) return;
-    const s = Math.max(toMin(ev.oraInizio), START_MIN), e = Math.min(toMin(ev.oraFine), END_MIN);
-    if(e<=s) return;
-    const top=(s-START_MIN)/RANGE*TRACK_H, h=Math.max((e-s)/RANGE*TRACK_H,16);
-    const div = document.createElement('div');
-    div.className = 'ev '+(ev.tentativo?' tentative':'')+(conflicts.has(ev.id)?' conflict':'');
-    div.style.top=top+'px'; div.style.height=h+'px'; div.style.background=DAY_COLORS[ev.weekdayIdx];
-    div.style.borderLeft = `4px solid ${colorOf(ev.figlia)}`;
-    div.title = ev.note||'';
-    div.innerHTML = `${ev.ricorrente?'<span class="rec-icon">🔁</span>':''}<b>${ev.attivita}</b>${ev.responsabile?`<span class="who">${ev.responsabile}</span>`:''}<span class="who">${ev.oraInizio}-${ev.oraFine}</span>`;
-    div.addEventListener('click', ()=>startEdit(ev.id));
-    track.appendChild(div);
-  });
+  // Un'unica colonna per ogni giorno: gli impegni vengono distribuiti
+  // orizzontalmente quando gli orari si sovrappongono, senza coprirsi.
+  for(let day=0; day<7; day++){
+    const track = document.querySelector(`.sub-track[data-idx="${day}"]`);
+    if(!track) continue;
+    const dayEvents = weekEvents.filter(ev=>ev.weekdayIdx===day).sort((a,b)=>toMin(a.oraInizio)-toMin(b.oraInizio) || toMin(a.oraFine)-toMin(b.oraFine));
+    const columns=[];
+    const placed=[];
+    dayEvents.forEach(ev=>{
+      const s=Math.max(toMin(ev.oraInizio),START_MIN), e=Math.min(toMin(ev.oraFine),END_MIN);
+      if(e<=s) return;
+      let col=0;
+      while(columns[col] !== undefined && columns[col] > s) col++;
+      columns[col]=e;
+      placed.push({ev,s,e,col});
+    });
+    const totalCols=Math.max(1,columns.length);
+    placed.forEach(({ev,s,e,col})=>{
+      const top=(s-START_MIN)/RANGE*TRACK_H, h=Math.max((e-s)/RANGE*TRACK_H,28);
+      const div=document.createElement('div');
+      div.className='ev '+(ev.tentativo?' tentative':'')+(conflicts.has(ev.id)?' conflict':'');
+      div.style.top=top+'px'; div.style.height=h+'px';
+      div.style.left=`calc(${(col*100)/totalCols}% + 5px)`;
+      div.style.width=`calc(${100/totalCols}% - 10px)`;
+      div.style.background=activityColor(ev.attivita);
+      div.style.borderLeft=`5px solid ${colorOf(ev.figlia)}`;
+      div.title=ev.note||'';
+      div.innerHTML=`${ev.ricorrente?'<span class="rec-icon">🔁</span>':''}<b>${ev.attivita}</b><span class="who">${ev.figlia}</span>${ev.responsabile?`<span class="who">👤 ${ev.responsabile}</span>`:''}<span class="who">${ev.oraInizio}-${ev.oraFine}</span>`;
+      div.addEventListener('click',(e)=>{e.stopPropagation();startEdit(ev.id)});
+      track.appendChild(div);
+    });
+  }
 
   const warnBox = document.getElementById('warnBox');
   if(conflicts.size>0){
