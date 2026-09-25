@@ -424,6 +424,56 @@
   .calendar-pane .cal-wrap{position:relative;}
   .calendar-pane .cal-wrap::-webkit-scrollbar{height:7px;}
 }
+
+/* ===== V11: COLONNE LARGHE, TESTO LEGGIBILE E SCORRIMENTO ORIZZONTALE ===== */
+.cal-wrap{
+  overflow-x:auto!important;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+}
+.cal{
+  grid-template-columns:68px repeat(7,220px)!important;
+  min-width:1608px!important;
+  width:1608px!important;
+}
+.day-head{
+  font-size:1.12rem!important;
+  padding:14px 8px!important;
+  white-space:nowrap;
+}
+.day-head small{font-size:.80rem!important;}
+.ev{
+  font-size:.82rem!important;
+  line-height:1.22!important;
+  padding:8px 9px!important;
+  overflow:hidden;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.ev b{font-size:.92rem!important;line-height:1.08!important;}
+.ev .who{font-size:.76rem!important;line-height:1.15!important;white-space:normal;}
+@media (max-width:760px){
+  .calendar-pane .cal{
+    grid-template-columns:58px repeat(7,220px)!important;
+    min-width:1598px!important;
+    width:1598px!important;
+  }
+  .calendar-pane .day-head{
+    font-size:1rem!important;
+    padding:13px 7px!important;
+  }
+  .calendar-pane .day-head small{font-size:.76rem!important;}
+  .calendar-pane .ev{
+    font-size:.80rem!important;
+    line-height:1.18!important;
+    padding:7px 8px!important;
+  }
+  .calendar-pane .ev b{font-size:.88rem!important;}
+  .calendar-pane .ev .who{font-size:.74rem!important;}
+}
+
 </style>
 </head>
 
