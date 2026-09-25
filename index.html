@@ -670,6 +670,121 @@
   size:A4 portrait;
   margin:10mm 11mm 12mm 11mm;
 }
+
+/* V15 - formato stampa identico al PDF approvato */
+#printWeeklyV15{display:none}
+
+@media print{
+  body.printing-v15 > *:not(#printWeeklyV15){display:none!important}
+
+  body.printing-v15 #printWeeklyV15{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+    color:#172033!important;
+    font-family:Arial,Helvetica,sans-serif!important;
+  }
+
+  .print-v15-header{
+    text-align:center!important;
+    padding:0 0 6mm!important;
+    margin:0 0 5mm!important;
+    border-bottom:2px solid #172033!important;
+  }
+  .print-v15-title{
+    font-size:23pt!important;
+    line-height:1.05!important;
+    font-weight:800!important;
+  }
+  .print-v15-range{
+    margin-top:2mm!important;
+    font-size:11pt!important;
+    font-weight:700!important;
+    color:#4b5563!important;
+  }
+
+  .print-v15-day{
+    margin:0 0 4.5mm!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+  .print-v15-day.print-v15-page2{
+    break-before:page!important;
+    page-break-before:always!important;
+  }
+
+  .print-v15-day-title{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    min-height:9.5mm!important;
+    padding:2.2mm 3.5mm!important;
+    background:#365f9e!important;
+    color:#fff!important;
+    font-size:12.5pt!important;
+    font-weight:800!important;
+    border-radius:0!important;
+  }
+  .print-v15-today-label{
+    font-size:8pt!important;
+    background:#fff!important;
+    color:#365f9e!important;
+    border-radius:10mm!important;
+    padding:1mm 3mm!important;
+  }
+
+  .print-v15-table{
+    width:100%!important;
+    table-layout:fixed!important;
+    border-collapse:collapse!important;
+    font-size:9pt!important;
+  }
+  .print-v15-table th{
+    background:#eef1f5!important;
+    color:#5d6673!important;
+    text-align:left!important;
+    font-size:7.8pt!important;
+    font-weight:800!important;
+    letter-spacing:.3px!important;
+    padding:2mm 2.2mm!important;
+    border:1px solid #d8dde5!important;
+  }
+  .print-v15-table td{
+    padding:2mm 2.2mm!important;
+    border:1px solid #d8dde5!important;
+    vertical-align:middle!important;
+    line-height:1.15!important;
+    height:7.5mm!important;
+  }
+  .print-v15-table th:nth-child(1),
+  .print-v15-table td:nth-child(1){width:17%!important}
+  .print-v15-table th:nth-child(2),
+  .print-v15-table td:nth-child(2){width:17%!important}
+  .print-v15-table th:nth-child(3),
+  .print-v15-table td:nth-child(3){width:31%!important}
+  .print-v15-table th:nth-child(4),
+  .print-v15-table td:nth-child(4){width:35%!important}
+
+  .print-v15-table .p-time{font-weight:800;white-space:nowrap}
+  .print-v15-table .p-person{font-weight:800}
+  .print-v15-table .p-activity{font-weight:800}
+  .print-v15-table .p-note{color:#626b78}
+
+  .print-v15-footer{
+    margin-top:2mm!important;
+    padding-top:2mm!important;
+    border-top:1px solid #bbb!important;
+    font-size:7.5pt!important;
+    color:#666!important;
+  }
+}
+
+@page{
+  size:A4 portrait;
+  margin:10mm 11mm 11mm 11mm;
+}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -2058,44 +2173,96 @@ initSync();
 <script>
 
 
-// ===== V14: stampa professionale dell'intera settimana =====
+
+// ===== V15: stampa nel formato del PDF approvato =====
 (function(){
-  function buildWeeklyPrintV14(){
-    const old=document.getElementById('printWeeklyProfessionalV14');
+  function esc(v){
+    return String(v||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function buildPrintV15(){
+    const old=document.getElementById('printWeeklyV15');
     if(old) old.remove();
 
-    const agenda=document.getElementById('weekAgenda');
-    if(!agenda) return null;
+    const source=document.getElementById('weekAgenda');
+    if(!source) return null;
 
     const wrapper=document.createElement('div');
-    wrapper.id='printWeeklyProfessionalV14';
+    wrapper.id='printWeeklyV15';
 
-    const bodyText=document.body.innerText;
-    const m=bodyText.match(/Settimana dal\s+Lunedì\s+\d{2}\/\d{2}\/\d{4}\s+al\s+Domenica\s+\d{2}\/\d{2}\/\d{4}/i);
-    const weekText=m ? m[0] : 'Settimana corrente';
+    const range=document.getElementById('weekRange')?.textContent || 'Settimana corrente';
 
-    const head=document.createElement('header');
-    head.className='print-v14-header';
-    head.innerHTML=
-      '<div class="print-v14-title">Piano settimanale</div>'+
-      '<div class="print-v14-week">'+weekText+'</div>';
+    const head=document.createElement('div');
+    head.className='print-v15-header';
+    head.innerHTML=`
+      <div class="print-v15-title">Piano settimanale</div>
+      <div class="print-v15-range">${esc(range)}</div>
+    `;
     wrapper.appendChild(head);
 
-    const content=document.createElement('main');
-    content.className='print-v14-content';
+    const days=[...source.querySelectorAll('.agenda-day-block')];
 
-    const clone=agenda.cloneNode(true);
-    clone.id='print-v14-agenda';
-    clone.querySelectorAll('button,input,select').forEach(x=>x.remove());
+    days.forEach((dayBlock, dayIndex)=>{
+      const banner=dayBlock.querySelector('.agenda-day-banner');
+      const dayName=(banner?.querySelector('span')?.textContent || '').trim();
+      const isToday=!!banner?.querySelector('em');
 
-    // Remove click handlers visually irrelevant to the paper copy.
-    clone.querySelectorAll('[onclick]').forEach(x=>x.removeAttribute('onclick'));
+      const section=document.createElement('section');
+      section.className='print-v15-day '+(isToday?'print-v15-today':'');
+      if(dayIndex===4) section.classList.add('print-v15-page2');
 
-    content.appendChild(clone);
-    wrapper.appendChild(content);
+      section.innerHTML=`
+        <div class="print-v15-day-title">
+          <span>${esc(dayName)}</span>
+          ${isToday?'<span class="print-v15-today-label">OGGI</span>':''}
+        </div>
+        <table class="print-v15-table">
+          <thead>
+            <tr>
+              <th>ORARIO</th>
+              <th>CHI</th>
+              <th>ATTIVITÀ</th>
+              <th>RESPONSABILE / NOTE</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      `;
 
-    const footer=document.createElement('footer');
-    footer.className='print-v14-footer';
+      const tbody=section.querySelector('tbody');
+      dayBlock.querySelectorAll('.agenda-row').forEach(row=>{
+        const time=row.querySelector('.agenda-time');
+        const person=row.querySelector('.person-banner');
+        const activity=row.querySelector('.activity-name');
+        const resp=row.querySelector('.agenda-resp');
+        const note=row.querySelector('.agenda-note');
+
+        let timeText=time ? time.textContent.replace(/\s+/g,' ').trim() : '';
+        timeText=timeText.replace(/→/g,'→');
+
+        let activityText=activity ? activity.textContent.trim() : '';
+        const recurring=row.querySelector('.mini-tag')?.textContent.includes('🔁');
+        if(recurring) activityText += ' 🔁';
+
+        let rn=[];
+        if(resp) rn.push(resp.textContent.replace(/^👤\s*/,'').trim());
+        if(note) rn.push(note.textContent.trim());
+
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td class="p-time">${esc(timeText)}</td>
+          <td class="p-person">${esc(person?.textContent.trim()||'')}</td>
+          <td class="p-activity">${esc(activityText)}</td>
+          <td class="p-note">${esc(rn.join(' · ')||'—')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      wrapper.appendChild(section);
+    });
+
+    const footer=document.createElement('div');
+    footer.className='print-v15-footer';
     footer.textContent='App-Famy · Piano settimanale';
     wrapper.appendChild(footer);
 
@@ -2103,14 +2270,14 @@ initSync();
     return wrapper;
   }
 
-  function printWeeklyV14(){
-    const wrapper=buildWeeklyPrintV14();
+  function printV15(){
+    const wrapper=buildPrintV15();
     if(!wrapper) return;
-    document.body.classList.add('printing-weekly-v14');
+    document.body.classList.add('printing-v15');
     setTimeout(()=>{
       window.print();
       setTimeout(()=>{
-        document.body.classList.remove('printing-weekly-v14');
+        document.body.classList.remove('printing-v15');
         wrapper.remove();
       },800);
     },80);
@@ -2119,8 +2286,8 @@ initSync();
   document.addEventListener('DOMContentLoaded',()=>{
     const a=document.getElementById('printWeeklyV11');
     const b=document.getElementById('printWeeklyPdfV11');
-    if(a) a.onclick=printWeeklyV14;
-    if(b) b.onclick=printWeeklyV14;
+    if(a) a.onclick=printV15;
+    if(b) b.onclick=printV15;
   });
 })();
 </script>
