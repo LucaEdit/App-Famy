@@ -333,6 +333,23 @@
 }
 
 </style>
+<style id="v6-extra-css">
+.multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
+.multi-date-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.multi-date-list{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.date-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#eef2f7;font-size:13px}
+.date-chip button{border:0;background:transparent;cursor:pointer;font-size:16px;line-height:1}
+.weekday-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:8px}
+.weekday-grid label{display:flex;gap:8px;align-items:center;border:1px solid var(--line,#ddd);border-radius:10px;padding:8px;font-size:13px;background:#fff}
+.weekday-grid input[type="checkbox"], .check-row input[type="checkbox"]{width:18px;height:18px;min-width:18px;min-height:18px;max-width:18px;max-height:18px;margin:0;padding:0;flex:0 0 18px;accent-color:#315fb8}
+.photo-preview{display:none;margin-top:10px;position:relative;width:140px}
+.photo-preview.show{display:block}
+.photo-preview img{width:140px;height:100px;object-fit:cover;border-radius:12px;border:1px solid var(--line,#ddd)}
+.photo-remove{position:absolute;right:-7px;top:-7px;border:0;border-radius:50%;width:25px;height:25px;cursor:pointer}
+.photo-badge{font-size:12px;margin-left:5px}
+@media(max-width:650px){.weekday-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
 </head>
 
 <body>
@@ -449,9 +466,17 @@
         <label>Chi</label>
         <select name="figlia" id="figliaSelect" required></select>
       </div>
-      <div class="form-field">
-        <label>Data (per impegno singolo)</label>
-        <input type="date" name="data">
+      <div class="form-field full">
+        <label>Data / date dell'impegno</label>
+        <div class="multi-date-box">
+          <div class="multi-date-controls">
+            <input type="date" id="datePickerV6">
+            <button type="button" class="secondary" id="addDateV6">+ Aggiungi data</button>
+          </div>
+          <div class="multi-date-list" id="selectedDatesV6"></div>
+          <small style="display:block;margin-top:8px;color:var(--muted)">Puoi aggiungere più date nello stesso salvataggio.</small>
+        </div>
+        <input type="hidden" name="data" id="dataV6">
       </div>
       <div class="form-field">
         <label>Ora inizio</label>
@@ -480,16 +505,27 @@
         <label for="tentativoCheck">Da confermare</label>
       </div>
 
-      <div class="form-field">
-        <label>Giorno (per impegno ricorrente)</label>
-        <select name="giornoSettimana">
-          <option value="0">Lunedì</option><option value="1">Martedì</option><option value="2">Mercoledì</option>
-          <option value="3">Giovedì</option><option value="4">Venerdì</option><option value="5">Sabato</option><option value="6">Domenica</option>
-        </select>
+      <div class="form-field full">
+        <label>Giorni della settimana (per impegno ricorrente)</label>
+        <div class="weekday-grid" id="weekdayGridV6">
+          <label><input type="checkbox" name="giorniSettimana" value="0"> Lunedì</label>
+          <label><input type="checkbox" name="giorniSettimana" value="1"> Martedì</label>
+          <label><input type="checkbox" name="giorniSettimana" value="2"> Mercoledì</label>
+          <label><input type="checkbox" name="giorniSettimana" value="3"> Giovedì</label>
+          <label><input type="checkbox" name="giorniSettimana" value="4"> Venerdì</label>
+          <label><input type="checkbox" name="giorniSettimana" value="5"> Sabato</label>
+          <label><input type="checkbox" name="giorniSettimana" value="6"> Domenica</label>
+        </div>
       </div>
       <div class="full note-field">
         <label>Note</label>
         <input type="text" name="note" placeholder="es. luogo, indicazioni, dettagli...">
+      </div>
+      <div class="form-field full">
+        <label>📷 Foto / documento</label>
+        <input type="file" id="photoV6" accept="image/*" capture="environment">
+        <div class="photo-preview" id="photoPreviewV6"><img id="photoImgV6" alt="Anteprima foto"><button type="button" class="photo-remove" id="removePhotoV6">×</button></div>
+        <small style="display:block;margin-top:6px;color:var(--muted)">La foto viene ridotta automaticamente per mantenere leggero il calendario.</small>
       </div>
       <div class="full form-actions">
         <button type="submit" id="submitBtn">+ Salva impegno</button>
@@ -1006,7 +1042,7 @@ function renderAgenda(dates, weekEvents, conflicts){
         <span class="sw" style="background:${colorOf(ev.figlia)}"></span>
         <span class="time">${ev.oraInizio}<br>${ev.oraFine}</span>
         <span class="info">
-          <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}</b>
+          <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}${ev.foto?' 📷':''}</b>
           <small>${ev.figlia}${ev.responsabile?' · '+ev.responsabile:''}${ev.note?' · '+ev.note:''}</small>
         </span>
         <span class="ag-actions">
@@ -1168,7 +1204,7 @@ function render(){
       <td><span class="badge" style="background:${colorOf(ev.figlia)}">${ev.figlia}</span></td>
       <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
       <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
-      <td>${ev.attivita}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
+      <td>${ev.attivita}${ev.foto?' 📷':''}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
       <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
           <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
     </tr>`;
@@ -1188,7 +1224,9 @@ function startEdit(id){
   editingId = id;
   const f = document.getElementById('form');
   f.figlia.value = ev.figlia;
-  f.data.value = ev.data || '';
+  setDatesV6(ev.data ? [ev.data] : []);
+  currentPhotoV6 = ev.foto || '';
+  if(currentPhotoV6){ document.getElementById('photoImgV6').src=currentPhotoV6; document.getElementById('photoPreviewV6').classList.add('show'); } else { clearPhotoV6(); }
   f.oraInizio.value = ev.oraInizio;
   f.oraFine.value = ev.oraFine;
   f.attivita.value = ev.attivita;
@@ -1196,7 +1234,7 @@ function startEdit(id){
   f.note.value = ev.note || '';
   f.ricorrente.checked = !!ev.ricorrente;
   f.tentativo.checked = !!ev.tentativo;
-  f.giornoSettimana.value = ev.giornoSettimana ?? 0;
+  document.querySelectorAll('input[name="giorniSettimana"]').forEach(cb=>cb.checked=Array.isArray(ev.giorniSettimana)?ev.giorniSettimana.map(Number).includes(Number(cb.value)):Number(cb.value)===(ev.giornoSettimana??0));
   document.getElementById('formTitle').textContent = 'Modifica impegno';
   document.getElementById('submitBtn').textContent = 'Salva modifiche';
   document.getElementById('cancelEdit').style.display = 'inline-block';
@@ -1207,39 +1245,83 @@ window.startEdit = startEdit;
 function cancelEdit(){
   editingId = null;
   document.getElementById('form').reset();
+  setDatesV6([]); clearPhotoV6();
   document.getElementById('formTitle').textContent = 'Aggiungi impegno';
   document.getElementById('submitBtn').textContent = '+ Aggiungi al calendario';
   document.getElementById('cancelEdit').style.display = 'none';
 }
 document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
+// ===== V6: multi-date + foto =====
+let selectedDatesV6 = [];
+let currentPhotoV6 = '';
+const dayNamesV6 = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+function renderSelectedDatesV6(){
+  const box=document.getElementById('selectedDatesV6');
+  box.innerHTML=selectedDatesV6.slice().sort().map(d=>`<span class="date-chip">${ddmm(parseDate(d))}<button type="button" data-date="${d}" aria-label="Rimuovi ${d}">×</button></span>`).join('') || '<span style="color:var(--muted);font-size:13px">Nessuna data selezionata</span>';
+  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{selectedDatesV6=selectedDatesV6.filter(x=>x!==b.dataset.date); syncDateHiddenV6(); renderSelectedDatesV6();}));
+}
+function syncDateHiddenV6(){document.getElementById('dataV6').value=selectedDatesV6[0]||'';}
+document.getElementById('addDateV6').addEventListener('click',()=>{
+  const d=document.getElementById('datePickerV6').value;
+  if(!d) return;
+  if(!selectedDatesV6.includes(d)) selectedDatesV6.push(d);
+  document.getElementById('datePickerV6').value=''; syncDateHiddenV6(); renderSelectedDatesV6();
+});
+function setDatesV6(dates){selectedDatesV6=[...new Set((dates||[]).filter(Boolean))]; syncDateHiddenV6(); renderSelectedDatesV6();}
+function clearPhotoV6(){currentPhotoV6='';document.getElementById('photoV6').value='';document.getElementById('photoPreviewV6').classList.remove('show');document.getElementById('photoImgV6').src='';}
+document.getElementById('removePhotoV6').addEventListener('click',clearPhotoV6);
+document.getElementById('photoV6').addEventListener('change',e=>{
+  const file=e.target.files?.[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){alert('Seleziona un file immagine.'); clearPhotoV6(); return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image(); img.onload=()=>{
+      const max=1200, scale=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*scale); c.height=Math.round(img.height*scale);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      currentPhotoV6=c.toDataURL('image/jpeg',0.72);
+      document.getElementById('photoImgV6').src=currentPhotoV6; document.getElementById('photoPreviewV6').classList.add('show');
+    }; img.src=ev.target.result;
+  }; reader.readAsDataURL(file);
+});
+renderSelectedDatesV6();
+
 document.getElementById('form').addEventListener('submit', function(e){
   e.preventDefault();
   const fd = new FormData(e.target);
   const ricorrente = fd.get('ricorrente')==='on';
-  const data = fd.get('data');
-  if(!ricorrente && !data){ alert('Inserisci una data, oppure spunta "si ripete ogni settimana".'); return; }
-  const payload = {
-    figlia: fd.get('figlia'),
-    ricorrente,
-    giornoSettimana: ricorrente ? Number(fd.get('giornoSettimana')) : (data ? (parseDate(data).getDay()+6)%7 : 0),
-    data: ricorrente ? null : data,
-    oraInizio: fd.get('oraInizio'),
-    oraFine: fd.get('oraFine'),
-    attivita: fd.get('attivita').trim(),
-    responsabile: (fd.get('responsabile')||'').trim(),
-    note: (fd.get('note')||'').trim(),
-    tentativo: fd.get('tentativo')==='on'
+  const dates = [...selectedDatesV6];
+  const weekdays = [...document.querySelectorAll('input[name="giorniSettimana"]:checked')].map(x=>Number(x.value));
+  if(ricorrente && weekdays.length===0){ alert('Seleziona almeno un giorno della settimana.'); return; }
+  if(!ricorrente && dates.length===0){ alert('Inserisci almeno una data.'); return; }
+  const base = {
+    figlia: fd.get('figlia'), ricorrente,
+    oraInizio: fd.get('oraInizio'), oraFine: fd.get('oraFine'),
+    attivita: fd.get('attivita').trim(), responsabile: (fd.get('responsabile')||'').trim(),
+    note: (fd.get('note')||'').trim(), tentativo: fd.get('tentativo')==='on',
+    foto: currentPhotoV6 || ''
   };
-  if(toMin(payload.oraFine)<=toMin(payload.oraInizio)){ alert("L'ora fine deve essere dopo l'ora inizio."); return; }
+  if(toMin(base.oraFine)<=toMin(base.oraInizio)){ alert("L'ora fine deve essere dopo l'ora inizio."); return; }
 
   if(editingId){
-    const idx = state.findIndex(e=>e.id===editingId);
-    state[idx] = Object.assign({id: editingId}, payload);
+    const idx=state.findIndex(e=>e.id===editingId); if(idx<0) return;
+    const ev=state[idx];
+    if(ricorrente){
+      state[idx]=Object.assign({id:editingId},base,{giornoSettimana:weekdays[0]??0,giorniSettimana:weekdays,data:null});
+    } else {
+      state[idx]=Object.assign({id:editingId},base,{giornoSettimana:(parseDate(dates[0]).getDay()+6)%7,data:dates[0],giorniSettimana:[]});
+      // If multiple dates are selected during an edit, create the additional dates as new linked copies.
+      for(let i=1;i<dates.length;i++) state.push(Object.assign({id:nextId++},base,{giornoSettimana:(parseDate(dates[i]).getDay()+6)%7,data:dates[i],giorniSettimana:[]}));
+    }
     cancelEdit();
   } else {
-    state.push(Object.assign({id: nextId++}, payload));
-    e.target.reset();
+    if(ricorrente){
+      weekdays.forEach(day=>state.push(Object.assign({id:nextId++},base,{giornoSettimana:day,giorniSettimana:weekdays,data:null})));
+    } else {
+      dates.forEach(d=>state.push(Object.assign({id:nextId++},base,{giornoSettimana:(parseDate(d).getDay()+6)%7,giorniSettimana:[],data:d})));
+    }
+    e.target.reset(); setDatesV6([]); clearPhotoV6();
   }
   render(); persist();
 });
