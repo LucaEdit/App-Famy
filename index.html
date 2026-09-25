@@ -408,6 +408,23 @@
 #list th:nth-child(7){min-width:180px}
 #list th:nth-child(8){min-width:110px}
 #list th:nth-child(9){min-width:170px}
+
+/* V11 - stampa piano settimanale */
+.weekly-print-actions-v11{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.weekly-print-actions-v11 button{white-space:nowrap}
+
+@media print{
+  body.printing-weekly-v11 > *:not(#printOnlyWeeklyV11){display:none!important}
+  body.printing-weekly-v11 #printOnlyWeeklyV11{display:block!important;position:static!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
+  #printOnlyWeeklyV11 .weekly-print-actions-v11{display:none!important}
+  #printOnlyWeeklyV11 .card,#printOnlyWeeklyV11 .panel{box-shadow:none!important;border:0!important;margin:0!important;max-width:none!important}
+  #printOnlyWeeklyV11 table{width:100%!important;min-width:0!important;font-size:11pt!important}
+  #printOnlyWeeklyV11 th,#printOnlyWeeklyV11 td{padding:7px 6px!important}
+  #printOnlyWeeklyV11 .print-title-v11{font-size:22pt!important;font-weight:700!important;margin:0 0 4px!important}
+  #printOnlyWeeklyV11 .print-meta-v11{font-size:10pt!important;margin:0 0 14px!important}
+  #printOnlyWeeklyV11 *{break-inside:avoid}
+}
+@page{size:A4;margin:12mm}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -447,6 +464,10 @@
   <div class="lock-overlay" id="lockOverlay">
     <div class="lock-box">
       <h2 id="lockTitle">🔒 Calendario protetto</h2>
+<div class="weekly-print-actions-v11">
+  <button type="button" class="secondary" id="printWeeklyV11">🖨️ Stampa</button>
+  <button type="button" class="secondary" id="printWeeklyPdfV11">📄 PDF</button>
+</div>
       <p id="lockText">Inserisci il PIN per accedere.</p>
       <input type="password" id="lockInput" inputmode="numeric" placeholder="PIN" maxlength="12">
       <div class="lock-error" id="lockError"></div>
@@ -1784,6 +1805,58 @@ initSync();
     const s=document.getElementById('filterDateScopeV8');
     if(s)s.addEventListener('change',updateListSummaryV10);
     updateListSummaryV10();
+  });
+})();
+</script>
+<script>
+// ===== V11: stampa del solo piano settimanale =====
+(function(){
+  function findWeeklyContainerV11(){
+    const buttons=document.querySelectorAll('#printWeeklyV11,#printWeeklyPdfV11');
+    if(!buttons.length)return null;
+    let el=buttons[0];
+    // climb to the nearest card/container that contains the weekly calendar/agenda
+    for(let i=0;i<6 && el;i++,el=el.parentElement){
+      if(el.classList && (el.classList.contains('card') || el.classList.contains('panel'))) return el;
+    }
+    return buttons[0].parentElement?.parentElement || null;
+  }
+
+  function buildPrintV11(){
+    const source=findWeeklyContainerV11();
+    if(!source)return null;
+    const clone=source.cloneNode(true);
+
+    // Remove the print controls from the printed copy.
+    clone.querySelectorAll('.weekly-print-actions-v11').forEach(x=>x.remove());
+
+    const wrapper=document.createElement('div');
+    wrapper.id='printOnlyWeeklyV11';
+    wrapper.innerHTML=`
+      <div class="print-title-v11">Piano settimanale</div>
+      <div class="print-meta-v11">${new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
+    `;
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+    return wrapper;
+  }
+
+  function doPrintV11(){
+    const wrapper=buildPrintV11();
+    if(!wrapper)return;
+    document.body.classList.add('printing-weekly-v11');
+    setTimeout(()=>{
+      window.print();
+      setTimeout(()=>{
+        document.body.classList.remove('printing-weekly-v11');
+        wrapper.remove();
+      },500);
+    },50);
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('printWeeklyV11')?.addEventListener('click',doPrintV11);
+    document.getElementById('printWeeklyPdfV11')?.addEventListener('click',doPrintV11);
   });
 })();
 </script>
