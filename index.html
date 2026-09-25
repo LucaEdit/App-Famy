@@ -362,6 +362,23 @@
 .filter-actions-v6{display:flex;align-items:end}
 .filter-result-v6{margin-top:12px;font-size:13px;color:var(--muted)}
 @media(max-width:650px){.filters-v6{grid-template-columns:1fr 1fr}.filter-actions-v6{grid-column:1/-1}}
+
+/* ===== V7: controlli in alto + date complete ===== */
+.view-controls-v7{margin:0 0 10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.view-control-group-v7{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.view-control-label-v7{font-size:.68rem;font-weight:850;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.person-filter-chips-v7{display:flex;gap:6px;flex-wrap:wrap}
+.person-filter-chip-v7{padding:6px 10px;border-radius:999px;background:var(--card);color:var(--text);border:1px solid var(--line);font-size:.72rem;font-weight:750}
+.person-filter-chip-v7:hover{background:var(--card)}
+.person-filter-chip-v7.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+#filtersCardV6{margin-bottom:12px}
+#filtersCardV6 h2{margin-bottom:10px}
+@media(max-width:600px){
+  .view-control-group-v7{align-items:flex-start;flex-direction:column;gap:7px}
+  .person-filter-chips-v7{width:100%}
+  .person-filter-chip-v7{padding:7px 10px}
+  #filtersCardV6 .filters-v6{grid-template-columns:1fr 1fr}
+}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -448,6 +465,13 @@
       <h2>📆 Calendario + Agenda completa</h2>
     </div>
     <div class="calendar-focus-note">Calendario a colpo d'occhio · tutti gli impegni ordinati a destra</div>
+  </div>
+
+  <div class="view-controls-v7">
+    <div class="view-control-group-v7">
+      <span class="view-control-label-v7">SELEZIONE PERSONA</span>
+      <div class="person-filter-chips-v7" id="calendarPersonFiltersV7"></div>
+    </div>
   </div>
 
   <div class="nav">
@@ -587,6 +611,58 @@
     </div>
   </div>
 
+<div class="card" id="filtersCardV6">
+  <h2>🔎 Filtri elenco impegni</h2>
+  <div class="filters-v6">
+    <label>
+      Persona
+      <select id="filterPersonV6">
+        <option value="">Tutte</option>
+      </select>
+    </label>
+    <label>
+      Attività
+      <select id="filterActivityV6">
+        <option value="">Tutte</option>
+      </select>
+    </label>
+    <label>
+      Responsabile
+      <select id="filterResponsibleV6">
+        <option value="">Tutti</option>
+      </select>
+    </label>
+    <label>
+      Data da
+      <input type="date" id="filterFromV6">
+    </label>
+    <label>
+      Data a
+      <input type="date" id="filterToV6">
+    </label>
+    <label>
+      Allegati
+      <select id="filterAttachmentsV6">
+        <option value="">Tutti</option>
+        <option value="yes">Solo con allegati</option>
+        <option value="no">Senza allegati</option>
+      </select>
+    </label>
+    <label>
+      Stato
+      <select id="filterTentativeV6">
+        <option value="">Tutti</option>
+        <option value="confirmed">Confermati</option>
+        <option value="tentative">Da confermare</option>
+      </select>
+    </label>
+    <div class="filter-actions-v6">
+      <button type="button" class="secondary" id="clearFiltersV6">Azzera filtri</button>
+    </div>
+  </div>
+  <div class="filter-result-v6" id="filterResultV6"></div>
+</div>
+
   <div class="card">
     <div class="section-title">
       <h2>Elenco completo — tutti gli impegni programmati</h2>
@@ -594,7 +670,7 @@
     </div>
     <div style="overflow-x:auto;">
       <table id="list">
-        <thead><tr><th>Data</th><th>Chi</th><th>Giorno</th><th>Orario</th><th>Attività</th><th>Responsabile</th><th>Note</th><th>Allegati</th><th></th></tr></thead>
+        <thead><tr><th>Data</th><th>Chi</th><th>Orario</th><th>Attività</th><th>Responsabile</th><th>Note</th><th>Allegati</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -941,6 +1017,7 @@ function fmtDate(d){
 }
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function ddmm(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+function fullDateV7(d){ return `${DAY_NAMES[(d.getDay()+6)%7]} ${ddmm(d)}/${d.getFullYear()}`; }
 
 function mondayOf(date){
   const d = new Date(date);
@@ -950,6 +1027,7 @@ function mondayOf(date){
   return d;
 }
 let currentWeekStart = mondayOf(new Date());
+let activePersonFilterV7 = '';
 function weekDates(){
   const out=[];
   for(let i=0;i<7;i++){ const d=new Date(currentWeekStart); d.setDate(d.getDate()+i); out.push(d); }
@@ -960,6 +1038,7 @@ function eventsForWeek(){
   const dates = weekDates();
   const out = [];
   state.forEach(ev=>{
+    if(activePersonFilterV7 && ev.figlia!==activePersonFilterV7) return;
     if(ev.ricorrente){
       out.push(Object.assign({}, ev, {dataEff: fmtDate(dates[ev.giornoSettimana]), weekdayIdx: ev.giornoSettimana}));
     } else if(ev.data){
@@ -988,7 +1067,24 @@ function findConflicts(list){
   return c;
 }
 
+
+function renderCalendarPersonFiltersV7(){
+  const box=document.getElementById('calendarPersonFiltersV7');
+  if(!box)return;
+  box.innerHTML=[
+    `<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===''?'active':''}" data-person="">Tutti</button>`,
+    ...persone.map(p=>`<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===p?'active':''}" data-person="${String(p).replace(/"/g,'&quot;')}">${String(p).replace(/</g,'&lt;')}</button>`)
+  ].join('');
+  box.querySelectorAll('[data-person]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      activePersonFilterV7=btn.dataset.person||'';
+      renderCalendarPersonFiltersV7();
+      render();
+    });
+  });
+}
 function renderPeopleChips(){
+  renderCalendarPersonFiltersV7();
   document.documentElement.style.setProperty('--daymin', Math.max(200, persone.length*55)+'px');
   const box = document.getElementById('peopleChips');
   box.innerHTML = persone.map((p,i)=>{
@@ -1185,8 +1281,7 @@ function renderWeekAgenda(weekEvents, conflicts){
     return `
       <section class="agenda-day-block ${isToday?'agenda-today':''}">
         <div class="agenda-day-banner" style="--day-color:${DAY_COLORS[group.idx]}">
-          <span>${DAY_NAMES[group.idx]}</span>
-          <b>${ddmm(date)}</b>
+          <span>${fullDateV7(date)}</span>
           ${isToday ? '<em>OGGI</em>' : ''}
         </div>
         <div class="agenda-day-events">${rows}</div>
@@ -1198,7 +1293,7 @@ function render(){
   renderTodaySummary();
   const dates = weekDates();
   document.getElementById('weekRange').textContent =
-    `Settimana dal ${ddmm(dates[0])} al ${ddmm(dates[6])}/${dates[6].getFullYear()}`;
+    `Settimana dal ${fullDateV7(dates[0])} al ${fullDateV7(dates[6])}`;
 
   const weekEvents = eventsForWeek();
   const conflicts = findConflicts(weekEvents);
@@ -1242,75 +1337,101 @@ function render(){
     return `<tr><td>${k}</td><td>${(ore[k].Clarissa||0).toFixed(1)}</td><td>${(ore[k].Carola||0).toFixed(1)}</td><td><b>${tot.toFixed(1)}</b></td></tr>`;
   }).join('') || '<tr><td colspan="4" style="color:var(--muted)">Nessun dato</td></tr>';
 
-  // Elenco COMPLETO di tutti gli impegni programmati, ordinato per prossima data.
-  const todayForList = new Date();
-  todayForList.setHours(0,0,0,0);
+  // Elenco completo ordinato per data e ora.
+  renderCompleteListV6();
 
-  function nextOccurrenceForList(ev){
-    if(ev.data){
-      const d=parseDate(ev.data);
-      d.setHours(0,0,0,0);
-      return d;
+}
+
+function allPlannedOccurrencesV6(){
+  const out=[];
+  const today=new Date(); today.setHours(0,0,0,0);
+  const end=new Date(today); end.setFullYear(end.getFullYear()+1);
+
+  state.forEach(ev=>{
+    if(ev.ricorrente){
+      const days=(Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length)
+        ? ev.giorniSettimana.map(Number)
+        : [Number(ev.giornoSettimana ?? 0)];
+      for(let d=new Date(today); d<=end; d.setDate(d.getDate()+1)){
+        const wd=(d.getDay()+6)%7;
+        if(days.includes(wd)) out.push({...ev,_listDate:fmtDate(d),_listDateObj:new Date(d)});
+      }
+    }else if(ev.data){
+      out.push({...ev,_listDate:ev.data,_listDateObj:parseDate(ev.data)});
     }
-    const d=new Date(todayForList);
-    const target=Number(ev.giornoSettimana ?? 0);
-    const diff=(target - ((d.getDay()+6)%7) + 7) % 7;
-    d.setDate(d.getDate()+diff);
-    return d;
-  }
-
-  const sortedAll = [...state].sort((a,b)=>{
-    const da=nextOccurrenceForList(a), db=nextOccurrenceForList(b);
-    return da-da || toMin(a.oraInizio)-toMin(b.oraInizio) || String(a.figlia).localeCompare(String(b.figlia));
   });
 
-  const escList = v => String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-
-  document.querySelector('#list tbody').innerHTML = sortedAll.map(ev=>{
-    const d=nextOccurrenceForList(ev);
-    const dateLabel=ev.data ? fmtDate(d).split('-').reverse().join('/') : `${DAY_NAMES[ev.giornoSettimana??0]} ${ddmm(d)}`;
+  return out.sort((a,b)=>{
+    const c=a._listDateObj-b._listDateObj;
+    if(c)return c;
+    const t=toMin(a.oraInizio)-toMin(b.oraInizio);
+    if(t)return t;
+    return String(a.figlia||'').localeCompare(String(b.figlia||''),'it');
+  });
+}
+function escListV6(v){
+  return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function renderCompleteListV6(){
+  const tbody=document.querySelector('#list tbody');
+  if(!tbody)return;
+  const rows=allPlannedOccurrencesV6();
+  tbody.innerHTML=rows.map(ev=>{
+    const d=ev._listDateObj;
+    const dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
     const dayLabel=DAY_NAMES[(d.getDay()+6)%7];
-    const attachments=Array.isArray(ev.allegati) ? ev.allegati : [];
-    const oldPhoto=ev.foto ? [{name:'Foto',type:'image/jpeg',url:ev.foto,size:0}] : [];
-    const allAttachments=[...attachments,...oldPhoto];
-
+    const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];
+    if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
     return `<tr>
-      <td><b>${dateLabel}</b>${ev.ricorrente?' 🔁':''}</td>
-      <td><span class="badge" style="background:${colorOf(ev.figlia)}">${escList(ev.figlia)}</span></td>
-      <td>${dayLabel}</td>
-      <td>${escList(ev.oraInizio)}-${escList(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
-      <td>${escList(ev.attivita)}</td>
-      <td>${escList(ev.responsabile||'-')}</td>
-      <td>${escList(ev.note||'-')}</td>
-      <td>${allAttachments.length
-        ? `<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${allAttachments.length} ${allAttachments.length===1?'file':'file'}</button>`
-        : '-'}</td>
+      <td><b>${fullDateV7(d)}</b>${ev.ricorrente?' 🔁':''}</td>
+      <td><span class="badge" style="background:${colorOf(ev.figlia)}">${escListV6(ev.figlia)}</span></td>
+      <td>${escListV6(ev.oraInizio)}-${escListV6(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
+      <td>${escListV6(ev.attivita)}</td>
+      <td>${escListV6(ev.responsabile||'-')}</td>
+      <td>${escListV6(ev.note||'-')}</td>
+      <td>${attachments.length?`<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${attachments.length} file</button>`:'-'}</td>
       <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
           <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="9" style="color:var(--muted)">Nessun impegno programmato</td></tr>';
-
+  }).join('')||'<tr><td colspan="8" style="color:var(--muted)">Nessun impegno programmato</td></tr>';
+  const counter=document.getElementById('filterResultV6');
+  if(counter)counter.textContent=`Visualizzati ${rows.length} impegni programmati.`;
 }
 
 
 function openAttachments(eventId){
-  const ev=state.find(e=>e.id===eventId);
-  if(!ev)return;
+  const ev=state.find(e=>e.id===eventId); if(!ev)return;
   const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];
-  if(ev.foto) attachments.push({name:'Foto',type:'image/jpeg',size:0,url:ev.foto});
-  const box=document.getElementById('attachmentsModalListV6');
+  if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',size:0,url:ev.foto});
+  const box=document.getElementById('attachmentsModalListV6'), modal=document.getElementById('attachmentsModalV6');
+  if(!box||!modal)return;
   document.getElementById('attachmentsTitleV6').textContent=`Allegati · ${ev.attivita||'Impegno'}`;
-  box.innerHTML=attachments.length ? attachments.map(a=>`
+  window._openAttachmentsV6=attachments;
+  box.innerHTML=attachments.length?attachments.map((a,i)=>`
     <div class="attachment-modal-row-v6">
       <span class="attachment-modal-icon-v6">${fileIconV6(a.type,a.name)}</span>
-      <span class="attachment-modal-name-v6" title="${String(a.name).replace(/"/g,'&quot;')}">${String(a.name).replace(/</g,'&lt;')}</span>
+      <span class="attachment-modal-name-v6">${escListV6(a.name)}</span>
       <span class="attachment-modal-actions-v6">
-        ${a.url ? `<a href="${a.url}" target="_blank" rel="noopener">👁️ Visualizza</a><a href="${a.url}" download="${String(a.name).replace(/"/g,'&quot;')}" target="_blank" rel="noopener">⬇️ Scarica</a>` : '<span>File non disponibile</span>'}
+        ${a.url?`<button type="button" class="secondary" onclick="viewAttachmentV6(${i})">👁️ Visualizza</button><button type="button" class="secondary" onclick="downloadAttachmentV6(${i})">⬇️ Scarica</button>`:'<span style="color:var(--muted)">File non disponibile</span>'}
       </span>
-    </div>`).join('') : '<div style="color:var(--muted)">Nessun allegato disponibile.</div>';
-  const modal=document.getElementById('attachmentsModalV6');
-  modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+    </div>`).join(''):'<div style="color:var(--muted)">Nessun allegato disponibile.</div>';
+  modal.classList.add('show');modal.setAttribute('aria-hidden','false');
 }
+function viewAttachmentV6(index){
+  const a=(window._openAttachmentsV6||[])[index];if(!a||!a.url)return;
+  window.open(a.url,'_blank','noopener');
+}
+async function downloadAttachmentV6(index){
+  const a=(window._openAttachmentsV6||[])[index];if(!a||!a.url)return;
+  try{
+    const response=await fetch(a.url);if(!response.ok)throw new Error('HTTP '+response.status);
+    const blob=await response.blob(), blobUrl=URL.createObjectURL(blob), link=document.createElement('a');
+    link.href=blobUrl;link.download=a.name||'allegato';document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(blobUrl),1500);
+  }catch(e){window.open(a.url,'_blank','noopener');}
+}
+window.openAttachments=openAttachments;window.viewAttachmentV6=viewAttachmentV6;window.downloadAttachmentV6=downloadAttachmentV6;
+
 function closeAttachments(){
   const modal=document.getElementById('attachmentsModalV6');
   if(modal){modal.classList.remove('show');modal.setAttribute('aria-hidden','true');}
@@ -1567,57 +1688,7 @@ checkLock();
 initSync();
 </script>
 
-<div class="card" id="filtersCardV6">
-  <h2>🔎 Filtri elenco impegni</h2>
-  <div class="filters-v6">
-    <label>
-      Persona
-      <select id="filterPersonV6">
-        <option value="">Tutte</option>
-      </select>
-    </label>
-    <label>
-      Attività
-      <select id="filterActivityV6">
-        <option value="">Tutte</option>
-      </select>
-    </label>
-    <label>
-      Responsabile
-      <select id="filterResponsibleV6">
-        <option value="">Tutti</option>
-      </select>
-    </label>
-    <label>
-      Data da
-      <input type="date" id="filterFromV6">
-    </label>
-    <label>
-      Data a
-      <input type="date" id="filterToV6">
-    </label>
-    <label>
-      Allegati
-      <select id="filterAttachmentsV6">
-        <option value="">Tutti</option>
-        <option value="yes">Solo con allegati</option>
-        <option value="no">Senza allegati</option>
-      </select>
-    </label>
-    <label>
-      Stato
-      <select id="filterTentativeV6">
-        <option value="">Tutti</option>
-        <option value="confirmed">Confermati</option>
-        <option value="tentative">Da confermare</option>
-      </select>
-    </label>
-    <div class="filter-actions-v6">
-      <button type="button" class="secondary" id="clearFiltersV6">Azzera filtri</button>
-    </div>
-  </div>
-  <div class="filter-result-v6" id="filterResultV6"></div>
-</div>
+
 
 <script>
 
@@ -1625,87 +1696,37 @@ initSync();
 (function(){
   const ids=['filterPersonV6','filterActivityV6','filterResponsibleV6','filterFromV6','filterToV6','filterAttachmentsV6','filterTentativeV6'];
   function val(id){return document.getElementById(id)?.value||'';}
-  function allPlannedEventsV6(){
-    // Use the complete event state, expanding weekly recurring events over the next 365 days.
-    const out=[];
-    const today=new Date(); today.setHours(0,0,0,0);
-    const end=new Date(today); end.setDate(end.getDate()+365);
-    state.forEach(ev=>{
-      if(ev.ricorrente){
-        const days=Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length
-          ? ev.giorniSettimana
-          : [Number(ev.giornoSettimana||0)];
-        for(let d=new Date(today); d<=end; d.setDate(d.getDate()+1)){
-          const wd=(d.getDay()+6)%7;
-          if(days.includes(wd)){
-            const copy={...ev,_filterDate:fmtDate(d)};
-            out.push(copy);
-          }
-        }
-      }else if(ev.data){
-        out.push({...ev,_filterDate:ev.data});
-      }
-    });
-    return out;
-  }
-  function uniqueSorted(arr){
-    return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'it'));
-  }
-  function populateFilters(){
-    const events=allPlannedEventsV6();
-    const person=document.getElementById('filterPersonV6');
-    const activity=document.getElementById('filterActivityV6');
-    const responsible=document.getElementById('filterResponsibleV6');
-    if(!person||!activity||!responsible)return;
-    const current={p:person.value,a:activity.value,r:responsible.value};
-    person.innerHTML='<option value="">Tutte</option>'+uniqueSorted(events.map(e=>e.figlia)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
-    activity.innerHTML='<option value="">Tutte</option>'+uniqueSorted(events.map(e=>e.attivita)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
-    responsible.innerHTML='<option value="">Tutti</option>'+uniqueSorted(events.map(e=>e.responsabile)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
-    person.value=current.p; activity.value=current.a; responsible.value=current.r;
-  }
-  function escapeHtmlV6(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function renderFilteredList(){
-    const table=document.getElementById('list');
-    if(!table)return;
-    const tbody=table.querySelector('tbody');
-    const all=allPlannedEventsV6();
-    const p=val('filterPersonV6'), a=val('filterActivityV6'), r=val('filterResponsibleV6');
-    const from=val('filterFromV6'), to=val('filterToV6');
-    const att=val('filterAttachmentsV6'), st=val('filterTentativeV6');
-    const filtered=all.filter(e=>{
-      const has=Array.isArray(e.allegati)&&e.allegati.length || !!e.foto;
-      if(p && e.figlia!==p)return false;
-      if(a && e.attivita!==a)return false;
-      if(r && (e.responsabile||'')!==r)return false;
-      if(from && e._filterDate<from)return false;
-      if(to && e._filterDate>to)return false;
-      if(att==='yes'&&!has)return false;
-      if(att==='no'&&has)return false;
-      if(st==='confirmed'&&e.tentativo)return false;
-      if(st==='tentative'&&!e.tentativo)return false;
-      return true;
-    }).sort((x,y)=>(x._filterDate||'').localeCompare(y._filterDate||'') || toMin(x.oraInizio)-toMin(y.oraInizio) || String(x.figlia).localeCompare(String(y.figlia),'it'));
-
-    tbody.innerHTML=filtered.map(ev=>{
-      const d=parseDate(ev._filterDate);
-      const attach=Array.isArray(ev.allegati)?ev.allegati:[];
-      const attachHtml=attach.map(x=>`<a href="${x.url}" target="_blank" rel="noopener" class="event-attachment-v6">📎 ${escapeHtmlV6(x.name)}</a>`).join(' ');
-      return `<tr>
-        <td>${escapeHtmlV6(ev.figlia)}</td>
-        <td>${ddmm(d)}${ev.ricorrente?' 🔁':''}</td>
-        <td>${escapeHtmlV6(ev.oraInizio)}–${escapeHtmlV6(ev.oraFine)}</td>
-        <td>${escapeHtmlV6(ev.attivita)}${ev.tentativo?' ⚠️':''}</td>
-        <td>${escapeHtmlV6(ev.responsabile||'')}</td>
-        <td>${escapeHtmlV6(ev.note||'')}</td>
-        <td>${attachHtml||((ev.foto)?'<a href="'+ev.foto+'" target="_blank" rel="noopener">📎 Foto</a>':'—')}</td>
-        <td><button type="button" class="secondary" onclick="startEdit(${ev.id})">Modifica</button></td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted)">Nessun impegno corrisponde ai filtri.</td></tr>';
-
-    const result=document.getElementById('filterResultV6');
-    if(result)result.textContent=`Visualizzati ${filtered.length} impegni programmati.`;
-  }
-  window.refreshV6Filters=function(){populateFilters();renderFilteredList();};
+  function allPlannedEventsV6(){ return allPlannedOccurrencesV6(); }
+function uniqueSorted(arr){return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'it'));}
+function escapeHtmlV6(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function populateFilters(){
+  const events=allPlannedEventsV6(), person=document.getElementById('filterPersonV6'), activity=document.getElementById('filterActivityV6'), responsible=document.getElementById('filterResponsibleV6');
+  if(!person||!activity||!responsible)return;
+  const current={p:person.value,a:activity.value,r:responsible.value};
+  person.innerHTML='<option value="">Tutte</option>'+uniqueSorted(events.map(e=>e.figlia)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
+  activity.innerHTML='<option value="">Tutte</option>'+uniqueSorted(events.map(e=>e.attivita)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
+  responsible.innerHTML='<option value="">Tutti</option>'+uniqueSorted(events.map(e=>e.responsabile)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
+  person.value=current.p; activity.value=current.a; responsible.value=current.r;
+}
+function renderFilteredList(){
+  const tbody=document.querySelector('#list tbody'); if(!tbody)return;
+  const all=allPlannedEventsV6(), p=val('filterPersonV6'), a=val('filterActivityV6'), r=val('filterResponsibleV6'), from=val('filterFromV6'), to=val('filterToV6'), att=val('filterAttachmentsV6'), st=val('filterTentativeV6');
+  const filtered=all.filter(e=>{
+    const has=(Array.isArray(e.allegati)&&e.allegati.length>0)||!!e.foto;
+    if(p&&e.figlia!==p)return false;if(a&&e.attivita!==a)return false;if(r&&(e.responsabile||'')!==r)return false;
+    if(from&&e._listDate<from)return false;if(to&&e._listDate>to)return false;
+    if(att==='yes'&&!has)return false;if(att==='no'&&has)return false;
+    if(st==='confirmed'&&e.tentativo)return false;if(st==='tentative'&&!e.tentativo)return false;
+    return true;
+  });
+  tbody.innerHTML=filtered.map(ev=>{
+    const d=ev._listDateObj,dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`,dayLabel=DAY_NAMES[(d.getDay()+6)%7];
+    const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
+    return `<tr><td><b>${fullDateV7(d)}</b>${ev.ricorrente?' 🔁':''}</td><td><span class="badge" style="background:${colorOf(ev.figlia)}">${escapeHtmlV6(ev.figlia)}</span></td><td>${escapeHtmlV6(ev.oraInizio)}-${escapeHtmlV6(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td><td>${escapeHtmlV6(ev.attivita)}</td><td>${escapeHtmlV6(ev.responsabile||'-')}</td><td>${escapeHtmlV6(ev.note||'-')}</td><td>${attachments.length?`<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${attachments.length} file</button>`:'-'}</td><td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button></td></tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted)">Nessun impegno corrisponde ai filtri.</td></tr>';
+  const result=document.getElementById('filterResultV6');if(result)result.textContent=`Visualizzati ${filtered.length} impegni programmati.`;
+}
+window.refreshV6Filters=function(){populateFilters();renderFilteredList();};
   document.addEventListener('DOMContentLoaded',()=>{
     ids.forEach(id=>document.getElementById(id)?.addEventListener('change',renderFilteredList));
     document.getElementById('clearFiltersV6')?.addEventListener('click',()=>{
