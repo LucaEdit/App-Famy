@@ -150,8 +150,8 @@
 
   /* Calendar */
   .cal-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
-  .cal{display:grid;grid-template-columns:72px repeat(7,minmax(250px,1fr));min-width:1820px}
-  .day-head{color:#fff;text-align:center;font-size:1rem;font-weight:850;padding:12px 5px}
+  .cal{display:grid;grid-template-columns:68px repeat(7,minmax(170px,1fr));min-width:1320px}
+  .day-head{color:#fff;text-align:center;font-size:1.08rem;font-weight:900;padding:13px 6px}
   .day-head small{display:block;font-weight:700;opacity:.95;font-size:.76rem;margin-top:3px}
   .subhead{display:none}
   .time-col{display:flex;flex-direction:column;background:var(--card);border-right:1px solid var(--line)}
@@ -260,16 +260,30 @@
 }
 
 
+
+.calendar-focus{width:100%;}
+.calendar-focus .calendar-pane{width:100%;}
+.calendar-focus .cal-wrap{width:100%;}
+
 /* ===== V4: CALENDARIO + AGENDA COMPLETA ===== */
 .calendar-focus{margin-top:18px!important}
 .calendar-focus-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}
 .calendar-focus-head h2{margin:2px 0 0;font-size:1.25rem;font-weight:850}
 .calendar-focus-note{font-size:.82rem;color:var(--muted,#64748b);font-weight:650}
-.calendar-agenda-layout{display:grid;grid-template-columns:minmax(0,2.35fr) minmax(330px,.85fr);gap:16px;align-items:start}
-.calendar-pane,.week-agenda-pane{min-width:0}
+.calendar-agenda-layout{display:block}
+.calendar-pane{min-width:0;width:100%}
+.week-agenda-pane{min-width:0}
 .pane-label{font-size:.72rem;letter-spacing:.08em;font-weight:850;color:var(--muted,#64748b);margin:0 0 8px 2px}
-.calendar-pane .cal-desktop{min-height:760px}
-.week-agenda-pane{border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;padding:10px;max-height:640px;overflow:auto}
+.calendar-pane .cal-desktop{min-height:780px}
+
+.week-agenda-pane{border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;padding:10px;max-height:none;overflow:visible}
+.week-agenda-tab{margin-top:14px;border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;box-shadow:var(--shadow);overflow:hidden}
+.week-agenda-tab summary{cursor:pointer;list-style:none;padding:15px 18px;font-size:.95rem;font-weight:850;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(180deg,#fff,#f8fafc)}
+.week-agenda-tab summary::-webkit-details-marker{display:none}
+.week-agenda-tab summary:after{content:'＋';font-size:1.15rem;color:var(--primary);font-weight:900}
+.week-agenda-tab[open] summary:after{content:'−'}
+.week-agenda-tab .week-agenda-pane{border:0;border-top:1px solid var(--line,#e2e8f0);border-radius:0;box-shadow:none;padding:10px 12px}
+
 .agenda-day-block{margin-bottom:10px;border:1px solid var(--line,#e2e8f0);border-radius:11px;overflow:hidden;background:#fff}
 .agenda-day-block:last-child{margin-bottom:0}
 .agenda-day-banner{display:flex;align-items:center;gap:8px;padding:8px 10px;color:#fff;background:var(--day-color);font-size:.82rem;font-weight:850}
@@ -293,17 +307,12 @@
 .next-events{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))!important}
 .activity-banner{display:inline-block;margin-top:4px;padding:4px 8px;border-radius:6px;color:#fff;font-size:.76rem;font-weight:850;line-height:1.1}
 .calendar-focus .agenda-mobile{display:none!important}
-@media(max-width:1050px){
-  .calendar-agenda-layout{grid-template-columns:1fr}
-  .week-agenda-pane{max-height:520px}
-}
 @media(max-width:760px){
   .calendar-focus{margin-top:14px!important}
   .calendar-focus-head{align-items:flex-start;flex-direction:column;gap:3px}
   .calendar-focus-note{display:none}
-  .calendar-agenda-layout{grid-template-columns:1fr}
+  .calendar-agenda-layout{display:block}
   .calendar-pane .cal-desktop{min-height:0}
-  .week-agenda-pane{max-height:none;overflow:visible}
   .agenda-row{grid-template-columns:82px 1fr}
 }
 
@@ -336,6 +345,34 @@
   .calendar-pane .cal-desktop{overflow:visible}
   .calendar-pane .cal-wrap{box-shadow:0 3px 14px rgba(15,23,42,.08)}
   .calendar-pane .day-body:nth-child(8n+1){background:#fbfdff}
+}
+
+
+/* ===== V9: MODIFICA DIRETTA DAL CALENDARIO ===== */
+.edit-modal{
+  position:fixed;inset:0;background:rgba(15,23,42,.58);z-index:3000;
+  display:none;align-items:center;justify-content:center;padding:22px;
+  backdrop-filter:blur(3px);
+}
+.edit-modal.show{display:flex}
+.edit-modal-box{
+  width:min(900px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;
+  box-shadow:0 24px 70px rgba(15,23,42,.28);border:1px solid #dbe3ef;
+}
+.edit-modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px;
+  position:sticky;top:0;background:#fff;border-bottom:1px solid #e6ebf2;z-index:2}
+.edit-modal-head h2{margin:0;font-size:1.12rem}
+.edit-modal-close{border:0;background:#eef2f7;color:#334155;width:36px;height:36px;border-radius:50%;
+  font-size:1.2rem;font-weight:900;cursor:pointer}
+.edit-modal-body{padding:18px 20px 20px}
+.edit-modal-body form{margin:0}
+.edit-modal-body .form-hint{display:none}
+.calendar-editable{cursor:pointer}
+.calendar-editable:hover{filter:brightness(1.04);transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,.18)}
+@media(max-width:760px){
+  .edit-modal{padding:8px}
+  .edit-modal-box{width:100%;max-height:96vh;border-radius:14px}
+  .edit-modal-body{padding:14px}
 }
 
 </style>
@@ -404,9 +441,9 @@
   <div class="calendar-focus-head">
     <div>
       <div class="eyebrow">SETTIMANA</div>
-      <h2>📆 Calendario + Agenda completa</h2>
+      <h2>📆 Calendario settimanale</h2>
     </div>
-    <div class="calendar-focus-note">Calendario a colpo d'occhio · tutti gli impegni ordinati a destra</div>
+    <div class="calendar-focus-note">Calendario a tutto schermo · tutti gli impegni nel pannello sotto</div>
   </div>
 
   <div class="nav">
@@ -423,12 +460,14 @@
         <div class="cal-wrap"><div class="cal" id="cal"></div></div>
       </div>
     </div>
-
-    <aside class="week-agenda-pane">
-      <div class="pane-label">TUTTI GLI IMPEGNI · ORDINATI PER ORA</div>
-      <div id="weekAgenda"></div>
-    </aside>
   </div>
+
+  <details class="week-agenda-tab">
+    <summary>📋 TUTTI GLI IMPEGNI · ORDINA E VISUALIZZA LA SETTIMANA</summary>
+    <div class="week-agenda-pane">
+      <div id="weekAgenda"></div>
+    </div>
+  </details>
 
   <div class="card agenda-mobile" id="agenda" style="display:none;"></div>
 </section>
@@ -445,11 +484,22 @@
     </div>
   </section>
 
-  <section class="card">
+  <div class="edit-modal" id="editModal" aria-hidden="true">
+    <div class="edit-modal-box" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+      <div class="edit-modal-head">
+        <h2 id="editModalTitle">✏️ Modifica impegno</h2>
+        <button type="button" class="edit-modal-close" id="editModalClose" aria-label="Chiudi">×</button>
+      </div>
+      <div class="edit-modal-body" id="editModalBody"></div>
+    </div>
+  </div>
+
+  <section class="card" id="newEventSection">
     <div class="section-title">
       <h2 id="formTitle">Nuovo impegno</h2>
       <small>Puoi creare impegni singoli o ricorrenti</small>
     </div>
+    <div id="formHome"></div>
     <form id="form">
       <div class="form-field">
         <label>Chi</label>
@@ -694,7 +744,7 @@
 const DAY_NAMES = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
 const DAY_COLORS = ["#4472C4","#548235","#BF8F00","#C55A11","#7030A0","#C00000","#404040"];
 const PERSON_PALETTE = ["#D6336C","#0B7285","#B98B00","#3454D1","#2F9E44","#9C36B5","#E8590C","#1098AD","#5C940D","#A61E4D"];
-const START_MIN = 7*60, END_MIN = 21*60, RANGE = END_MIN-START_MIN, TRACK_H = 700;
+const START_MIN = 7*60, END_MIN = 21*60, RANGE = END_MIN-START_MIN, TRACK_H = 760;
 
 const raw = JSON.parse(document.getElementById('app-data').textContent);
 let persone = raw.persone;
@@ -988,6 +1038,7 @@ function buildCalendarSkeleton(dates){
 }
 
 function quickAdd(dayIdx, personName){
+  if(editModal && editModal.classList.contains('show')) cancelEdit();
   const f = document.getElementById('form');
   f.figlia.value = personName;
   f.data.value = fmtDate(weekDates()[dayIdx]);
@@ -1145,7 +1196,7 @@ function render(){
     placed.forEach(({ev,s,e,col})=>{
       const top=(s-START_MIN)/RANGE*TRACK_H, h=Math.max((e-s)/RANGE*TRACK_H,28);
       const div=document.createElement('div');
-      div.className='ev '+(ev.tentativo?' tentative':'')+(conflicts.has(ev.id)?' conflict':'');
+      div.className='ev calendar-editable '+(ev.tentativo?' tentative':'')+(conflicts.has(ev.id)?' conflict':'');
       div.style.top=top+'px'; div.style.height=h+'px';
       div.style.left=`calc(${(col*100)/totalCols}% + 5px)`;
       div.style.width=`calc(${100/totalCols}% - 10px)`;
@@ -1196,6 +1247,34 @@ async function persist(){
   await syncPush();
 }
 
+const editModal = document.getElementById('editModal');
+const editModalBody = document.getElementById('editModalBody');
+const formHome = document.getElementById('formHome');
+const formEl = document.getElementById('form');
+const newEventSection = document.getElementById('newEventSection');
+
+function openEditModal(){
+  editModalBody.appendChild(formEl);
+  editModal.classList.add('show');
+  editModal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{
+    const first = formEl.querySelector('[name="figlia"]');
+    if(first) first.focus();
+  },50);
+}
+
+function closeEditModal(){
+  formHome.appendChild(formEl);
+  editModal.classList.remove('show');
+  editModal.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+
+document.getElementById('editModalClose').addEventListener('click', cancelEdit);
+editModal.addEventListener('click', e=>{ if(e.target===editModal) cancelEdit(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && editModal.classList.contains('show')) cancelEdit(); });
+
 function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
 window.removeEvent = removeEvent;
 
@@ -1216,16 +1295,18 @@ function startEdit(id){
   document.getElementById('formTitle').textContent = 'Modifica impegno';
   document.getElementById('submitBtn').textContent = 'Salva modifiche';
   document.getElementById('cancelEdit').style.display = 'inline-block';
-  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('editModalTitle').textContent = `✏️ Modifica: ${ev.attivita} · ${ev.figlia}`;
+  openEditModal();
 }
 window.startEdit = startEdit;
 
 function cancelEdit(){
   editingId = null;
-  document.getElementById('form').reset();
-  document.getElementById('formTitle').textContent = 'Aggiungi impegno';
-  document.getElementById('submitBtn').textContent = '+ Aggiungi al calendario';
+  formEl.reset();
+  document.getElementById('formTitle').textContent = 'Nuovo impegno';
+  document.getElementById('submitBtn').textContent = '+ Salva impegno';
   document.getElementById('cancelEdit').style.display = 'none';
+  if(editModal.classList.contains('show')) closeEditModal();
 }
 document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
