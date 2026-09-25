@@ -379,6 +379,16 @@
   .person-filter-chip-v7{padding:7px 10px}
   #filtersCardV6 .filters-v6{grid-template-columns:1fr 1fr}
 }
+
+/* ===== V8 ===== */
+.view-controls-v8{margin:0 0 10px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.control-main-v8{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.mini-filter-v8{width:auto;min-width:125px;padding:7px 9px;font-size:.78rem;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text)}
+.mini-btn-v8{padding:7px 10px;font-size:.76rem;white-space:nowrap}
+.more-filters-v8{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.more-filters-v8 input,.more-filters-v8 select{padding:7px 9px;font-size:.76rem;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text)}
+.danger-v8{border-color:#e3b4b0!important;color:#b42318!important}
+@media(max-width:650px){.control-main-v8{align-items:stretch}.mini-filter-v8{flex:1;min-width:120px}.more-filters-v8>*{flex:1;min-width:120px}}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -467,10 +477,20 @@
     <div class="calendar-focus-note">Calendario a colpo d'occhio · tutti gli impegni ordinati a destra</div>
   </div>
 
-  <div class="view-controls-v7">
-    <div class="view-control-group-v7">
-      <span class="view-control-label-v7">SELEZIONE PERSONA</span>
+  <div class="view-controls-v8">
+    <div class="control-main-v8">
+      <span class="view-control-label-v7">SELEZIONE</span>
       <div class="person-filter-chips-v7" id="calendarPersonFiltersV7"></div>
+      <select id="calendarActivityFilterV8" class="mini-filter-v8"><option value="">Tutte le attività</option></select>
+      <select id="calendarResponsibleFilterV8" class="mini-filter-v8"><option value="">Tutti i responsabili</option></select>
+      <button type="button" class="secondary mini-btn-v8" id="toggleMoreFiltersV8">☰ Altri filtri</button>
+    </div>
+    <div class="more-filters-v8" id="moreFiltersV8" hidden>
+      <input type="date" id="filterFromV8" title="Data da">
+      <input type="date" id="filterToV8" title="Data a">
+      <select id="filterAttachmentsV8"><option value="">Allegati: tutti</option><option value="yes">Solo con allegati</option><option value="no">Senza allegati</option></select>
+      <select id="filterTentativeV8"><option value="">Stato: tutti</option><option value="confirmed">Confermati</option><option value="tentative">Da confermare</option></select>
+      <button type="button" class="ghost mini-btn-v8" id="clearFiltersV8">Azzera</button>
     </div>
   </div>
 
@@ -611,62 +631,10 @@
     </div>
   </div>
 
-<div class="card" id="filtersCardV6">
-  <h2>🔎 Filtri elenco impegni</h2>
-  <div class="filters-v6">
-    <label>
-      Persona
-      <select id="filterPersonV6">
-        <option value="">Tutte</option>
-      </select>
-    </label>
-    <label>
-      Attività
-      <select id="filterActivityV6">
-        <option value="">Tutte</option>
-      </select>
-    </label>
-    <label>
-      Responsabile
-      <select id="filterResponsibleV6">
-        <option value="">Tutti</option>
-      </select>
-    </label>
-    <label>
-      Data da
-      <input type="date" id="filterFromV6">
-    </label>
-    <label>
-      Data a
-      <input type="date" id="filterToV6">
-    </label>
-    <label>
-      Allegati
-      <select id="filterAttachmentsV6">
-        <option value="">Tutti</option>
-        <option value="yes">Solo con allegati</option>
-        <option value="no">Senza allegati</option>
-      </select>
-    </label>
-    <label>
-      Stato
-      <select id="filterTentativeV6">
-        <option value="">Tutti</option>
-        <option value="confirmed">Confermati</option>
-        <option value="tentative">Da confermare</option>
-      </select>
-    </label>
-    <div class="filter-actions-v6">
-      <button type="button" class="secondary" id="clearFiltersV6">Azzera filtri</button>
-    </div>
-  </div>
-  <div class="filter-result-v6" id="filterResultV6"></div>
-</div>
-
   <div class="card">
-    <div class="section-title">
-      <h2>Elenco completo — tutti gli impegni programmati</h2>
-      <small>Ordinati per data e ora</small>
+    <div class="section-title list-head-v8">
+      <div><h2>Elenco completo — tutti gli impegni programmati</h2><small id="listFilterSummaryV8">Tutti gli impegni · ordinati per data e ora</small></div>
+      <button type="button" class="secondary mini-btn-v8" id="listFiltersInfoV8">Filtri attivi: 0</button>
     </div>
     <div style="overflow-x:auto;">
       <table id="list">
@@ -1028,6 +996,43 @@ function mondayOf(date){
 }
 let currentWeekStart = mondayOf(new Date());
 let activePersonFilterV7 = '';
+
+let activeActivityFilterV8='', activeResponsibleFilterV8='', activeFromFilterV8='', activeToFilterV8='', activeAttachmentsFilterV8='', activeTentativeFilterV8='';
+function hasAttachmentsV8(ev){return (Array.isArray(ev.allegati)&&ev.allegati.length>0)||!!ev.foto;}
+function passesFiltersV8(ev,ds){
+  if(activePersonFilterV7&&ev.figlia!==activePersonFilterV7)return false;
+  if(activeActivityFilterV8&&(ev.attivita||'')!==activeActivityFilterV8)return false;
+  if(activeResponsibleFilterV8&&(ev.responsabile||'')!==activeResponsibleFilterV8)return false;
+  if(activeFromFilterV8&&ds<activeFromFilterV8)return false;
+  if(activeToFilterV8&&ds>activeToFilterV8)return false;
+  const has=hasAttachmentsV8(ev);
+  if(activeAttachmentsFilterV8==='yes'&&!has)return false;
+  if(activeAttachmentsFilterV8==='no'&&has)return false;
+  if(activeTentativeFilterV8==='confirmed'&&ev.tentativo)return false;
+  if(activeTentativeFilterV8==='tentative'&&!ev.tentativo)return false;
+  return true;
+}
+function uniqueValuesV8(a){return [...new Set(a.filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),'it'))}
+function escV8(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function updateFilterCounterV8(){
+  let n=[activePersonFilterV7,activeActivityFilterV8,activeResponsibleFilterV8,activeFromFilterV8,activeToFilterV8,activeAttachmentsFilterV8,activeTentativeFilterV8].filter(Boolean).length;
+  const b=document.getElementById('listFiltersInfoV8');if(b)b.textContent=`Filtri attivi: ${n}`;
+  const s=document.getElementById('listFilterSummaryV8');if(s)s.textContent=n?`Filtri attivi: ${n} · ordinati per data e ora`:'Tutti gli impegni · ordinati per data e ora';
+}
+function populateIntegratedFiltersV8(){
+  const a=document.getElementById('calendarActivityFilterV8'),r=document.getElementById('calendarResponsibleFilterV8');if(!a||!r)return;
+  a.innerHTML='<option value="">Tutte le attività</option>'+uniqueValuesV8(state.map(e=>e.attivita)).map(v=>`<option value="${escV8(v)}">${escV8(v)}</option>`).join('');
+  r.innerHTML='<option value="">Tutti i responsabili</option>'+uniqueValuesV8(state.map(e=>e.responsabile)).map(v=>`<option value="${escV8(v)}">${escV8(v)}</option>`).join('');
+  a.value=activeActivityFilterV8;r.value=activeResponsibleFilterV8;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v};
+  set('filterFromV8',activeFromFilterV8);set('filterToV8',activeToFilterV8);set('filterAttachmentsV8',activeAttachmentsFilterV8);set('filterTentativeV8',activeTentativeFilterV8);
+  updateFilterCounterV8();
+}
+function clearIntegratedFiltersV8(){
+  activePersonFilterV7='';activeActivityFilterV8='';activeResponsibleFilterV8='';activeFromFilterV8='';activeToFilterV8='';activeAttachmentsFilterV8='';activeTentativeFilterV8='';
+  renderCalendarPersonFiltersV7();populateIntegratedFiltersV8();render();
+}
+
 function weekDates(){
   const out=[];
   for(let i=0;i<7;i++){ const d=new Date(currentWeekStart); d.setDate(d.getDate()+i); out.push(d); }
@@ -1038,12 +1043,12 @@ function eventsForWeek(){
   const dates = weekDates();
   const out = [];
   state.forEach(ev=>{
-    if(activePersonFilterV7 && ev.figlia!==activePersonFilterV7) return;
     if(ev.ricorrente){
-      out.push(Object.assign({}, ev, {dataEff: fmtDate(dates[ev.giornoSettimana]), weekdayIdx: ev.giornoSettimana}));
-    } else if(ev.data){
-      const idx = dates.findIndex(x=>fmtDate(x)===ev.data);
-      if(idx>=0) out.push(Object.assign({}, ev, {dataEff: ev.data, weekdayIdx: idx}));
+      const days=(Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length)?ev.giorniSettimana.map(Number):[Number(ev.giornoSettimana??0)];
+      days.forEach(wd=>{const ds=fmtDate(dates[wd]);if(wd>=0&&wd<7&&passesFiltersV8(ev,ds))out.push(Object.assign({},ev,{dataEff:ds,weekdayIdx:wd}));});
+    }else if(ev.data){
+      const idx=dates.findIndex(x=>fmtDate(x)===ev.data);
+      if(idx>=0&&passesFiltersV8(ev,ev.data))out.push(Object.assign({},ev,{dataEff:ev.data,weekdayIdx:idx}));
     }
   });
   return out;
@@ -1069,19 +1074,10 @@ function findConflicts(list){
 
 
 function renderCalendarPersonFiltersV7(){
-  const box=document.getElementById('calendarPersonFiltersV7');
-  if(!box)return;
-  box.innerHTML=[
-    `<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===''?'active':''}" data-person="">Tutti</button>`,
-    ...persone.map(p=>`<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===p?'active':''}" data-person="${String(p).replace(/"/g,'&quot;')}">${String(p).replace(/</g,'&lt;')}</button>`)
-  ].join('');
-  box.querySelectorAll('[data-person]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      activePersonFilterV7=btn.dataset.person||'';
-      renderCalendarPersonFiltersV7();
-      render();
-    });
-  });
+  const box=document.getElementById('calendarPersonFiltersV7');if(!box)return;
+  box.innerHTML=[`<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===''?'active':''}" data-person="">Tutti</button>`,
+    ...persone.map(p=>`<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===p?'active':''}" data-person="${String(p).replace(/"/g,'&quot;')}">${String(p).replace(/</g,'&lt;')}</button>`)].join('');
+  box.querySelectorAll('[data-person]').forEach(btn=>btn.addEventListener('click',()=>{activePersonFilterV7=btn.dataset.person||'';renderCalendarPersonFiltersV7();populateIntegratedFiltersV8();render();}));
 }
 function renderPeopleChips(){
   renderCalendarPersonFiltersV7();
@@ -1343,62 +1339,31 @@ function render(){
 }
 
 function allPlannedOccurrencesV6(){
-  const out=[];
-  const today=new Date(); today.setHours(0,0,0,0);
-  const end=new Date(today); end.setFullYear(end.getFullYear()+1);
-
+  const out=[],today=new Date();today.setHours(0,0,0,0);
+  const start=new Date(today);start.setFullYear(start.getFullYear()-2);
+  const end=new Date(today);end.setFullYear(end.getFullYear()+2);
   state.forEach(ev=>{
     if(ev.ricorrente){
-      const days=(Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length)
-        ? ev.giorniSettimana.map(Number)
-        : [Number(ev.giornoSettimana ?? 0)];
-      for(let d=new Date(today); d<=end; d.setDate(d.getDate()+1)){
-        const wd=(d.getDay()+6)%7;
-        if(days.includes(wd)) out.push({...ev,_listDate:fmtDate(d),_listDateObj:new Date(d)});
-      }
-    }else if(ev.data){
-      out.push({...ev,_listDate:ev.data,_listDateObj:parseDate(ev.data)});
-    }
+      const days=(Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length)?ev.giorniSettimana.map(Number):[Number(ev.giornoSettimana??0)];
+      for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){const wd=(d.getDay()+6)%7;if(days.includes(wd)){const ds=fmtDate(d);if(passesFiltersV8(ev,ds))out.push({...ev,_listDate:ds,_listDateObj:new Date(d)});}}
+    }else if(ev.data){const d=parseDate(ev.data);if(passesFiltersV8(ev,ev.data))out.push({...ev,_listDate:ev.data,_listDateObj:d});}
   });
-
-  return out.sort((a,b)=>{
-    const c=a._listDateObj-b._listDateObj;
-    if(c)return c;
-    const t=toMin(a.oraInizio)-toMin(b.oraInizio);
-    if(t)return t;
-    return String(a.figlia||'').localeCompare(String(b.figlia||''),'it');
-  });
+  return out.sort((a,b)=>{const c=a._listDateObj-b._listDateObj;if(c)return c;const t=toMin(a.oraInizio)-toMin(b.oraInizio);if(t)return t;return String(a.figlia||'').localeCompare(String(b.figlia||''),'it')});
 }
+
 function escListV6(v){
   return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function renderCompleteListV6(){
-  const tbody=document.querySelector('#list tbody');
-  if(!tbody)return;
+  const tbody=document.querySelector('#list tbody');if(!tbody)return;
   const rows=allPlannedOccurrencesV6();
   tbody.innerHTML=rows.map(ev=>{
-    const d=ev._listDateObj;
-    const dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-    const dayLabel=DAY_NAMES[(d.getDay()+6)%7];
-    const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];
-    if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
-    return `<tr>
-      <td><b>${fullDateV7(d)}</b>${ev.ricorrente?' 🔁':''}</td>
-      <td><span class="badge" style="background:${colorOf(ev.figlia)}">${escListV6(ev.figlia)}</span></td>
-      <td>${escListV6(ev.oraInizio)}-${escListV6(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
-      <td>${escListV6(ev.attivita)}</td>
-      <td>${escListV6(ev.responsabile||'-')}</td>
-      <td>${escListV6(ev.note||'-')}</td>
-      <td>${attachments.length?`<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${attachments.length} file</button>`:'-'}</td>
-      <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
-          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="8" style="color:var(--muted)">Nessun impegno programmato</td></tr>';
-  const counter=document.getElementById('filterResultV6');
-  if(counter)counter.textContent=`Visualizzati ${rows.length} impegni programmati.`;
+    const d=ev._listDateObj,dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`,dayLabel=DAY_NAMES[(d.getDay()+6)%7];
+    const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
+    return `<tr><td><b>${dateLabel}</b>${ev.ricorrente?' 🔁':''}</td><td><span class="badge" style="background:${colorOf(ev.figlia)}">${escListV6(ev.figlia)}</span></td><td>${dayLabel}</td><td>${escListV6(ev.oraInizio)}-${escListV6(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td><td>${escListV6(ev.attivita)}</td><td>${escListV6(ev.responsabile||'-')}</td><td>${escListV6(ev.note||'-')}</td><td>${attachments.length?`<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${attachments.length} file</button>`:'-'}</td><td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button> <button class="secondary danger-v8" onclick="removeEvent(${ev.id})">Elimina</button></td></tr>`;
+  }).join('')||'<tr><td colspan="9" style="color:var(--muted)">Nessun impegno corrisponde ai filtri.</td></tr>';
+  updateFilterCounterV8();
 }
-
-
 function openAttachments(eventId){
   const ev=state.find(e=>e.id===eventId); if(!ev)return;
   const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];
@@ -1445,41 +1410,38 @@ async function persist(){
   await syncPush();
 }
 
-function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
+function removeEvent(id){
+  const ev=state.find(e=>e.id===id);if(!ev)return;
+  const scope=ev.ricorrente?'È un impegno ricorrente: verranno rimosse la regola e tutte le sue occorrenze passate/future visualizzate.':`Data: ${ev.data||'—'} · ${ev.oraInizio||''}-${ev.oraFine||''}.`;
+  if(!window.confirm(`Confermi l'eliminazione?\n\n${ev.figlia||''} · ${ev.attivita||''}\n${scope}\n\nL'operazione non può essere annullata.`))return;
+  state=state.filter(e=>e.id!==id);if(editingId===id)cancelEdit();render();persist();
+}
 window.removeEvent = removeEvent;
 
 function startEdit(id){
-  const ev = state.find(e=>e.id===id); if(!ev) return;
-  editingId = id;
-  const f = document.getElementById('form');
-  f.figlia.value = ev.figlia;
-  setDatesV6(ev.data ? [ev.data] : []);
-  currentPhotoV6 = ev.foto || '';
-  if(currentPhotoV6){ document.getElementById('photoImgV6').src=currentPhotoV6; document.getElementById('photoPreviewV6').classList.add('show'); } else { clearPhotoV6(); }
-  f.oraInizio.value = ev.oraInizio;
-  f.oraFine.value = ev.oraFine;
-  f.attivita.value = ev.attivita;
-  f.responsabile.value = ev.responsabile || '';
-  f.note.value = ev.note || '';
-  f.ricorrente.checked = !!ev.ricorrente;
-  f.tentativo.checked = !!ev.tentativo;
+  const ev=state.find(e=>e.id===id);if(!ev)return;
+  const scope=ev.ricorrente?'È un impegno ricorrente: la modifica riguarderà la regola e le sue occorrenze passate/future visualizzate.':`Data: ${ev.data||'—'} · ${ev.oraInizio||''}-${ev.oraFine||''}.`;
+  if(!window.confirm(`Vuoi modificare questo impegno?\n\n${ev.figlia||''} · ${ev.attivita||''}\n${scope}`))return;
+  editingId=id;
+  const f=document.getElementById('form');f.figlia.value=ev.figlia;setDatesV6(ev.data?[ev.data]:[]);
+  attachmentsV6=Array.isArray(ev.allegati)?ev.allegati.map(a=>({...a})):[];if(!attachmentsV6.length&&ev.foto)attachmentsV6=[{name:'Foto',type:'image/jpeg',size:0,url:ev.foto}];renderAttachmentsV6();
+  f.oraInizio.value=ev.oraInizio;f.oraFine.value=ev.oraFine;f.attivita.value=ev.attivita;f.responsabile.value=ev.responsabile||'';f.note.value=ev.note||'';
+  f.ricorrente.checked=!!ev.ricorrente;f.tentativo.checked=!!ev.tentativo;
   document.querySelectorAll('input[name="giorniSettimana"]').forEach(cb=>cb.checked=Array.isArray(ev.giorniSettimana)?ev.giorniSettimana.map(Number).includes(Number(cb.value)):Number(cb.value)===(ev.giornoSettimana??0));
-  document.getElementById('formTitle').textContent = 'Modifica impegno';
-  document.getElementById('submitBtn').textContent = 'Salva modifiche';
-  document.getElementById('cancelEdit').style.display = 'inline-block';
-  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('formTitle').textContent='Modifica impegno';document.getElementById('submitBtn').textContent='Salva modifiche';document.getElementById('cancelEdit').style.display='inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 window.startEdit = startEdit;
 
 function cancelEdit(){
   editingId = null;
   document.getElementById('form').reset();
-  setDatesV6([]); clearPhotoV6();
+  setDatesV6([]); attachmentsV6=[]; renderAttachmentsV6();
   document.getElementById('formTitle').textContent = 'Aggiungi impegno';
   document.getElementById('submitBtn').textContent = '+ Aggiungi al calendario';
   document.getElementById('cancelEdit').style.display = 'none';
 }
-document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
+document.getElementById('cancelEdit').addEventListener('click', ()=>{if(window.confirm('Annullare la modifica e perdere le modifiche non ancora salvate?'))cancelEdit();});
 
 // ===== V6: multi-date + allegati =====
 let selectedDatesV6 = [];
@@ -1600,6 +1562,10 @@ document.getElementById('form').addEventListener('submit', async function(e){
   if(toMin(base.oraFine)<=toMin(base.oraInizio)){alert("L'ora fine deve essere dopo l'ora inizio.");return;}
 
   const wasEditing=!!editingId;
+  if(wasEditing){
+    const current=state.find(e=>e.id===editingId);
+    if(current && !window.confirm(`Confermi il salvataggio delle modifiche a “${current.attivita||'impegno'}”?`))return;
+  }
   const targetIds=[];
 
   if(wasEditing){
@@ -1691,52 +1657,25 @@ initSync();
 
 
 <script>
-
-// ===== V6: filtri elenco completo =====
+// ===== V8: filtri integrati =====
 (function(){
-  const ids=['filterPersonV6','filterActivityV6','filterResponsibleV6','filterFromV6','filterToV6','filterAttachmentsV6','filterTentativeV6'];
-  function val(id){return document.getElementById(id)?.value||'';}
-  function allPlannedEventsV6(){ return allPlannedOccurrencesV6(); }
-function uniqueSorted(arr){return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'it'));}
-function escapeHtmlV6(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function populateFilters(){
-  const events=allPlannedEventsV6(), person=document.getElementById('filterPersonV6'), activity=document.getElementById('filterActivityV6'), responsible=document.getElementById('filterResponsibleV6');
-  if(!person||!activity||!responsible)return;
-  const current={p:person.value,a:activity.value,r:responsible.value};
-  person.innerHTML='<option value="">Tutte</option>'+uniqueSorted(events.map(e=>e.figlia)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
-  activity.innerHTML='<option value="">Tutte</option>'+uniqueSorted(events.map(e=>e.attivita)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
-  responsible.innerHTML='<option value="">Tutti</option>'+uniqueSorted(events.map(e=>e.responsabile)).map(x=>`<option value="${escapeHtmlV6(x)}">${escapeHtmlV6(x)}</option>`).join('');
-  person.value=current.p; activity.value=current.a; responsible.value=current.r;
-}
-function renderFilteredList(){
-  const tbody=document.querySelector('#list tbody'); if(!tbody)return;
-  const all=allPlannedEventsV6(), p=val('filterPersonV6'), a=val('filterActivityV6'), r=val('filterResponsibleV6'), from=val('filterFromV6'), to=val('filterToV6'), att=val('filterAttachmentsV6'), st=val('filterTentativeV6');
-  const filtered=all.filter(e=>{
-    const has=(Array.isArray(e.allegati)&&e.allegati.length>0)||!!e.foto;
-    if(p&&e.figlia!==p)return false;if(a&&e.attivita!==a)return false;if(r&&(e.responsabile||'')!==r)return false;
-    if(from&&e._listDate<from)return false;if(to&&e._listDate>to)return false;
-    if(att==='yes'&&!has)return false;if(att==='no'&&has)return false;
-    if(st==='confirmed'&&e.tentativo)return false;if(st==='tentative'&&!e.tentativo)return false;
-    return true;
-  });
-  tbody.innerHTML=filtered.map(ev=>{
-    const d=ev._listDateObj,dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`,dayLabel=DAY_NAMES[(d.getDay()+6)%7];
-    const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
-    return `<tr><td><b>${fullDateV7(d)}</b>${ev.ricorrente?' 🔁':''}</td><td><span class="badge" style="background:${colorOf(ev.figlia)}">${escapeHtmlV6(ev.figlia)}</span></td><td>${escapeHtmlV6(ev.oraInizio)}-${escapeHtmlV6(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td><td>${escapeHtmlV6(ev.attivita)}</td><td>${escapeHtmlV6(ev.responsabile||'-')}</td><td>${escapeHtmlV6(ev.note||'-')}</td><td>${attachments.length?`<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${attachments.length} file</button>`:'-'}</td><td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button></td></tr>`;
-  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted)">Nessun impegno corrisponde ai filtri.</td></tr>';
-  const result=document.getElementById('filterResultV6');if(result)result.textContent=`Visualizzati ${filtered.length} impegni programmati.`;
-}
-window.refreshV6Filters=function(){populateFilters();renderFilteredList();};
-  document.addEventListener('DOMContentLoaded',()=>{
-    ids.forEach(id=>document.getElementById(id)?.addEventListener('change',renderFilteredList));
-    document.getElementById('clearFiltersV6')?.addEventListener('click',()=>{
-      ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-      renderFilteredList();
-    });
-    populateFilters();renderFilteredList();
-  });
+  function bind(){
+    const a=document.getElementById('calendarActivityFilterV8'),r=document.getElementById('calendarResponsibleFilterV8');
+    const more=document.getElementById('moreFiltersV8'),toggle=document.getElementById('toggleMoreFiltersV8');
+    const clear=document.getElementById('clearFiltersV8');
+    a?.addEventListener('change',()=>{activeActivityFilterV8=a.value;render();});
+    r?.addEventListener('change',()=>{activeResponsibleFilterV8=r.value;render();});
+    document.getElementById('filterFromV8')?.addEventListener('change',e=>{activeFromFilterV8=e.target.value;render();});
+    document.getElementById('filterToV8')?.addEventListener('change',e=>{activeToFilterV8=e.target.value;render();});
+    document.getElementById('filterAttachmentsV8')?.addEventListener('change',e=>{activeAttachmentsFilterV8=e.target.value;render();});
+    document.getElementById('filterTentativeV8')?.addEventListener('change',e=>{activeTentativeFilterV8=e.target.value;render();});
+    toggle?.addEventListener('click',()=>{if(!more)return;more.hidden=!more.hidden;toggle.textContent=more.hidden?'☰ Altri filtri':'☰ Chiudi filtri';});
+    clear?.addEventListener('click',clearIntegratedFiltersV8);
+    document.getElementById('listFiltersInfoV8')?.addEventListener('click',()=>{if(more){more.hidden=false;toggle.textContent='☰ Chiudi filtri';more.scrollIntoView({behavior:'smooth',block:'nearest'});}});
+    populateIntegratedFiltersV8();renderCalendarPersonFiltersV7();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
 })();
-
 </script>
 </body>
 </html>
