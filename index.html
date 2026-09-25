@@ -150,24 +150,24 @@
 
   /* Calendar */
   .cal-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
-  .cal{display:grid;grid-template-columns:56px repeat(7,minmax(var(--daymin,200px),1fr))}
-  .day-head{color:#fff;text-align:center;font-size:.78rem;font-weight:800;padding:8px 3px}
+  .cal{display:grid;grid-template-columns:60px repeat(7,minmax(var(--daymin,220px),1fr))}
+  .day-head{color:#fff;text-align:center;font-size:.84rem;font-weight:800;padding:10px 3px}
   .day-head small{display:block;font-weight:500;opacity:.9;font-size:.65rem;margin-top:2px}
   .subhead{display:grid;font-size:.58rem;color:#fff;text-align:center;opacity:.95}
   .subhead div{padding:4px 1px 2px;border-top:1px solid rgba(255,255,255,.28);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .time-col{display:flex;flex-direction:column;background:var(--card);border-right:1px solid var(--line)}
-  .time-cell{height:40px;font-size:.64rem;color:var(--muted);text-align:right;padding-right:6px;border-top:1px solid var(--line);display:flex;align-items:flex-start;justify-content:flex-end}
+  .time-cell{height:50px;font-size:.68rem;color:var(--muted);text-align:right;padding-right:6px;border-top:1px solid var(--line);display:flex;align-items:flex-start;justify-content:flex-end}
   .day-body{position:relative;border-left:1px solid var(--line)}
-  .subgrid{position:relative;height:560px;display:grid}
+  .subgrid{position:relative;height:700px;display:grid}
   .sub-track{position:relative;border-left:1px dashed var(--line);cursor:pointer}
   .sub-track:first-child{border-left:none}
   .hline{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
   .ev{
-    position:absolute;left:3px;right:3px;border-radius:7px;color:#fff;font-size:.6rem;line-height:1.15;
+    position:absolute;left:4px;right:4px;border-radius:8px;color:#fff;font-size:.68rem;line-height:1.2;
     padding:4px 5px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.12);cursor:pointer
   }
-  .ev b{display:block;font-size:.62rem}
-  .ev .who{opacity:.9}
+  .ev b{display:block;font-size:.72rem}
+  .ev .who{opacity:.92;font-size:.66rem}
   .ev.tentative{outline:2px dashed rgba(255,255,255,.9);outline-offset:-2px}
   .ev.conflict{outline:2px solid #ff4d4f;outline-offset:-2px}
   .rec-icon{position:absolute;top:2px;right:3px;font-size:.6rem;opacity:.9}
@@ -254,7 +254,7 @@
 .calendar-focus-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
 .calendar-focus-head h2{margin:2px 0 0;font-size:1.25rem;font-weight:850}
 .calendar-focus-note{font-size:.82rem;color:var(--muted,#64748b);font-weight:650}
-.calendar-focus .cal-desktop{min-height:520px}
+.calendar-focus .cal-desktop{min-height:700px}
 .calendar-focus .today{box-shadow:inset 0 0 0 3px var(--primary,#2563eb)}
 @media(max-width:760px){
   .calendar-focus{margin-top:14px!important}
@@ -270,7 +270,7 @@
 .calendar-agenda-layout{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(320px,.9fr);gap:16px;align-items:start}
 .calendar-pane,.week-agenda-pane{min-width:0}
 .pane-label{font-size:.72rem;letter-spacing:.08em;font-weight:850;color:var(--muted,#64748b);margin:0 0 8px 2px}
-.calendar-pane .cal-desktop{min-height:540px}
+.calendar-pane .cal-desktop{min-height:700px}
 .week-agenda-pane{border:1px solid var(--line,#e2e8f0);border-radius:14px;background:#fff;padding:10px;max-height:590px;overflow:auto}
 .agenda-day-block{margin-bottom:10px;border:1px solid var(--line,#e2e8f0);border-radius:11px;overflow:hidden;background:#fff}
 .agenda-day-block:last-child{margin-bottom:0}
@@ -332,477 +332,7 @@
   font-weight:850;
 }
 
-
-.attachment-list-v6{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.attachment-item-v6{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e3e7ee;border-radius:12px;background:#f8fafc}
-.attachment-icon-v6{font-size:20px;flex:0 0 auto}
-.attachment-name-v6{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
-.attachment-meta-v6{font-size:12px;color:var(--muted);white-space:nowrap}
-.attachment-actions-v6{display:flex;gap:6px;flex:0 0 auto}
-.attachment-actions-v6 a,.attachment-actions-v6 button{font-size:12px;padding:6px 9px;border-radius:8px}
-.event-attachments-v6{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
-.event-attachment-v6{font-size:12px;text-decoration:none;padding:4px 7px;border-radius:7px;background:#eef2f7;color:inherit}
-
-.attachments-modal-v6{display:none;position:fixed;inset:0;z-index:9999}
-.attachments-modal-v6.show{display:block}
-.attachments-backdrop-v6{position:absolute;inset:0;background:rgba(0,0,0,.48)}
-.attachments-dialog-v6{position:relative;z-index:1;width:min(680px,calc(100% - 28px));max-height:82vh;overflow:auto;margin:9vh auto;background:#fff;border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.attachments-dialog-head-v6{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.attachments-dialog-head-v6 h3{margin:0}
-.attachment-modal-row-v6{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #e7eaf0}
-.attachment-modal-row-v6:first-child{border-top:0}
-.attachment-modal-icon-v6{font-size:22px}
-.attachment-modal-name-v6{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis}
-.attachment-modal-actions-v6{display:flex;gap:6px;flex-wrap:wrap}
-.attachment-modal-actions-v6 a{display:inline-block;padding:7px 10px;border-radius:8px;background:#eef2f7;color:inherit;text-decoration:none}
-.attachment-view-btn{white-space:nowrap}
-.filters-v6{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end}
-.filters-v6 label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
-.filters-v6 select,.filters-v6 input{width:100%;box-sizing:border-box}
-.filter-actions-v6{display:flex;align-items:end}
-.filter-result-v6{margin-top:12px;font-size:13px;color:var(--muted)}
-@media(max-width:650px){.filters-v6{grid-template-columns:1fr 1fr}.filter-actions-v6{grid-column:1/-1}}
-
-/* ===== V7: controlli in alto + date complete ===== */
-.view-controls-v7{margin:0 0 10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
-.view-control-group-v7{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.view-control-label-v7{font-size:.68rem;font-weight:850;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
-.person-filter-chips-v7{display:flex;gap:6px;flex-wrap:wrap}
-.person-filter-chip-v7{padding:6px 10px;border-radius:999px;background:var(--card);color:var(--text);border:1px solid var(--line);font-size:.72rem;font-weight:750}
-.person-filter-chip-v7:hover{background:var(--card)}
-.person-filter-chip-v7.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-#filtersCardV6{margin-bottom:12px}
-#filtersCardV6 h2{margin-bottom:10px}
-@media(max-width:600px){
-  .view-control-group-v7{align-items:flex-start;flex-direction:column;gap:7px}
-  .person-filter-chips-v7{width:100%}
-  .person-filter-chip-v7{padding:7px 10px}
-  #filtersCardV6 .filters-v6{grid-template-columns:1fr 1fr}
-}
-
-/* ===== V8 ===== */
-.view-controls-v8{margin:0 0 10px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
-.control-main-v8{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.mini-filter-v8{width:auto;min-width:125px;padding:7px 9px;font-size:.78rem;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text)}
-.mini-btn-v8{padding:7px 10px;font-size:.76rem;white-space:nowrap}
-.more-filters-v8{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
-.more-filters-v8 input,.more-filters-v8 select{padding:7px 9px;font-size:.76rem;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text)}
-.danger-v8{border-color:#e3b4b0!important;color:#b42318!important}
-@media(max-width:650px){.control-main-v8{align-items:stretch}.mini-filter-v8{flex:1;min-width:120px}.more-filters-v8>*{flex:1;min-width:120px}}
-
-/* V8.1 - filtri compatti */
-.filter-word-v8{display:inline-flex!important;align-items:center;gap:6px;margin:0!important;font-weight:700!important;color:inherit!important}
-.filter-word-v8 span{font-size:13px}
-.filter-word-v8 select{width:auto!important;min-width:145px!important;padding:7px 10px!important}
-#filterFromV6,#filterToV6,#filterAttachmentsV6,#filterTentativeV6{display:none!important}
-
-/* V10: tabella elenco completa allineata */
-#list{min-width:980px}
-#list th,#list td{vertical-align:middle}
-#list th:nth-child(1){min-width:120px}
-#list th:nth-child(2){min-width:110px}
-#list th:nth-child(3){min-width:105px}
-#list th:nth-child(4){min-width:95px}
-#list th:nth-child(5){min-width:150px}
-#list th:nth-child(6){min-width:130px}
-#list th:nth-child(7){min-width:180px}
-#list th:nth-child(8){min-width:110px}
-#list th:nth-child(9){min-width:170px}
-
-/* V11 - stampa piano settimanale */
-.weekly-print-actions-v11{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
-.weekly-print-actions-v11 button{white-space:nowrap}
-
-@media print{
-  body.printing-weekly-v11 > *:not(#printOnlyWeeklyV11){display:none!important}
-  body.printing-weekly-v11 #printOnlyWeeklyV11{display:block!important;position:static!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
-  #printOnlyWeeklyV11 .weekly-print-actions-v11,#printOnlyWeeklyV11 .weekly-print-actions-v12{display:none!important}
-  #printOnlyWeeklyV11 .card,#printOnlyWeeklyV11 .panel{box-shadow:none!important;border:0!important;margin:0!important;max-width:none!important}
-  #printOnlyWeeklyV11 table{width:100%!important;min-width:0!important;font-size:11pt!important}
-  #printOnlyWeeklyV11 th,#printOnlyWeeklyV11 td{padding:7px 6px!important}
-  #printOnlyWeeklyV11 .print-title-v11{font-size:22pt!important;font-weight:700!important;margin:0 0 4px!important}
-  #printOnlyWeeklyV11 .print-meta-v11{font-size:10pt!important;margin:0 0 14px!important}
-  #printOnlyWeeklyV11 *{break-inside:avoid}
-}
-@page{size:A4;margin:12mm}
-
-/* V12 - stampa sempre visibile */
-.weekly-print-actions-v12{
-  display:flex!important;
-  gap:10px!important;
-  margin:12px 0 18px!important;
-  flex-wrap:wrap!important;
-}
-.weekly-print-actions-v12 .print-main-v12{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  min-height:44px!important;
-  padding:10px 16px!important;
-  font-weight:800!important;
-  cursor:pointer!important;
-}
-
-/* V13 - impaginazione professionale A4 */
-#printWeeklyProfessionalV13{display:none}
-
-@media print{
-  body.printing-professional-weekly-v13 > *:not(#printWeeklyProfessionalV13){
-    display:none!important;
-  }
-  body.printing-professional-weekly-v13 #printWeeklyProfessionalV13{
-    display:block!important;
-    width:100%!important;
-    margin:0!important;
-    padding:0!important;
-    background:#fff!important;
-    color:#172033!important;
-    font-family:Arial,Helvetica,sans-serif!important;
-  }
-  #printWeeklyProfessionalV13 .print-v13-title{
-    border-bottom:2px solid #172033!important;
-    padding:0 0 8mm!important;
-    margin-bottom:7mm!important;
-  }
-  #printWeeklyProfessionalV13 .print-v13-main-title{
-    font-size:24pt!important;
-    font-weight:800!important;
-    line-height:1.05!important;
-  }
-  #printWeeklyProfessionalV13 .print-v13-week{
-    font-size:12pt!important;
-    margin-top:3mm!important;
-    font-weight:600!important;
-  }
-  #printWeeklyProfessionalV13 .print-v13-footer{
-    margin-top:6mm!important;
-    padding-top:3mm!important;
-    border-top:1px solid #bbb!important;
-    font-size:8pt!important;
-    color:#666!important;
-  }
-
-  /* Compact the cloned agenda into a clean printable report. */
-  #printWeeklyProfessionalV13 table{
-    width:100%!important;
-    min-width:0!important;
-    border-collapse:collapse!important;
-    font-size:9.5pt!important;
-  }
-  #printWeeklyProfessionalV13 th{
-    font-size:8pt!important;
-    text-transform:uppercase!important;
-    letter-spacing:.4px!important;
-    padding:5px 4px!important;
-    border-bottom:1.5px solid #555!important;
-  }
-  #printWeeklyProfessionalV13 td{
-    padding:6px 4px!important;
-    border-bottom:1px solid #ddd!important;
-    vertical-align:top!important;
-  }
-
-  /* If the agenda is card-based, make each day a clean section. */
-  #printWeeklyProfessionalV13 .day-card,
-  #printWeeklyProfessionalV13 .day-section,
-  #printWeeklyProfessionalV13 [class*="day"]{
-    break-inside:avoid!important;
-  }
-  #printWeeklyProfessionalV13 button,
-  #printWeeklyProfessionalV13 input,
-  #printWeeklyProfessionalV13 select{
-    display:none!important;
-  }
-  #printWeeklyProfessionalV13 *{
-    box-shadow:none!important;
-  }
-}
-
-@page{
-  size:A4 portrait;
-  margin:12mm 12mm 14mm 12mm;
-}
-
-/* V14 - stampa dell'intera settimana nello stesso stile del piano */
-#printWeeklyProfessionalV14{display:none}
-
-@media print{
-  body.printing-weekly-v14 > *:not(#printWeeklyProfessionalV14){
-    display:none!important;
-  }
-  body.printing-weekly-v14 #printWeeklyProfessionalV14{
-    display:block!important;
-    width:100%!important;
-    margin:0!important;
-    padding:0!important;
-    background:#fff!important;
-    color:#172033!important;
-    font-family:Arial,Helvetica,sans-serif!important;
-  }
-  #printWeeklyProfessionalV14 .print-v14-header{
-    padding:0 0 7mm!important;
-    margin:0 0 6mm!important;
-    border-bottom:2px solid #172033!important;
-  }
-  #printWeeklyProfessionalV14 .print-v14-title{
-    font-size:23pt!important;
-    font-weight:800!important;
-    line-height:1.05!important;
-  }
-  #printWeeklyProfessionalV14 .print-v14-week{
-    margin-top:3mm!important;
-    font-size:11pt!important;
-    font-weight:600!important;
-    color:#4b5563!important;
-  }
-
-  #printWeeklyProfessionalV14 #print-v14-agenda{
-    display:block!important;
-    width:100%!important;
-  }
-
-  #printWeeklyProfessionalV14 .agenda-day-block{
-    display:block!important;
-    margin:0 0 5mm!important;
-    border:1px solid #dfe3ea!important;
-    border-radius:4mm!important;
-    overflow:hidden!important;
-    break-inside:avoid!important;
-    page-break-inside:avoid!important;
-    background:#fff!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-day-banner{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    min-height:10mm!important;
-    padding:3mm 4mm!important;
-    background:var(--day-color)!important;
-    color:#fff!important;
-    font-size:12pt!important;
-    font-weight:800!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-day-banner em{
-    font-style:normal!important;
-    font-size:8pt!important;
-    background:#fff!important;
-    color:#172033!important;
-    border-radius:20px!important;
-    padding:1.2mm 3mm!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-day-events{
-    display:block!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-row{
-    display:grid!important;
-    grid-template-columns:31mm 1fr!important;
-    gap:4mm!important;
-    padding:3.2mm 4mm!important;
-    border-bottom:1px solid #e5e7eb!important;
-    min-height:15mm!important;
-    break-inside:avoid!important;
-    page-break-inside:avoid!important;
-    background:#fff!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-row:last-child{
-    border-bottom:0!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-time{
-    font-size:9.5pt!important;
-    font-weight:800!important;
-    line-height:1.25!important;
-    white-space:nowrap!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-time span{
-    padding:0 1mm!important;
-    color:#7b8492!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-main{
-    min-width:0!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-topline{
-    display:flex!important;
-    align-items:center!important;
-    gap:2mm!important;
-    flex-wrap:wrap!important;
-  }
-  #printWeeklyProfessionalV14 .person-banner{
-    display:inline-block!important;
-    padding:1mm 2.5mm!important;
-    border:1px solid #d7dce5!important;
-    border-radius:3mm!important;
-    font-size:8.5pt!important;
-    font-weight:800!important;
-    background:#f7f8fa!important;
-  }
-  #printWeeklyProfessionalV14 .activity-name{
-    display:inline-block!important;
-    padding:1mm 2.5mm!important;
-    border-left:2mm solid var(--activity-color)!important;
-    border-radius:1.5mm!important;
-    font-size:9.5pt!important;
-    font-weight:800!important;
-    color:var(--activity-color)!important;
-    background:#f5f6fa!important;
-  }
-  #printWeeklyProfessionalV14 .mini-tag{
-    font-size:9pt!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-resp,
-  #printWeeklyProfessionalV14 .agenda-note{
-    margin-top:1.2mm!important;
-    font-size:8pt!important;
-    line-height:1.25!important;
-    color:#5f6875!important;
-  }
-  #printWeeklyProfessionalV14 .agenda-resp{
-    font-weight:600!important;
-  }
-  #printWeeklyProfessionalV14 .print-v14-footer{
-    margin-top:4mm!important;
-    padding-top:2.5mm!important;
-    border-top:1px solid #bbb!important;
-    font-size:7.5pt!important;
-    color:#666!important;
-  }
-}
-@page{
-  size:A4 portrait;
-  margin:10mm 11mm 12mm 11mm;
-}
-
-/* V15 - formato stampa identico al PDF approvato */
-#printWeeklyV15{display:none}
-
-@media print{
-  body.printing-v15 > *:not(#printWeeklyV15){display:none!important}
-
-  body.printing-v15 #printWeeklyV15{
-    display:block!important;
-    width:100%!important;
-    margin:0!important;
-    padding:0!important;
-    background:#fff!important;
-    color:#172033!important;
-    font-family:Arial,Helvetica,sans-serif!important;
-  }
-
-  .print-v15-header{
-    text-align:center!important;
-    padding:0 0 6mm!important;
-    margin:0 0 5mm!important;
-    border-bottom:2px solid #172033!important;
-  }
-  .print-v15-title{
-    font-size:23pt!important;
-    line-height:1.05!important;
-    font-weight:800!important;
-  }
-  .print-v15-range{
-    margin-top:2mm!important;
-    font-size:11pt!important;
-    font-weight:700!important;
-    color:#4b5563!important;
-  }
-
-  .print-v15-day{
-    margin:0 0 4.5mm!important;
-    break-inside:avoid!important;
-    page-break-inside:avoid!important;
-  }
-  .print-v15-day.print-v15-page2{
-    break-before:page!important;
-    page-break-before:always!important;
-  }
-
-  .print-v15-day-title{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    min-height:9.5mm!important;
-    padding:2.2mm 3.5mm!important;
-    background:#365f9e!important;
-    color:#fff!important;
-    font-size:12.5pt!important;
-    font-weight:800!important;
-    border-radius:0!important;
-  }
-  .print-v15-today-label{
-    font-size:8pt!important;
-    background:#fff!important;
-    color:#365f9e!important;
-    border-radius:10mm!important;
-    padding:1mm 3mm!important;
-  }
-
-  .print-v15-table{
-    width:100%!important;
-    table-layout:fixed!important;
-    border-collapse:collapse!important;
-    font-size:9pt!important;
-  }
-  .print-v15-table th{
-    background:#eef1f5!important;
-    color:#5d6673!important;
-    text-align:left!important;
-    font-size:7.8pt!important;
-    font-weight:800!important;
-    letter-spacing:.3px!important;
-    padding:2mm 2.2mm!important;
-    border:1px solid #d8dde5!important;
-  }
-  .print-v15-table td{
-    padding:2mm 2.2mm!important;
-    border:1px solid #d8dde5!important;
-    vertical-align:middle!important;
-    line-height:1.15!important;
-    height:7.5mm!important;
-  }
-  .print-v15-table th:nth-child(1),
-  .print-v15-table td:nth-child(1){width:17%!important}
-  .print-v15-table th:nth-child(2),
-  .print-v15-table td:nth-child(2){width:17%!important}
-  .print-v15-table th:nth-child(3),
-  .print-v15-table td:nth-child(3){width:31%!important}
-  .print-v15-table th:nth-child(4),
-  .print-v15-table td:nth-child(4){width:35%!important}
-
-  .print-v15-table .p-time{font-weight:800;white-space:nowrap}
-  .print-v15-table .p-person{font-weight:800}
-  .print-v15-table .p-activity{font-weight:800}
-  .print-v15-table .p-note{color:#626b78}
-
-  .print-v15-footer{
-    margin-top:2mm!important;
-    padding-top:2mm!important;
-    border-top:1px solid #bbb!important;
-    font-size:7.5pt!important;
-    color:#666!important;
-  }
-}
-
-@page{
-  size:A4 portrait;
-  margin:10mm 11mm 11mm 11mm;
-}
 </style>
-<style id="v6-extra-css">
-.multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
-.multi-date-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.multi-date-list{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.date-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#eef2f7;font-size:13px}
-.date-chip button{border:0;background:transparent;cursor:pointer;font-size:16px;line-height:1}
-.weekday-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:8px}
-.weekday-grid label{display:flex;gap:8px;align-items:center;border:1px solid var(--line,#ddd);border-radius:10px;padding:8px;font-size:13px;background:#fff}
-.weekday-grid input[type="checkbox"], .check-row input[type="checkbox"]{width:18px;height:18px;min-width:18px;min-height:18px;max-width:18px;max-height:18px;margin:0;padding:0;flex:0 0 18px;accent-color:#315fb8}
-.photo-preview{display:none;margin-top:10px;position:relative;width:140px}
-.photo-preview.show{display:block}
-.photo-preview img{width:140px;height:100px;object-fit:cover;border-radius:12px;border:1px solid var(--line,#ddd)}
-.photo-remove{position:absolute;right:-7px;top:-7px;border:0;border-radius:50%;width:25px;height:25px;cursor:pointer}
-.photo-badge{font-size:12px;margin-left:5px}
-@media(max-width:650px){.weekday-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style>
-
 </head>
 
 <body>
@@ -824,7 +354,6 @@
   <div class="lock-overlay" id="lockOverlay">
     <div class="lock-box">
       <h2 id="lockTitle">🔒 Calendario protetto</h2>
-
       <p id="lockText">Inserisci il PIN per accedere.</p>
       <input type="password" id="lockInput" inputmode="numeric" placeholder="PIN" maxlength="12">
       <div class="lock-error" id="lockError"></div>
@@ -874,32 +403,10 @@
     <div class="calendar-focus-note">Calendario a colpo d'occhio · tutti gli impegni ordinati a destra</div>
   </div>
 
-  <div class="view-controls-v8">
-    <div class="control-main-v8">
-      <span class="view-control-label-v7">SELEZIONE</span>
-      <div class="person-filter-chips-v7" id="calendarPersonFiltersV7"></div>
-      <select id="calendarActivityFilterV8" class="mini-filter-v8"><option value="">Tutte le attività</option></select>
-      <select id="calendarResponsibleFilterV8" class="mini-filter-v8"><option value="">Tutti i responsabili</option></select>
-      <button type="button" class="secondary mini-btn-v8" id="toggleMoreFiltersV8">☰ Altri filtri</button>
-    </div>
-    <div class="more-filters-v8" id="moreFiltersV8" hidden>
-      <input type="date" id="filterFromV8" title="Data da">
-      <input type="date" id="filterToV8" title="Data a">
-      <select id="filterAttachmentsV8"><option value="">Allegati: tutti</option><option value="yes">Solo con allegati</option><option value="no">Senza allegati</option></select>
-      <select id="filterTentativeV8"><option value="">Stato: tutti</option><option value="confirmed">Confermati</option><option value="tentative">Da confermare</option></select>
-      <button type="button" class="ghost mini-btn-v8" id="clearFiltersV8">Azzera</button>
-    </div>
-  </div>
-
   <div class="nav">
     <button class="ghost" id="prevWeek">← Settimana prec.</button>
     <button class="ghost" id="todayBtn">Oggi</button>
     <button class="ghost" id="nextWeek">Settimana succ. →</button>
-<div class="weekly-print-actions-v12">
-  <button type="button" class="secondary print-main-v12" id="printWeeklyV11">🖨️ STAMPA PIANO</button>
-  <button type="button" class="secondary print-main-v12" id="printWeeklyPdfV11">📄 PDF</button>
-</div>
-
     <span class="range" id="weekRange"></span>
   </div>
 
@@ -942,17 +449,9 @@
         <label>Chi</label>
         <select name="figlia" id="figliaSelect" required></select>
       </div>
-      <div class="form-field full">
-        <label>Data / date dell'impegno</label>
-        <div class="multi-date-box">
-          <div class="multi-date-controls">
-            <input type="date" id="datePickerV6">
-            <button type="button" class="secondary" id="addDateV6">+ Aggiungi data</button>
-          </div>
-          <div class="multi-date-list" id="selectedDatesV6"></div>
-          <small style="display:block;margin-top:8px;color:var(--muted)">Puoi aggiungere più date nello stesso salvataggio.</small>
-        </div>
-        <input type="hidden" name="data" id="dataV6">
+      <div class="form-field">
+        <label>Data (per impegno singolo)</label>
+        <input type="date" name="data">
       </div>
       <div class="form-field">
         <label>Ora inizio</label>
@@ -981,27 +480,16 @@
         <label for="tentativoCheck">Da confermare</label>
       </div>
 
-      <div class="form-field full">
-        <label>Giorni della settimana (per impegno ricorrente)</label>
-        <div class="weekday-grid" id="weekdayGridV6">
-          <label><input type="checkbox" name="giorniSettimana" value="0"> Lunedì</label>
-          <label><input type="checkbox" name="giorniSettimana" value="1"> Martedì</label>
-          <label><input type="checkbox" name="giorniSettimana" value="2"> Mercoledì</label>
-          <label><input type="checkbox" name="giorniSettimana" value="3"> Giovedì</label>
-          <label><input type="checkbox" name="giorniSettimana" value="4"> Venerdì</label>
-          <label><input type="checkbox" name="giorniSettimana" value="5"> Sabato</label>
-          <label><input type="checkbox" name="giorniSettimana" value="6"> Domenica</label>
-        </div>
+      <div class="form-field">
+        <label>Giorno (per impegno ricorrente)</label>
+        <select name="giornoSettimana">
+          <option value="0">Lunedì</option><option value="1">Martedì</option><option value="2">Mercoledì</option>
+          <option value="3">Giovedì</option><option value="4">Venerdì</option><option value="5">Sabato</option><option value="6">Domenica</option>
+        </select>
       </div>
       <div class="full note-field">
         <label>Note</label>
         <input type="text" name="note" placeholder="es. luogo, indicazioni, dettagli...">
-      </div>
-      <div class="form-field full">
-        <label>📎 Allegati</label>
-        <input type="file" id="attachmentV6" accept="*/*" multiple>
-        <div id="attachmentListV6" class="attachment-list-v6"></div>
-        <small style="display:block;margin-top:6px;color:var(--muted)">Puoi aggiungere più foto, PDF e documenti. Gli allegati vengono salvati nell'impegno e possono essere visualizzati o scaricati.</small>
       </div>
       <div class="full form-actions">
         <button type="submit" id="submitBtn">+ Salva impegno</button>
@@ -1034,33 +522,20 @@
   </div>
 
   <div class="card">
-    <div class="section-title list-head-v8">
-      <div><h2>Elenco completo — tutti gli impegni programmati</h2><small id="listFilterSummaryV8">Tutti gli impegni · ordinati per data e ora</small></div>
-      <button type="button" class="secondary mini-btn-v8" id="listFiltersInfoV8">Filtri attivi: 0</button>
+    <div class="section-title">
+      <h2>Elenco impegni</h2>
+      <small>Settimana visualizzata</small>
     </div>
     <div style="overflow-x:auto;">
       <table id="list">
-        <thead><tr><th>Data</th><th>Chi</th><th>Giorno</th><th>Orario</th><th>Attività</th><th>Responsabile</th><th>Note</th><th>Allegati</th><th></th></tr></thead>
+        <thead><tr><th>Chi</th><th>Giorno</th><th>Orario</th><th>Attività</th><th>Responsabile</th><th>Note</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
   </div>
 
-
-<div id="attachmentsModalV6" class="attachments-modal-v6" aria-hidden="true">
-  <div class="attachments-backdrop-v6" onclick="closeAttachments()"></div>
-  <div class="attachments-dialog-v6" role="dialog" aria-modal="true" aria-labelledby="attachmentsTitleV6">
-    <div class="attachments-dialog-head-v6">
-      <h3 id="attachmentsTitleV6">Allegati</h3>
-      <button type="button" class="secondary" onclick="closeAttachments()">Chiudi</button>
-    </div>
-    <div id="attachmentsModalListV6"></div>
-  </div>
-</div>
-
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
 <script id="app-data" type="application/json">
 {
@@ -1213,7 +688,7 @@
 const DAY_NAMES = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
 const DAY_COLORS = ["#4472C4","#548235","#BF8F00","#C55A11","#7030A0","#C00000","#404040"];
 const PERSON_PALETTE = ["#D6336C","#0B7285","#B98B00","#3454D1","#2F9E44","#9C36B5","#E8590C","#1098AD","#5C940D","#A61E4D"];
-const START_MIN = 7*60, END_MIN = 21*60, RANGE = END_MIN-START_MIN, TRACK_H = 560;
+const START_MIN = 7*60, END_MIN = 21*60, RANGE = END_MIN-START_MIN, TRACK_H = 700;
 
 const raw = JSON.parse(document.getElementById('app-data').textContent);
 let persone = raw.persone;
@@ -1234,7 +709,6 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref('impegniCalendario/state');
-const storage = firebase.storage();
 let applyingRemote = false;
 let firstSnapshot = true;
 
@@ -1387,7 +861,6 @@ function fmtDate(d){
 }
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function ddmm(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
-function fullDateV7(d){ return `${DAY_NAMES[(d.getDay()+6)%7]} ${ddmm(d)}/${d.getFullYear()}`; }
 
 function mondayOf(date){
   const d = new Date(date);
@@ -1397,44 +870,6 @@ function mondayOf(date){
   return d;
 }
 let currentWeekStart = mondayOf(new Date());
-let activePersonFilterV7 = '';
-
-let activeActivityFilterV8='', activeResponsibleFilterV8='', activeFromFilterV8='', activeToFilterV8='', activeAttachmentsFilterV8='', activeTentativeFilterV8='';
-function hasAttachmentsV8(ev){return (Array.isArray(ev.allegati)&&ev.allegati.length>0)||!!ev.foto;}
-function passesFiltersV8(ev,ds){
-  if(activePersonFilterV7&&ev.figlia!==activePersonFilterV7)return false;
-  if(activeActivityFilterV8&&(ev.attivita||'')!==activeActivityFilterV8)return false;
-  if(activeResponsibleFilterV8&&(ev.responsabile||'')!==activeResponsibleFilterV8)return false;
-  if(activeFromFilterV8&&ds<activeFromFilterV8)return false;
-  if(activeToFilterV8&&ds>activeToFilterV8)return false;
-  const has=hasAttachmentsV8(ev);
-  if(activeAttachmentsFilterV8==='yes'&&!has)return false;
-  if(activeAttachmentsFilterV8==='no'&&has)return false;
-  if(activeTentativeFilterV8==='confirmed'&&ev.tentativo)return false;
-  if(activeTentativeFilterV8==='tentative'&&!ev.tentativo)return false;
-  return true;
-}
-function uniqueValuesV8(a){return [...new Set(a.filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),'it'))}
-function escV8(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function updateFilterCounterV8(){
-  let n=[activePersonFilterV7,activeActivityFilterV8,activeResponsibleFilterV8,activeFromFilterV8,activeToFilterV8,activeAttachmentsFilterV8,activeTentativeFilterV8].filter(Boolean).length;
-  const b=document.getElementById('listFiltersInfoV8');if(b)b.textContent=`Filtri attivi: ${n}`;
-  const s=document.getElementById('listFilterSummaryV8');if(s)s.textContent=n?`Filtri attivi: ${n} · ordinati per data e ora`:'Tutti gli impegni · ordinati per data e ora';
-}
-function populateIntegratedFiltersV8(){
-  const a=document.getElementById('calendarActivityFilterV8'),r=document.getElementById('calendarResponsibleFilterV8');if(!a||!r)return;
-  a.innerHTML='<option value="">Tutte le attività</option>'+uniqueValuesV8(state.map(e=>e.attivita)).map(v=>`<option value="${escV8(v)}">${escV8(v)}</option>`).join('');
-  r.innerHTML='<option value="">Tutti i responsabili</option>'+uniqueValuesV8(state.map(e=>e.responsabile)).map(v=>`<option value="${escV8(v)}">${escV8(v)}</option>`).join('');
-  a.value=activeActivityFilterV8;r.value=activeResponsibleFilterV8;
-  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v};
-  set('filterFromV8',activeFromFilterV8);set('filterToV8',activeToFilterV8);set('filterAttachmentsV8',activeAttachmentsFilterV8);set('filterTentativeV8',activeTentativeFilterV8);
-  updateFilterCounterV8();
-}
-function clearIntegratedFiltersV8(){
-  activePersonFilterV7='';activeActivityFilterV8='';activeResponsibleFilterV8='';activeFromFilterV8='';activeToFilterV8='';activeAttachmentsFilterV8='';activeTentativeFilterV8='';
-  renderCalendarPersonFiltersV7();populateIntegratedFiltersV8();render();
-}
-
 function weekDates(){
   const out=[];
   for(let i=0;i<7;i++){ const d=new Date(currentWeekStart); d.setDate(d.getDate()+i); out.push(d); }
@@ -1446,11 +881,10 @@ function eventsForWeek(){
   const out = [];
   state.forEach(ev=>{
     if(ev.ricorrente){
-      const days=(Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length)?ev.giorniSettimana.map(Number):[Number(ev.giornoSettimana??0)];
-      days.forEach(wd=>{const ds=fmtDate(dates[wd]);if(wd>=0&&wd<7&&passesFiltersV8(ev,ds))out.push(Object.assign({},ev,{dataEff:ds,weekdayIdx:wd}));});
-    }else if(ev.data){
-      const idx=dates.findIndex(x=>fmtDate(x)===ev.data);
-      if(idx>=0&&passesFiltersV8(ev,ev.data))out.push(Object.assign({},ev,{dataEff:ev.data,weekdayIdx:idx}));
+      out.push(Object.assign({}, ev, {dataEff: fmtDate(dates[ev.giornoSettimana]), weekdayIdx: ev.giornoSettimana}));
+    } else if(ev.data){
+      const idx = dates.findIndex(x=>fmtDate(x)===ev.data);
+      if(idx>=0) out.push(Object.assign({}, ev, {dataEff: ev.data, weekdayIdx: idx}));
     }
   });
   return out;
@@ -1474,15 +908,7 @@ function findConflicts(list){
   return c;
 }
 
-
-function renderCalendarPersonFiltersV7(){
-  const box=document.getElementById('calendarPersonFiltersV7');if(!box)return;
-  box.innerHTML=[`<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===''?'active':''}" data-person="">Tutti</button>`,
-    ...persone.map(p=>`<button type="button" class="person-filter-chip-v7 ${activePersonFilterV7===p?'active':''}" data-person="${String(p).replace(/"/g,'&quot;')}">${String(p).replace(/</g,'&lt;')}</button>`)].join('');
-  box.querySelectorAll('[data-person]').forEach(btn=>btn.addEventListener('click',()=>{activePersonFilterV7=btn.dataset.person||'';renderCalendarPersonFiltersV7();populateIntegratedFiltersV8();render();}));
-}
 function renderPeopleChips(){
-  renderCalendarPersonFiltersV7();
   document.documentElement.style.setProperty('--daymin', Math.max(200, persone.length*55)+'px');
   const box = document.getElementById('peopleChips');
   box.innerHTML = persone.map((p,i)=>{
@@ -1580,7 +1006,7 @@ function renderAgenda(dates, weekEvents, conflicts){
         <span class="sw" style="background:${colorOf(ev.figlia)}"></span>
         <span class="time">${ev.oraInizio}<br>${ev.oraFine}</span>
         <span class="info">
-          <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}${ev.foto?' 📷':''}</b>
+          <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}</b>
           <small>${ev.figlia}${ev.responsabile?' · '+ev.responsabile:''}${ev.note?' · '+ev.note:''}</small>
         </span>
         <span class="ag-actions">
@@ -1679,7 +1105,8 @@ function renderWeekAgenda(weekEvents, conflicts){
     return `
       <section class="agenda-day-block ${isToday?'agenda-today':''}">
         <div class="agenda-day-banner" style="--day-color:${DAY_COLORS[group.idx]}">
-          <span>${fullDateV7(date)}</span>
+          <span>${DAY_NAMES[group.idx]}</span>
+          <b>${ddmm(date)}</b>
           ${isToday ? '<em>OGGI</em>' : ''}
         </div>
         <div class="agenda-day-events">${rows}</div>
@@ -1691,7 +1118,7 @@ function render(){
   renderTodaySummary();
   const dates = weekDates();
   document.getElementById('weekRange').textContent =
-    `Settimana dal ${fullDateV7(dates[0])} al ${fullDateV7(dates[6])}`;
+    `Settimana dal ${ddmm(dates[0])} al ${ddmm(dates[6])}/${dates[6].getFullYear()}`;
 
   const weekEvents = eventsForWeek();
   const conflicts = findConflicts(weekEvents);
@@ -1735,319 +1162,86 @@ function render(){
     return `<tr><td>${k}</td><td>${(ore[k].Clarissa||0).toFixed(1)}</td><td>${(ore[k].Carola||0).toFixed(1)}</td><td><b>${tot.toFixed(1)}</b></td></tr>`;
   }).join('') || '<tr><td colspan="4" style="color:var(--muted)">Nessun dato</td></tr>';
 
-  // Elenco completo ordinato per data e ora.
-  renderCompleteListV6();
-
+  const sorted = [...weekEvents].sort((a,b)=> a.weekdayIdx-b.weekdayIdx || toMin(a.oraInizio)-toMin(b.oraInizio));
+  document.querySelector('#list tbody').innerHTML = sorted.map(ev=>{
+    return `<tr class="${conflicts.has(ev.id)?'conflict-row':''}">
+      <td><span class="badge" style="background:${colorOf(ev.figlia)}">${ev.figlia}</span></td>
+      <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
+      <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
+      <td>${ev.attivita}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
+      <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
+          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Nessun impegno in questa settimana</td></tr>';
 }
-
-function allPlannedOccurrencesV6(){
-  const out=[],today=new Date();today.setHours(0,0,0,0);
-  const start=new Date(today);start.setFullYear(start.getFullYear()-2);
-  const end=new Date(today);end.setFullYear(end.getFullYear()+2);
-  state.forEach(ev=>{
-    if(ev.ricorrente){
-      const days=(Array.isArray(ev.giorniSettimana)&&ev.giorniSettimana.length)?ev.giorniSettimana.map(Number):[Number(ev.giornoSettimana??0)];
-      for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){const wd=(d.getDay()+6)%7;if(days.includes(wd)){const ds=fmtDate(d);if(passesFiltersV8(ev,ds))out.push({...ev,_listDate:ds,_listDateObj:new Date(d)});}}
-    }else if(ev.data){const d=parseDate(ev.data);if(passesFiltersV8(ev,ev.data))out.push({...ev,_listDate:ev.data,_listDateObj:d});}
-  });
-  return out.sort((a,b)=>{const c=a._listDateObj-b._listDateObj;if(c)return c;const t=toMin(a.oraInizio)-toMin(b.oraInizio);if(t)return t;return String(a.figlia||'').localeCompare(String(b.figlia||''),'it')});
-}
-
-function escListV6(v){
-  return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function renderCompleteListV6(){
-  const tbody=document.querySelector('#list tbody');if(!tbody)return;
-  const scope=document.getElementById('filterDateScopeV8')?.value || 'future';
-  const todayKey=fmtDate(new Date());
-  let rows=allPlannedOccurrencesV6();
-  if(scope==='future') rows=rows.filter(ev=>ev._listDate>=todayKey);
-  else if(scope==='past') rows=rows.filter(ev=>ev._listDate<todayKey);
-  tbody.innerHTML=rows.map(ev=>{
-    const d=ev._listDateObj,dateLabel=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`,dayLabel=DAY_NAMES[(d.getDay()+6)%7];
-    const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',url:ev.foto,size:0});
-    return `<tr><td><b>${dateLabel}</b>${ev.ricorrente?' 🔁':''}</td><td><span class="badge" style="background:${colorOf(ev.figlia)}">${escListV6(ev.figlia)}</span></td><td>${dayLabel}</td><td>${escListV6(ev.oraInizio)}-${escListV6(ev.oraFine)}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td><td>${escListV6(ev.attivita)}</td><td>${escListV6(ev.responsabile||'-')}</td><td>${escListV6(ev.note||'-')}</td><td>${attachments.length?`<button type="button" class="secondary attachment-view-btn" onclick="openAttachments(${ev.id})">📎 ${attachments.length} file</button>`:'-'}</td><td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button> <button class="secondary danger-v8" onclick="removeEvent(${ev.id})">Elimina</button></td></tr>`;
-  }).join('')||'<tr><td colspan="9" style="color:var(--muted)">Nessun impegno corrisponde ai filtri.</td></tr>';
-  updateFilterCounterV8();
-}
-function openAttachments(eventId){
-  const ev=state.find(e=>e.id===eventId); if(!ev)return;
-  const attachments=Array.isArray(ev.allegati)?ev.allegati.slice():[];
-  if(ev.foto)attachments.push({name:'Foto',type:'image/jpeg',size:0,url:ev.foto});
-  const box=document.getElementById('attachmentsModalListV6'), modal=document.getElementById('attachmentsModalV6');
-  if(!box||!modal)return;
-  document.getElementById('attachmentsTitleV6').textContent=`Allegati · ${ev.attivita||'Impegno'}`;
-  window._openAttachmentsV6=attachments;
-  box.innerHTML=attachments.length?attachments.map((a,i)=>`
-    <div class="attachment-modal-row-v6">
-      <span class="attachment-modal-icon-v6">${fileIconV6(a.type,a.name)}</span>
-      <span class="attachment-modal-name-v6">${escListV6(a.name)}</span>
-      <span class="attachment-modal-actions-v6">
-        ${a.url?`<button type="button" class="secondary" onclick="viewAttachmentV6(${i})">👁️ Visualizza</button><button type="button" class="secondary" onclick="downloadAttachmentV6(${i})">⬇️ Scarica</button>`:'<span style="color:var(--muted)">File non disponibile</span>'}
-      </span>
-    </div>`).join(''):'<div style="color:var(--muted)">Nessun allegato disponibile.</div>';
-  modal.classList.add('show');modal.setAttribute('aria-hidden','false');
-}
-function viewAttachmentV6(index){
-  const a=(window._openAttachmentsV6||[])[index];if(!a||!a.url)return;
-  window.open(a.url,'_blank','noopener');
-}
-async function downloadAttachmentV6(index){
-  const a=(window._openAttachmentsV6||[])[index];if(!a||!a.url)return;
-  try{
-    const response=await fetch(a.url);if(!response.ok)throw new Error('HTTP '+response.status);
-    const blob=await response.blob(), blobUrl=URL.createObjectURL(blob), link=document.createElement('a');
-    link.href=blobUrl;link.download=a.name||'allegato';document.body.appendChild(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(blobUrl),1500);
-  }catch(e){window.open(a.url,'_blank','noopener');}
-}
-window.openAttachments=openAttachments;window.viewAttachmentV6=viewAttachmentV6;window.downloadAttachmentV6=downloadAttachmentV6;
-
-function closeAttachments(){
-  const modal=document.getElementById('attachmentsModalV6');
-  if(modal){modal.classList.remove('show');modal.setAttribute('aria-hidden','true');}
-}
-window.openAttachments=openAttachments;
-window.closeAttachments=closeAttachments;
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAttachments();});
 
 async function persist(){
   document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
   await syncPush();
 }
 
-function removeEvent(id){
-  const ev=state.find(e=>e.id===id);if(!ev)return;
-  const scope=ev.ricorrente?'È un impegno ricorrente: verranno rimosse la regola e tutte le sue occorrenze passate/future visualizzate.':`Data: ${ev.data||'—'} · ${ev.oraInizio||''}-${ev.oraFine||''}.`;
-  if(!window.confirm(`Confermi l'eliminazione?\n\n${ev.figlia||''} · ${ev.attivita||''}\n${scope}\n\nL'operazione non può essere annullata.`))return;
-  state=state.filter(e=>e.id!==id);if(editingId===id)cancelEdit();render();persist();
-}
+function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
 window.removeEvent = removeEvent;
 
 function startEdit(id){
-  const ev=state.find(e=>e.id===id);if(!ev)return;
-  const scope=ev.ricorrente?'È un impegno ricorrente: la modifica riguarderà la regola e le sue occorrenze passate/future visualizzate.':`Data: ${ev.data||'—'} · ${ev.oraInizio||''}-${ev.oraFine||''}.`;
-  if(!window.confirm(`Vuoi modificare questo impegno?\n\n${ev.figlia||''} · ${ev.attivita||''}\n${scope}`))return;
-  editingId=id;
-  const f=document.getElementById('form');f.figlia.value=ev.figlia;setDatesV6(ev.data?[ev.data]:[]);
-  attachmentsV6=Array.isArray(ev.allegati)?ev.allegati.map(a=>({...a})):[];if(!attachmentsV6.length&&ev.foto)attachmentsV6=[{name:'Foto',type:'image/jpeg',size:0,url:ev.foto}];renderAttachmentsV6();
-  f.oraInizio.value=ev.oraInizio;f.oraFine.value=ev.oraFine;f.attivita.value=ev.attivita;f.responsabile.value=ev.responsabile||'';f.note.value=ev.note||'';
-  f.ricorrente.checked=!!ev.ricorrente;f.tentativo.checked=!!ev.tentativo;
-  document.querySelectorAll('input[name="giorniSettimana"]').forEach(cb=>cb.checked=Array.isArray(ev.giorniSettimana)?ev.giorniSettimana.map(Number).includes(Number(cb.value)):Number(cb.value)===(ev.giornoSettimana??0));
-  document.getElementById('formTitle').textContent='Modifica impegno';document.getElementById('submitBtn').textContent='Salva modifiche';document.getElementById('cancelEdit').style.display='inline-block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  const ev = state.find(e=>e.id===id); if(!ev) return;
+  editingId = id;
+  const f = document.getElementById('form');
+  f.figlia.value = ev.figlia;
+  f.data.value = ev.data || '';
+  f.oraInizio.value = ev.oraInizio;
+  f.oraFine.value = ev.oraFine;
+  f.attivita.value = ev.attivita;
+  f.responsabile.value = ev.responsabile || '';
+  f.note.value = ev.note || '';
+  f.ricorrente.checked = !!ev.ricorrente;
+  f.tentativo.checked = !!ev.tentativo;
+  f.giornoSettimana.value = ev.giornoSettimana ?? 0;
+  document.getElementById('formTitle').textContent = 'Modifica impegno';
+  document.getElementById('submitBtn').textContent = 'Salva modifiche';
+  document.getElementById('cancelEdit').style.display = 'inline-block';
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 window.startEdit = startEdit;
 
 function cancelEdit(){
   editingId = null;
   document.getElementById('form').reset();
-  setDatesV6([]); attachmentsV6=[]; renderAttachmentsV6();
   document.getElementById('formTitle').textContent = 'Aggiungi impegno';
   document.getElementById('submitBtn').textContent = '+ Aggiungi al calendario';
   document.getElementById('cancelEdit').style.display = 'none';
 }
-document.getElementById('cancelEdit').addEventListener('click', ()=>{if(window.confirm('Annullare la modifica e perdere le modifiche non ancora salvate?'))cancelEdit();});
+document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
-// ===== V6: multi-date + allegati =====
-let selectedDatesV6 = [];
-let attachmentsV6 = [];
-
-function formatBytesV6(bytes){
-  if(!bytes) return '0 B';
-  const units=['B','KB','MB','GB']; let i=0, n=bytes;
-  while(n>=1024 && i<units.length-1){n/=1024;i++;}
-  return `${n.toFixed(i?1:0)} ${units[i]}`;
-}
-function fileIconV6(type,name){
-  const ext=(name||'').split('.').pop().toLowerCase();
-  if((type||'').startsWith('image/')) return '🖼️';
-  if(type==='application/pdf'||ext==='pdf') return '📄';
-  if(['doc','docx','txt','rtf'].includes(ext)) return '📝';
-  if(['xls','xlsx','csv'].includes(ext)) return '📊';
-  if(['ppt','pptx'].includes(ext)) return '📑';
-  if((type||'').startsWith('video/')) return '🎥';
-  if((type||'').startsWith('audio/')) return '🎵';
-  if(['zip','rar','7z'].includes(ext)) return '📦';
-  return '📎';
-}
-
-function renderSelectedDatesV6(){
-  const box=document.getElementById('selectedDatesV6');
-  box.innerHTML=selectedDatesV6.slice().sort().map(d=>`<span class="date-chip">${ddmm(parseDate(d))}<button type="button" data-date="${d}" aria-label="Rimuovi ${d}">×</button></span>`).join('') || '<span style="color:var(--muted);font-size:13px">Nessuna data selezionata</span>';
-  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-    selectedDatesV6=selectedDatesV6.filter(x=>x!==b.dataset.date);
-    syncDateHiddenV6(); renderSelectedDatesV6();
-  }));
-}
-function syncDateHiddenV6(){document.getElementById('dataV6').value=selectedDatesV6[0]||'';}
-document.getElementById('addDateV6').addEventListener('click',()=>{
-  const d=document.getElementById('datePickerV6').value;
-  if(!d) return;
-  if(!selectedDatesV6.includes(d)) selectedDatesV6.push(d);
-  document.getElementById('datePickerV6').value='';
-  syncDateHiddenV6(); renderSelectedDatesV6();
-});
-function setDatesV6(dates){
-  selectedDatesV6=[...new Set((dates||[]).filter(Boolean))];
-  syncDateHiddenV6(); renderSelectedDatesV6();
-}
-
-function renderAttachmentsV6(){
-  const box=document.getElementById('attachmentListV6');
-  if(!attachmentsV6.length){box.innerHTML='';return;}
-  box.innerHTML=attachmentsV6.map((a,i)=>`
-    <div class="attachment-item-v6">
-      <span class="attachment-icon-v6">${fileIconV6(a.type,a.name)}</span>
-      <span class="attachment-name-v6" title="${String(a.name).replace(/"/g,'&quot;')}">${String(a.name).replace(/</g,'&lt;')}</span>
-      <span class="attachment-meta-v6">${formatBytesV6(a.size)}</span>
-      <span class="attachment-actions-v6">
-        ${a.url ? `<a href="${a.url}" target="_blank" rel="noopener">Apri</a><a href="${a.url}" download="${String(a.name).replace(/"/g,'&quot;')}">Scarica</a>` : '<span class="attachment-status-v6">Da caricare</span>'}
-        <button type="button" onclick="removeAttachmentV6(${i})">×</button>
-      </span>
-    </div>`).join('');
-}
-function removeAttachmentV6(index){
-  attachmentsV6.splice(index,1);
-  renderAttachmentsV6();
-}
-window.removeAttachmentV6=removeAttachmentV6;
-
-document.getElementById('attachmentV6').addEventListener('change',e=>{
-  [...(e.target.files||[])].forEach(file=>{
-    attachmentsV6.push({
-      name:file.name,
-      type:file.type||'application/octet-stream',
-      size:file.size,
-      file
-    });
-  });
-  e.target.value='';
-  renderAttachmentsV6();
-});
-
-async function uploadAttachmentsV6(eventId, files){
-  const uploaded=[];
-  for(const a of files){
-    if(a.url && !a.file){uploaded.push(a);continue;}
-    if(!a.file) continue;
-    const safeName=a.name.replace(/[^\w.\- ()àèéìòù]/gi,'_');
-    const path=`impegniCalendario/allegati/${eventId}/${Date.now()}_${Math.random().toString(36).slice(2,9)}_${safeName}`;
-    const ref=storage.ref(path);
-    const snap=await ref.put(a.file,{contentType:a.type||'application/octet-stream'});
-    const url=await snap.ref.getDownloadURL();
-    uploaded.push({name:a.name,type:a.type||'application/octet-stream',size:a.size,url,path});
-  }
-  return uploaded;
-}
-
-renderSelectedDatesV6();
-renderAttachmentsV6();
-
-document.getElementById('form').addEventListener('submit', async function(e){
+document.getElementById('form').addEventListener('submit', function(e){
   e.preventDefault();
-  const fd=new FormData(e.target);
-  const ricorrente=fd.get('ricorrente')==='on';
-  const dates=[...selectedDatesV6];
-  const weekdays=[...document.querySelectorAll('input[name="giorniSettimana"]:checked')].map(x=>Number(x.value));
-
-  if(ricorrente && weekdays.length===0){alert('Seleziona almeno un giorno della settimana.');return;}
-  if(!ricorrente && dates.length===0){alert('Inserisci almeno una data.');return;}
-
-  const base={
-    figlia:fd.get('figlia'),
+  const fd = new FormData(e.target);
+  const ricorrente = fd.get('ricorrente')==='on';
+  const data = fd.get('data');
+  if(!ricorrente && !data){ alert('Inserisci una data, oppure spunta "si ripete ogni settimana".'); return; }
+  const payload = {
+    figlia: fd.get('figlia'),
     ricorrente,
-    oraInizio:fd.get('oraInizio'),
-    oraFine:fd.get('oraFine'),
-    attivita:(fd.get('attivita')||'').trim(),
-    responsabile:(fd.get('responsabile')||'').trim(),
-    note:(fd.get('note')||'').trim(),
-    tentativo:fd.get('tentativo')==='on',
-    allegati:[]
+    giornoSettimana: ricorrente ? Number(fd.get('giornoSettimana')) : (data ? (parseDate(data).getDay()+6)%7 : 0),
+    data: ricorrente ? null : data,
+    oraInizio: fd.get('oraInizio'),
+    oraFine: fd.get('oraFine'),
+    attivita: fd.get('attivita').trim(),
+    responsabile: (fd.get('responsabile')||'').trim(),
+    note: (fd.get('note')||'').trim(),
+    tentativo: fd.get('tentativo')==='on'
   };
-  if(toMin(base.oraFine)<=toMin(base.oraInizio)){alert("L'ora fine deve essere dopo l'ora inizio.");return;}
+  if(toMin(payload.oraFine)<=toMin(payload.oraInizio)){ alert("L'ora fine deve essere dopo l'ora inizio."); return; }
 
-  const wasEditing=!!editingId;
-  if(wasEditing){
-    const current=state.find(e=>e.id===editingId);
-    if(current && !window.confirm(`Confermi il salvataggio delle modifiche a “${current.attivita||'impegno'}”?`))return;
-  }
-  const targetIds=[];
-
-  if(wasEditing){
-    const idx=state.findIndex(e=>e.id===editingId);
-    if(idx<0)return;
-    const ev=state[idx];
-    // Mantieni gli allegati già presenti e aggiungi quelli nuovi.
-    const existingAttachments=Array.isArray(ev.allegati)?ev.allegati:[];
-    const newFiles=attachmentsV6.filter(a=>a.file);
-    const keptAttachments=attachmentsV6.filter(a=>!a.file);
-    base.allegati=keptAttachments.length ? keptAttachments : existingAttachments;
-
-    if(ricorrente){
-      state[idx]=Object.assign({id:editingId},base,{
-        giornoSettimana:weekdays[0]??0,
-        giorniSettimana:weekdays,
-        data:null
-      });
-    }else{
-      state[idx]=Object.assign({id:editingId},base,{
-        giornoSettimana:(parseDate(dates[0]).getDay()+6)%7,
-        data:dates[0],
-        giorniSettimana:[]
-      });
-      targetIds.push(editingId);
-      for(let i=1;i<dates.length;i++){
-        const newId=nextId++;
-        state.push(Object.assign({id:newId},base,{
-          giornoSettimana:(parseDate(dates[i]).getDay()+6)%7,
-          data:dates[i],
-          giorniSettimana:[]
-        }));
-        targetIds.push(newId);
-      }
-    }
-    if(ricorrente) targetIds.push(editingId);
-  }else{
-    if(ricorrente){
-      weekdays.forEach(day=>{
-        const id=nextId++;
-        state.push(Object.assign({id},base,{giornoSettimana:day,giorniSettimana:weekdays,data:null}));
-        targetIds.push(id);
-      });
-    }else{
-      dates.forEach(d=>{
-        const id=nextId++;
-        state.push(Object.assign({id},base,{
-          giornoSettimana:(parseDate(d).getDay()+6)%7,
-          giorniSettimana:[],
-          data:d
-        }));
-        targetIds.push(id);
-      });
-    }
-  }
-
-  try{
-    const newFiles=attachmentsV6.filter(a=>a.file);
-    const existing=attachmentsV6.filter(a=>!a.file);
-    let uploaded=[];
-    if(newFiles.length){
-      uploaded=await uploadAttachmentsV6(targetIds[0],newFiles);
-    }
-    const allAttachments=[...existing,...uploaded];
-    targetIds.forEach(id=>{
-      const idx=state.findIndex(x=>x.id===id);
-      if(idx>=0) state[idx].allegati=allAttachments.map(a=>({...a,file:undefined}));
-    });
-    render();
-    await persist();
+  if(editingId){
+    const idx = state.findIndex(e=>e.id===editingId);
+    state[idx] = Object.assign({id: editingId}, payload);
     cancelEdit();
-  }catch(err){
-    console.error(err);
-    alert('Il salvataggio dell’allegato non è riuscito. Verifica la connessione e le autorizzazioni di Firebase Storage.');
-    render();
+  } else {
+    state.push(Object.assign({id: nextId++}, payload));
+    e.target.reset();
   }
+  render(); persist();
 });
 
 document.getElementById('prevWeek').addEventListener('click', ()=>{ currentWeekStart.setDate(currentWeekStart.getDate()-7); render(); });
@@ -2058,238 +1252,6 @@ renderPeopleChips();
 render();
 checkLock();
 initSync();
-</script>
-
-
-
-<script>
-// ===== V8: filtri integrati =====
-(function(){
-  function bind(){
-    const a=document.getElementById('calendarActivityFilterV8'),r=document.getElementById('calendarResponsibleFilterV8');
-    const more=document.getElementById('moreFiltersV8'),toggle=document.getElementById('toggleMoreFiltersV8');
-    const clear=document.getElementById('clearFiltersV8');
-    a?.addEventListener('change',()=>{activeActivityFilterV8=a.value;render();});
-    r?.addEventListener('change',()=>{activeResponsibleFilterV8=r.value;render();});
-    document.getElementById('filterFromV8')?.addEventListener('change',e=>{activeFromFilterV8=e.target.value;render();});
-    document.getElementById('filterToV8')?.addEventListener('change',e=>{activeToFilterV8=e.target.value;render();});
-    document.getElementById('filterAttachmentsV8')?.addEventListener('change',e=>{activeAttachmentsFilterV8=e.target.value;render();});
-    document.getElementById('filterTentativeV8')?.addEventListener('change',e=>{activeTentativeFilterV8=e.target.value;render();});
-    toggle?.addEventListener('click',()=>{if(!more)return;more.hidden=!more.hidden;toggle.textContent=more.hidden?'☰ Altri filtri':'☰ Chiudi filtri';});
-    clear?.addEventListener('click',clearIntegratedFiltersV8);
-    document.getElementById('listFiltersInfoV8')?.addEventListener('click',()=>{if(more){more.hidden=false;toggle.textContent='☰ Chiudi filtri';more.scrollIntoView({behavior:'smooth',block:'nearest'});}});
-    populateIntegratedFiltersV8();renderCalendarPersonFiltersV7();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
-})();
-</script>
-<script>
-// ===== V8.1: periodo elenco, default da oggi in poi =====
-(function(){
-  function todayV8(){
-    const d=new Date(); d.setHours(0,0,0,0);
-    return fmtDate(d);
-  }
-  function applyDateScopeV8(){
-    const scope=document.getElementById('filterDateScopeV8')?.value||'future';
-    const today=todayV8();
-    const from=document.getElementById('filterFromV6');
-    const to=document.getElementById('filterToV6');
-    if(!from||!to)return;
-    if(scope==='future'){
-      from.value=today; to.value='';
-    }else if(scope==='past'){
-      from.value=''; to.value=today;
-    }else{
-      from.value=''; to.value='';
-    }
-    if(typeof renderFilteredList==='function') renderFilteredList();
-  }
-  window.applyDateScopeV8=applyDateScopeV8;
-  document.addEventListener('DOMContentLoaded',()=>{
-    const s=document.getElementById('filterDateScopeV8');
-    if(s){
-      s.value='future';
-      s.addEventListener('change',applyDateScopeV8);
-      applyDateScopeV8();
-    }
-  });
-})();
-</script>
-<script>/* V8.1 clear override */
-// V8.1 clear override: reset to future appointments.
-(function(){
-  document.addEventListener('DOMContentLoaded',()=>{
-    const b=document.getElementById('clearFiltersV8');
-    if(b){
-      b.addEventListener('click',()=>{
-        const s=document.getElementById('filterDateScopeV8');
-        if(s){s.value='future';}
-        if(typeof applyDateScopeV8==='function') applyDateScopeV8();
-      });
-    }
-  });
-})();
-</script>
-<script>/* V9 date safety */
-
-// ===== V9: data odierna + futuri come visualizzazione predefinita =====
-(function(){
-  function applyDefaultFutureScopeV9(){
-    const s=document.getElementById('filterDateScopeV8');
-    if(s && !s.dataset.userChanged) s.value='future';
-    if(typeof renderFilteredList==='function') renderFilteredList();
-  }
-  document.addEventListener('DOMContentLoaded',()=>{
-    const s=document.getElementById('filterDateScopeV8');
-    if(s){
-      s.value='future';
-      s.dataset.userChanged='';
-      s.addEventListener('change',()=>{s.dataset.userChanged='1';});
-    }
-    applyDefaultFutureScopeV9();
-  });
-})();
-</script>
-<script>/* V10 list alignment */
-
-// V10: summary della lista coerente con il periodo selezionato.
-(function(){
-  function updateListSummaryV10(){
-    const el=document.getElementById('listFilterSummaryV8');
-    if(!el)return;
-    const scope=document.getElementById('filterDateScopeV8')?.value || 'future';
-    const labels={future:'Da oggi in poi',past:'Solo appuntamenti passati',all:'Tutti gli appuntamenti'};
-    el.textContent=(labels[scope]||labels.future)+' · ordinati per data e ora';
-  }
-  window.updateListSummaryV10=updateListSummaryV10;
-  document.addEventListener('DOMContentLoaded',()=>{
-    const s=document.getElementById('filterDateScopeV8');
-    if(s)s.addEventListener('change',updateListSummaryV10);
-    updateListSummaryV10();
-  });
-})();
-</script>
-<script>
-
-
-
-// ===== V15: stampa nel formato del PDF approvato =====
-(function(){
-  function esc(v){
-    return String(v||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  function buildPrintV15(){
-    const old=document.getElementById('printWeeklyV15');
-    if(old) old.remove();
-
-    const source=document.getElementById('weekAgenda');
-    if(!source) return null;
-
-    const wrapper=document.createElement('div');
-    wrapper.id='printWeeklyV15';
-
-    const range=document.getElementById('weekRange')?.textContent || 'Settimana corrente';
-
-    const head=document.createElement('div');
-    head.className='print-v15-header';
-    head.innerHTML=`
-      <div class="print-v15-title">Piano settimanale</div>
-      <div class="print-v15-range">${esc(range)}</div>
-    `;
-    wrapper.appendChild(head);
-
-    const days=[...source.querySelectorAll('.agenda-day-block')];
-
-    days.forEach((dayBlock, dayIndex)=>{
-      const banner=dayBlock.querySelector('.agenda-day-banner');
-      const dayName=(banner?.querySelector('span')?.textContent || '').trim();
-      const isToday=!!banner?.querySelector('em');
-
-      const section=document.createElement('section');
-      section.className='print-v15-day '+(isToday?'print-v15-today':'');
-      if(dayIndex===4) section.classList.add('print-v15-page2');
-
-      section.innerHTML=`
-        <div class="print-v15-day-title">
-          <span>${esc(dayName)}</span>
-          ${isToday?'<span class="print-v15-today-label">OGGI</span>':''}
-        </div>
-        <table class="print-v15-table">
-          <thead>
-            <tr>
-              <th>ORARIO</th>
-              <th>CHI</th>
-              <th>ATTIVITÀ</th>
-              <th>RESPONSABILE / NOTE</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      `;
-
-      const tbody=section.querySelector('tbody');
-      dayBlock.querySelectorAll('.agenda-row').forEach(row=>{
-        const time=row.querySelector('.agenda-time');
-        const person=row.querySelector('.person-banner');
-        const activity=row.querySelector('.activity-name');
-        const resp=row.querySelector('.agenda-resp');
-        const note=row.querySelector('.agenda-note');
-
-        let timeText=time ? time.textContent.replace(/\s+/g,' ').trim() : '';
-        timeText=timeText.replace(/→/g,'→');
-
-        let activityText=activity ? activity.textContent.trim() : '';
-        const recurring=row.querySelector('.mini-tag')?.textContent.includes('🔁');
-        if(recurring) activityText += ' 🔁';
-
-        let rn=[];
-        if(resp) rn.push(resp.textContent.replace(/^👤\s*/,'').trim());
-        if(note) rn.push(note.textContent.trim());
-
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td class="p-time">${esc(timeText)}</td>
-          <td class="p-person">${esc(person?.textContent.trim()||'')}</td>
-          <td class="p-activity">${esc(activityText)}</td>
-          <td class="p-note">${esc(rn.join(' · ')||'—')}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      wrapper.appendChild(section);
-    });
-
-    const footer=document.createElement('div');
-    footer.className='print-v15-footer';
-    footer.textContent='App-Famy · Piano settimanale';
-    wrapper.appendChild(footer);
-
-    document.body.appendChild(wrapper);
-    return wrapper;
-  }
-
-  function printV15(){
-    const wrapper=buildPrintV15();
-    if(!wrapper) return;
-    document.body.classList.add('printing-v15');
-    setTimeout(()=>{
-      window.print();
-      setTimeout(()=>{
-        document.body.classList.remove('printing-v15');
-        wrapper.remove();
-      },800);
-    },80);
-  }
-
-  document.addEventListener('DOMContentLoaded',()=>{
-    const a=document.getElementById('printWeeklyV11');
-    const b=document.getElementById('printWeeklyPdfV11');
-    if(a) a.onclick=printV15;
-    if(b) b.onclick=printV15;
-  });
-})();
 </script>
 </body>
 </html>
