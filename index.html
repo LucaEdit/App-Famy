@@ -332,6 +332,16 @@
   font-weight:850;
 }
 
+
+.attachment-list-v6{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.attachment-item-v6{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e3e7ee;border-radius:12px;background:#f8fafc}
+.attachment-icon-v6{font-size:20px;flex:0 0 auto}
+.attachment-name-v6{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.attachment-meta-v6{font-size:12px;color:var(--muted);white-space:nowrap}
+.attachment-actions-v6{display:flex;gap:6px;flex:0 0 auto}
+.attachment-actions-v6 a,.attachment-actions-v6 button{font-size:12px;padding:6px 9px;border-radius:8px}
+.event-attachments-v6{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.event-attachment-v6{font-size:12px;text-decoration:none;padding:4px 7px;border-radius:7px;background:#eef2f7;color:inherit}
 </style>
 <style id="v6-extra-css">
 .multi-date-box{border:1px solid var(--line,#ddd);border-radius:14px;padding:12px;background:rgba(0,0,0,.02);margin-top:8px}
@@ -522,10 +532,10 @@
         <input type="text" name="note" placeholder="es. luogo, indicazioni, dettagli...">
       </div>
       <div class="form-field full">
-        <label>📎 Foto / documento</label>
-        <input type="file" id="photoV6" accept="*/*">
-        <div class="photo-preview" id="photoPreviewV6"><img id="photoImgV6" alt="Anteprima foto"><button type="button" class="photo-remove" id="removePhotoV6">×</button></div>
-        <small style="display:block;margin-top:6px;color:var(--muted)">Puoi scegliere foto, PDF e altri documenti dal dispositivo. mantenere leggero il calendario.</small>
+        <label>📎 Allegati</label>
+        <input type="file" id="attachmentV6" accept="*/*" multiple>
+        <div id="attachmentListV6" class="attachment-list-v6"></div>
+        <small style="display:block;margin-top:6px;color:var(--muted)">Puoi aggiungere più foto, PDF e documenti. Gli allegati vengono salvati nell'impegno e possono essere visualizzati o scaricati.</small>
       </div>
       <div class="full form-actions">
         <button type="submit" id="submitBtn">+ Salva impegno</button>
@@ -572,6 +582,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
 <script id="app-data" type="application/json">
 {
@@ -745,6 +756,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref('impegniCalendario/state');
+const storage = firebase.storage();
 let applyingRemote = false;
 let firstSnapshot = true;
 
@@ -1204,7 +1216,7 @@ function render(){
       <td><span class="badge" style="background:${colorOf(ev.figlia)}">${ev.figlia}</span></td>
       <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
       <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
-      <td>${ev.attivita}${ev.foto?' 📷':''}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
+      <td>${ev.attivita}${(ev.foto||ev.allegati?.length)?' 📎':''}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
       <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
           <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
     </tr>`;
@@ -1252,78 +1264,201 @@ function cancelEdit(){
 }
 document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
-// ===== V6: multi-date + foto =====
+// ===== V6: multi-date + allegati =====
 let selectedDatesV6 = [];
-let currentPhotoV6 = '';
-const dayNamesV6 = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+let attachmentsV6 = [];
+
+function formatBytesV6(bytes){
+  if(!bytes) return '0 B';
+  const units=['B','KB','MB','GB']; let i=0, n=bytes;
+  while(n>=1024 && i<units.length-1){n/=1024;i++;}
+  return `${n.toFixed(i?1:0)} ${units[i]}`;
+}
+function fileIconV6(type,name){
+  const ext=(name||'').split('.').pop().toLowerCase();
+  if((type||'').startsWith('image/')) return '🖼️';
+  if(type==='application/pdf'||ext==='pdf') return '📄';
+  if(['doc','docx','txt','rtf'].includes(ext)) return '📝';
+  if(['xls','xlsx','csv'].includes(ext)) return '📊';
+  if(['ppt','pptx'].includes(ext)) return '📑';
+  if((type||'').startsWith('video/')) return '🎥';
+  if((type||'').startsWith('audio/')) return '🎵';
+  if(['zip','rar','7z'].includes(ext)) return '📦';
+  return '📎';
+}
+
 function renderSelectedDatesV6(){
   const box=document.getElementById('selectedDatesV6');
   box.innerHTML=selectedDatesV6.slice().sort().map(d=>`<span class="date-chip">${ddmm(parseDate(d))}<button type="button" data-date="${d}" aria-label="Rimuovi ${d}">×</button></span>`).join('') || '<span style="color:var(--muted);font-size:13px">Nessuna data selezionata</span>';
-  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{selectedDatesV6=selectedDatesV6.filter(x=>x!==b.dataset.date); syncDateHiddenV6(); renderSelectedDatesV6();}));
+  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    selectedDatesV6=selectedDatesV6.filter(x=>x!==b.dataset.date);
+    syncDateHiddenV6(); renderSelectedDatesV6();
+  }));
 }
 function syncDateHiddenV6(){document.getElementById('dataV6').value=selectedDatesV6[0]||'';}
 document.getElementById('addDateV6').addEventListener('click',()=>{
   const d=document.getElementById('datePickerV6').value;
   if(!d) return;
   if(!selectedDatesV6.includes(d)) selectedDatesV6.push(d);
-  document.getElementById('datePickerV6').value=''; syncDateHiddenV6(); renderSelectedDatesV6();
+  document.getElementById('datePickerV6').value='';
+  syncDateHiddenV6(); renderSelectedDatesV6();
 });
-function setDatesV6(dates){selectedDatesV6=[...new Set((dates||[]).filter(Boolean))]; syncDateHiddenV6(); renderSelectedDatesV6();}
-function clearPhotoV6(){currentPhotoV6='';document.getElementById('photoV6').value='';document.getElementById('photoPreviewV6').classList.remove('show');document.getElementById('photoImgV6').src='';}
-document.getElementById('removePhotoV6').addEventListener('click',clearPhotoV6);
-document.getElementById('photoV6').addEventListener('change',e=>{
-  const file=e.target.files?.[0]; if(!file) return;
-  if(!file.type.startsWith('image/')){alert('Seleziona un file immagine.'); clearPhotoV6(); return;}
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const img=new Image(); img.onload=()=>{
-      const max=1200, scale=Math.min(1,max/Math.max(img.width,img.height));
-      const c=document.createElement('canvas'); c.width=Math.round(img.width*scale); c.height=Math.round(img.height*scale);
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-      currentPhotoV6=c.toDataURL('image/jpeg',0.72);
-      document.getElementById('photoImgV6').src=currentPhotoV6; document.getElementById('photoPreviewV6').classList.add('show');
-    }; img.src=ev.target.result;
-  }; reader.readAsDataURL(file);
+function setDatesV6(dates){
+  selectedDatesV6=[...new Set((dates||[]).filter(Boolean))];
+  syncDateHiddenV6(); renderSelectedDatesV6();
+}
+
+function renderAttachmentsV6(){
+  const box=document.getElementById('attachmentListV6');
+  if(!attachmentsV6.length){box.innerHTML='';return;}
+  box.innerHTML=attachmentsV6.map((a,i)=>`
+    <div class="attachment-item-v6">
+      <span class="attachment-icon-v6">${fileIconV6(a.type,a.name)}</span>
+      <span class="attachment-name-v6" title="${String(a.name).replace(/"/g,'&quot;')}">${String(a.name).replace(/</g,'&lt;')}</span>
+      <span class="attachment-meta-v6">${formatBytesV6(a.size)}</span>
+      <span class="attachment-actions-v6">
+        ${a.url ? `<a href="${a.url}" target="_blank" rel="noopener">Apri</a><a href="${a.url}" download="${String(a.name).replace(/"/g,'&quot;')}">Scarica</a>` : '<span class="attachment-status-v6">Da caricare</span>'}
+        <button type="button" onclick="removeAttachmentV6(${i})">×</button>
+      </span>
+    </div>`).join('');
+}
+function removeAttachmentV6(index){
+  attachmentsV6.splice(index,1);
+  renderAttachmentsV6();
+}
+window.removeAttachmentV6=removeAttachmentV6;
+
+document.getElementById('attachmentV6').addEventListener('change',e=>{
+  [...(e.target.files||[])].forEach(file=>{
+    attachmentsV6.push({
+      name:file.name,
+      type:file.type||'application/octet-stream',
+      size:file.size,
+      file
+    });
+  });
+  e.target.value='';
+  renderAttachmentsV6();
 });
-renderSelectedDatesV6();
 
-document.getElementById('form').addEventListener('submit', function(e){
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const ricorrente = fd.get('ricorrente')==='on';
-  const dates = [...selectedDatesV6];
-  const weekdays = [...document.querySelectorAll('input[name="giorniSettimana"]:checked')].map(x=>Number(x.value));
-  if(ricorrente && weekdays.length===0){ alert('Seleziona almeno un giorno della settimana.'); return; }
-  if(!ricorrente && dates.length===0){ alert('Inserisci almeno una data.'); return; }
-  const base = {
-    figlia: fd.get('figlia'), ricorrente,
-    oraInizio: fd.get('oraInizio'), oraFine: fd.get('oraFine'),
-    attivita: fd.get('attivita').trim(), responsabile: (fd.get('responsabile')||'').trim(),
-    note: (fd.get('note')||'').trim(), tentativo: fd.get('tentativo')==='on',
-    foto: currentPhotoV6 || ''
-  };
-  if(toMin(base.oraFine)<=toMin(base.oraInizio)){ alert("L'ora fine deve essere dopo l'ora inizio."); return; }
-
-  if(editingId){
-    const idx=state.findIndex(e=>e.id===editingId); if(idx<0) return;
-    const ev=state[idx];
-    if(ricorrente){
-      state[idx]=Object.assign({id:editingId},base,{giornoSettimana:weekdays[0]??0,giorniSettimana:weekdays,data:null});
-    } else {
-      state[idx]=Object.assign({id:editingId},base,{giornoSettimana:(parseDate(dates[0]).getDay()+6)%7,data:dates[0],giorniSettimana:[]});
-      // If multiple dates are selected during an edit, create the additional dates as new linked copies.
-      for(let i=1;i<dates.length;i++) state.push(Object.assign({id:nextId++},base,{giornoSettimana:(parseDate(dates[i]).getDay()+6)%7,data:dates[i],giorniSettimana:[]}));
-    }
-    cancelEdit();
-  } else {
-    if(ricorrente){
-      weekdays.forEach(day=>state.push(Object.assign({id:nextId++},base,{giornoSettimana:day,giorniSettimana:weekdays,data:null})));
-    } else {
-      dates.forEach(d=>state.push(Object.assign({id:nextId++},base,{giornoSettimana:(parseDate(d).getDay()+6)%7,giorniSettimana:[],data:d})));
-    }
-    e.target.reset(); setDatesV6([]); clearPhotoV6();
+async function uploadAttachmentsV6(eventId, files){
+  const uploaded=[];
+  for(const a of files){
+    if(a.url && !a.file){uploaded.push(a);continue;}
+    if(!a.file) continue;
+    const safeName=a.name.replace(/[^\w.\- ()àèéìòù]/gi,'_');
+    const path=`impegniCalendario/allegati/${eventId}/${Date.now()}_${Math.random().toString(36).slice(2,9)}_${safeName}`;
+    const ref=storage.ref(path);
+    const snap=await ref.put(a.file,{contentType:a.type||'application/octet-stream'});
+    const url=await snap.ref.getDownloadURL();
+    uploaded.push({name:a.name,type:a.type||'application/octet-stream',size:a.size,url,path});
   }
-  render(); persist();
+  return uploaded;
+}
+
+renderSelectedDatesV6();
+renderAttachmentsV6();
+
+document.getElementById('form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const fd=new FormData(e.target);
+  const ricorrente=fd.get('ricorrente')==='on';
+  const dates=[...selectedDatesV6];
+  const weekdays=[...document.querySelectorAll('input[name="giorniSettimana"]:checked')].map(x=>Number(x.value));
+
+  if(ricorrente && weekdays.length===0){alert('Seleziona almeno un giorno della settimana.');return;}
+  if(!ricorrente && dates.length===0){alert('Inserisci almeno una data.');return;}
+
+  const base={
+    figlia:fd.get('figlia'),
+    ricorrente,
+    oraInizio:fd.get('oraInizio'),
+    oraFine:fd.get('oraFine'),
+    attivita:(fd.get('attivita')||'').trim(),
+    responsabile:(fd.get('responsabile')||'').trim(),
+    note:(fd.get('note')||'').trim(),
+    tentativo:fd.get('tentativo')==='on',
+    allegati:[]
+  };
+  if(toMin(base.oraFine)<=toMin(base.oraInizio)){alert("L'ora fine deve essere dopo l'ora inizio.");return;}
+
+  const wasEditing=!!editingId;
+  const targetIds=[];
+
+  if(wasEditing){
+    const idx=state.findIndex(e=>e.id===editingId);
+    if(idx<0)return;
+    const ev=state[idx];
+    // Mantieni gli allegati già presenti e aggiungi quelli nuovi.
+    const existingAttachments=Array.isArray(ev.allegati)?ev.allegati:[];
+    const newFiles=attachmentsV6.filter(a=>a.file);
+    const keptAttachments=attachmentsV6.filter(a=>!a.file);
+    base.allegati=keptAttachments.length ? keptAttachments : existingAttachments;
+
+    if(ricorrente){
+      state[idx]=Object.assign({id:editingId},base,{
+        giornoSettimana:weekdays[0]??0,
+        giorniSettimana:weekdays,
+        data:null
+      });
+    }else{
+      state[idx]=Object.assign({id:editingId},base,{
+        giornoSettimana:(parseDate(dates[0]).getDay()+6)%7,
+        data:dates[0],
+        giorniSettimana:[]
+      });
+      targetIds.push(editingId);
+      for(let i=1;i<dates.length;i++){
+        const newId=nextId++;
+        state.push(Object.assign({id:newId},base,{
+          giornoSettimana:(parseDate(dates[i]).getDay()+6)%7,
+          data:dates[i],
+          giorniSettimana:[]
+        }));
+        targetIds.push(newId);
+      }
+    }
+    if(ricorrente) targetIds.push(editingId);
+  }else{
+    if(ricorrente){
+      weekdays.forEach(day=>{
+        const id=nextId++;
+        state.push(Object.assign({id},base,{giornoSettimana:day,giorniSettimana:weekdays,data:null}));
+        targetIds.push(id);
+      });
+    }else{
+      dates.forEach(d=>{
+        const id=nextId++;
+        state.push(Object.assign({id},base,{
+          giornoSettimana:(parseDate(d).getDay()+6)%7,
+          giorniSettimana:[],
+          data:d
+        }));
+        targetIds.push(id);
+      });
+    }
+  }
+
+  try{
+    const newFiles=attachmentsV6.filter(a=>a.file);
+    const existing=attachmentsV6.filter(a=>!a.file);
+    let uploaded=[];
+    if(newFiles.length){
+      uploaded=await uploadAttachmentsV6(targetIds[0],newFiles);
+    }
+    const allAttachments=[...existing,...uploaded];
+    targetIds.forEach(id=>{
+      const idx=state.findIndex(x=>x.id===id);
+      if(idx>=0) state[idx].allegati=allAttachments.map(a=>({...a,file:undefined}));
+    });
+    render();
+    await persist();
+    cancelEdit();
+  }catch(err){
+    console.error(err);
+    alert('Il salvataggio dell’allegato non è riuscito. Verifica la connessione e le autorizzazioni di Firebase Storage.');
+    render();
+  }
 });
 
 document.getElementById('prevWeek').addEventListener('click', ()=>{ currentWeekStart.setDate(currentWeekStart.getDate()-7); render(); });
