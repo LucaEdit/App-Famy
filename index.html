@@ -195,6 +195,31 @@
   tr.conflict-row{background:#fff1f0}
   .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.66rem;font-weight:800;color:#fff}
 
+
+  /* ===== ADMIN / SOLA VISUALIZZAZIONE ===== */
+  .admin-only{display:none!important}
+  body.admin-mode .admin-only{display:block!important}
+  body.admin-mode .admin-only.inline-admin{display:inline-flex!important}
+  body.admin-mode .admin-only.flex-admin{display:flex!important}
+  .view-only-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:.72rem;font-weight:800;color:#64748b;
+    background:#f1f5f9;border:1px solid #dbe3ea;padding:6px 9px;border-radius:999px;
+  }
+  .admin-status{
+    font-size:.72rem;font-weight:800;color:#166534;
+    background:#ecfdf3;border:1px solid #bbf7d0;padding:6px 9px;border-radius:999px;
+    display:none;
+  }
+  body.admin-mode .admin-status{display:inline-flex}
+  .auth-box{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+  .auth-box h3{font-size:.9rem;margin:0 0 5px}
+  .auth-box p{font-size:.74rem;color:var(--muted);margin:0 0 12px}
+  .auth-error{font-size:.76rem;color:#c0392b;min-height:1.1em;margin-top:6px}
+  .auth-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+  .auth-actions button{flex:1;min-width:120px}
+  .admin-email{font-size:.72rem;color:var(--muted);margin-top:7px;word-break:break-all}
+
   /* Lock/settings */
   .lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
   .lock-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 22px;max-width:360px;width:100%;text-align:center;box-shadow:var(--shadow)}
@@ -424,56 +449,6 @@
   .calendar-pane .cal-wrap{position:relative;}
   .calendar-pane .cal-wrap::-webkit-scrollbar{height:7px;}
 }
-
-/* ===== V11: COLONNE LARGHE, TESTO LEGGIBILE E SCORRIMENTO ORIZZONTALE ===== */
-.cal-wrap{
-  overflow-x:auto!important;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:thin;
-}
-.cal{
-  grid-template-columns:68px repeat(7,220px)!important;
-  min-width:1608px!important;
-  width:1608px!important;
-}
-.day-head{
-  font-size:1.12rem!important;
-  padding:14px 8px!important;
-  white-space:nowrap;
-}
-.day-head small{font-size:.80rem!important;}
-.ev{
-  font-size:.82rem!important;
-  line-height:1.22!important;
-  padding:8px 9px!important;
-  overflow:hidden;
-  white-space:normal;
-  overflow-wrap:anywhere;
-  word-break:normal;
-}
-.ev b{font-size:.92rem!important;line-height:1.08!important;}
-.ev .who{font-size:.76rem!important;line-height:1.15!important;white-space:normal;}
-@media (max-width:760px){
-  .calendar-pane .cal{
-    grid-template-columns:58px repeat(7,220px)!important;
-    min-width:1598px!important;
-    width:1598px!important;
-  }
-  .calendar-pane .day-head{
-    font-size:1rem!important;
-    padding:13px 7px!important;
-  }
-  .calendar-pane .day-head small{font-size:.76rem!important;}
-  .calendar-pane .ev{
-    font-size:.80rem!important;
-    line-height:1.18!important;
-    padding:7px 8px!important;
-  }
-  .calendar-pane .ev b{font-size:.88rem!important;}
-  .calendar-pane .ev .who{font-size:.74rem!important;}
-}
-
 </style>
 </head>
 
@@ -488,6 +463,8 @@
     </div>
     <div class="header-actions">
       <span id="syncStatus" class="sync-pill">🔄 Connessione...</span>
+<span id="viewOnlyBadge" class="view-only-badge">👁️ Sola visualizzazione</span>
+<span id="adminStatus" class="admin-status">🛠️ Admin</span>
       <button type="button" class="gear" id="refreshBtn" title="Aggiorna dati">↻</button>
       <button type="button" class="gear" id="openSettings" title="Impostazioni protezione">⚙️</button>
     </div>
@@ -505,11 +482,57 @@
 
   <div class="settings-panel" id="settingsPanel">
     <div class="settings-box">
-      <h2>Protezione con PIN</h2>
-      <div class="row" id="pinCurrentRow" style="display:none;">
-        <label>PIN attuale</label>
-        <input type="password" id="pinCurrent" inputmode="numeric" placeholder="PIN attuale">
+      <h2>⚙️ Amministrazione</h2>
+
+      <div id="adminLoggedOut">
+        <div class="auth-box" style="border-top:0;margin-top:0;padding-top:0;">
+          <h3>Accesso amministratore</h3>
+          <p>Il PIN consente solo la visualizzazione. Per modificare impegni, persone o PIN devi accedere come amministratore.</p>
+          <div class="row">
+            <label>Email</label>
+            <input type="email" id="adminEmail" autocomplete="username" placeholder="email amministratore">
+          </div>
+          <div class="row">
+            <label>Password</label>
+            <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Password">
+          </div>
+          <div class="auth-error" id="authError"></div>
+          <div class="auth-actions">
+            <button type="button" id="adminLoginBtn">Accedi</button>
+            <button type="button" class="ghost" id="resetPasswordBtn">Recupera password</button>
+          </div>
+        </div>
       </div>
+
+      <div id="adminLoggedIn" style="display:none;">
+        <div class="admin-email" id="adminEmailLogged"></div>
+        <div class="auth-actions" style="margin-bottom:14px;">
+          <button type="button" class="ghost" id="adminLogoutBtn">Esci dall'admin</button>
+        </div>
+
+        <div class="auth-box">
+          <h3>Protezione PIN</h3>
+          <div class="row" id="pinCurrentRow" style="display:none;">
+            <label>PIN attuale</label>
+            <input type="password" id="pinCurrent" inputmode="numeric" placeholder="PIN attuale">
+          </div>
+          <div class="row">
+            <label id="pinNewLabel">Imposta un nuovo PIN</label>
+            <input type="password" id="pinNew" inputmode="numeric" placeholder="Nuovo PIN (min 4 cifre)">
+          </div>
+          <div class="settings-msg" id="settingsMsg"></div>
+          <div class="close-row">
+            <button type="button" class="ghost" id="removePinBtn">Rimuovi protezione</button>
+            <button type="button" id="savePinBtn">Salva PIN</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="close-row">
+        <button type="button" class="ghost" id="closeSettings">Chiudi</button>
+      </div>
+    </div>
+  </div>
       <div class="row">
         <label id="pinNewLabel">Imposta un nuovo PIN</label>
         <input type="password" id="pinNew" inputmode="numeric" placeholder="Nuovo PIN (min 4 cifre)">
@@ -593,7 +616,7 @@
     </div>
   </div>
 
-  <section class="card" id="newEventSection">
+  <section class="card admin-only" id="newEventSection">
     <div class="section-title">
       <h2 id="formTitle">Nuovo impegno</h2>
       <small>Puoi creare impegni singoli o ricorrenti</small>
@@ -691,6 +714,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script id="app-data" type="application/json">
 {
@@ -863,9 +887,40 @@ const firebaseConfig = {
   appId: "1:889441482025:web:cf9ebc731e61ca0d93f338"
 };
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const dbRef = firebase.database().ref('impegniCalendario/state');
 let applyingRemote = false;
 let firstSnapshot = true;
+let currentAdmin = null;
+
+function isAdmin(){
+  return !!currentAdmin;
+}
+
+function requireAdmin(action='eseguire questa operazione'){
+  if(!isAdmin()){
+    alert('Accesso amministratore richiesto per ' + action + '.');
+    return false;
+  }
+  return true;
+}
+
+function setAdminUI(user){
+  currentAdmin = user || null;
+  document.body.classList.toggle('admin-mode', !!currentAdmin);
+  const loggedOut = document.getElementById('adminLoggedOut');
+  const loggedIn = document.getElementById('adminLoggedIn');
+  const email = document.getElementById('adminEmailLogged');
+  const badge = document.getElementById('viewOnlyBadge');
+  if(loggedOut) loggedOut.style.display = currentAdmin ? 'none' : 'block';
+  if(loggedIn) loggedIn.style.display = currentAdmin ? 'block' : 'none';
+  if(email) email.textContent = currentAdmin ? 'Admin: ' + (currentAdmin.email || '') : '';
+  if(badge) badge.style.display = currentAdmin ? 'none' : 'inline-flex';
+  renderPeopleChips();
+  render();
+}
+
+auth.onAuthStateChanged(user => setAdminUI(user));
 
 function initSync(){
   const el = document.getElementById('syncStatus');
@@ -873,7 +928,7 @@ function initSync(){
     const data = snap.val();
     if(!data){
       // primo avvio: nessun dato online ancora, carico i dati locali come base
-      if(firstSnapshot){ dbRef.set({persone, pin, eventi: state}); }
+      if(firstSnapshot && isAdmin()){ dbRef.set({persone, pin, eventi: state}); }
       firstSnapshot = false;
       return;
     }
@@ -894,6 +949,10 @@ function initSync(){
 }
 
 async function syncPush(){
+  if(!isAdmin()){
+    console.warn('Scrittura Firebase bloccata: admin non autenticato.');
+    return;
+  }
   if(applyingRemote) return; // evita di riscrivere ciò che è appena arrivato dal server
   const el = document.getElementById('syncStatus');
   try{
@@ -909,7 +968,7 @@ function syncPull(showStatus){
   if(showStatus && el) el.textContent = '☁️ Già sincronizzato in tempo reale';
 }
 
-// ---- Protezione PIN ----
+// ---- Protezione PIN / Amministrazione ----
 function isUnlocked(){
   try{ return localStorage.getItem('calPinUnlocked')==='1'; }catch(e){ return false; }
 }
@@ -923,59 +982,123 @@ function showLock(){
   const ov = document.getElementById('lockOverlay');
   const isFirstSetup = !pin;
   document.getElementById('lockTitle').textContent = isFirstSetup ? '🔒 Nessun PIN impostato' : '🔒 Calendario protetto';
-  document.getElementById('lockText').textContent = isFirstSetup ? 'Non hai ancora impostato un PIN: chiunque abbia il link può accedere. Vai su ⚙️ per proteggerlo.' : 'Inserisci il PIN per accedere.';
+  document.getElementById('lockText').textContent = isFirstSetup
+    ? 'Nessun PIN impostato: il calendario è consultabile.'
+    : 'Inserisci il PIN per accedere alla visualizzazione.';
   document.getElementById('lockInput').style.display = isFirstSetup ? 'none' : 'block';
   document.getElementById('lockSubmit').style.display = isFirstSetup ? 'none' : 'block';
-  ov.style.display = 'flex';
+  ov.style.display = isFirstSetup ? 'none' : 'flex';
 }
 function hideLock(){ document.getElementById('lockOverlay').style.display = 'none'; }
 function checkLock(){
-  if(!pin){ hideLock(); return; } // nessun PIN impostato: accesso libero
-  if(isUnlocked()){ hideLock(); return; }
+  if(isAdmin() || !pin || isUnlocked()){ hideLock(); return; }
   showLock();
 }
 document.getElementById('lockSubmit').addEventListener('click', ()=>{
   const val = document.getElementById('lockInput').value.trim();
-  if(val === pin){ setUnlocked(); hideLock(); document.getElementById('lockError').textContent=''; }
-  else { document.getElementById('lockError').textContent = 'PIN errato, riprova.'; }
+  if(val === pin){
+    setUnlocked();
+    hideLock();
+    document.getElementById('lockError').textContent='';
+  } else {
+    document.getElementById('lockError').textContent = 'PIN errato, riprova.';
+  }
 });
-document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('lockSubmit').click(); });
+document.getElementById('lockInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('lockSubmit').click();
+});
 
-// ---- Pannello impostazioni ----
+// ---- Login / pannello amministratore ----
 function openSettings(){
-  document.getElementById('pinCurrentRow').style.display = pin ? 'block' : 'none';
-  document.getElementById('pinNewLabel').textContent = pin ? 'Nuovo PIN' : 'Imposta un nuovo PIN';
-  document.getElementById('pinCurrent').value='';
-  document.getElementById('pinNew').value='';
-  document.getElementById('settingsMsg').textContent='';
-  document.getElementById('removePinBtn').style.display = pin ? 'inline-block' : 'none';
-  document.getElementById('settingsPanel').classList.add('show');
+  const panel = document.getElementById('settingsPanel');
+  panel.classList.add('show');
+
+  if(isAdmin()){
+    document.getElementById('pinCurrentRow').style.display = pin ? 'block' : 'none';
+    document.getElementById('pinNewLabel').textContent = pin ? 'Nuovo PIN' : 'Imposta un nuovo PIN';
+    document.getElementById('pinCurrent').value='';
+    document.getElementById('pinNew').value='';
+    document.getElementById('settingsMsg').textContent='';
+  } else {
+    document.getElementById('adminEmail').focus();
+  }
 }
 document.getElementById('openSettings').addEventListener('click', openSettings);
 document.getElementById('refreshBtn').addEventListener('click', ()=>syncPull(true));
-document.getElementById('closeSettings').addEventListener('click', ()=>document.getElementById('settingsPanel').classList.remove('show'));
+document.getElementById('closeSettings').addEventListener('click', ()=>{
+  document.getElementById('settingsPanel').classList.remove('show');
+});
 
-document.getElementById('savePinBtn').addEventListener('click', ()=>{
+document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('authError');
+  msg.textContent = '';
+  if(!email || !password){ msg.textContent='Inserisci email e password.'; return; }
+
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+  }catch(err){
+    console.error(err);
+    msg.textContent = 'Accesso non riuscito. Verifica email e password.';
+  }
+});
+
+document.getElementById('adminPassword').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('adminLoginBtn').click();
+});
+
+document.getElementById('resetPasswordBtn').addEventListener('click', async ()=>{
+  const email = document.getElementById('adminEmail').value.trim();
+  const msg = document.getElementById('authError');
+  msg.textContent = '';
+  if(!email){ msg.textContent='Inserisci prima l’email amministratore.'; return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    msg.style.color='#166534';
+    msg.textContent='Email di recupero inviata. Controlla anche la posta indesiderata.';
+  }catch(err){
+    console.error(err);
+    msg.style.color='#c0392b';
+    msg.textContent='Impossibile inviare il recupero password. Verifica l’email.';
+  }
+});
+
+document.getElementById('adminLogoutBtn').addEventListener('click', async ()=>{
+  try{ await auth.signOut(); }catch(err){ console.error(err); }
+});
+
+document.getElementById('savePinBtn').addEventListener('click', async ()=>{
+  if(!requireAdmin('modificare il PIN')) return;
   const msg = document.getElementById('settingsMsg');
   if(pin){
     const cur = document.getElementById('pinCurrent').value.trim();
-    if(cur !== pin){ msg.textContent = 'PIN attuale errato.'; msg.style.color='#c0392b'; return; }
+    if(cur !== pin){
+      msg.textContent = 'PIN attuale errato.';
+      msg.style.color='#c0392b';
+      return;
+    }
   }
   const nw = document.getElementById('pinNew').value.trim();
-  if(nw.length < 4){ msg.textContent = 'Il PIN deve avere almeno 4 caratteri.'; msg.style.color='#c0392b'; return; }
+  if(nw.length < 4){
+    msg.textContent = 'Il PIN deve avere almeno 4 caratteri.';
+    msg.style.color='#c0392b';
+    return;
+  }
   pin = nw;
   setUnlocked();
-  persist();
+  await persist();
   msg.style.color = 'var(--muted)';
   msg.textContent = 'PIN salvato.';
   setTimeout(()=>document.getElementById('settingsPanel').classList.remove('show'), 700);
 });
 
-document.getElementById('removePinBtn').addEventListener('click', ()=>{
+document.getElementById('removePinBtn').addEventListener('click', async ()=>{
+  if(!requireAdmin('rimuovere la protezione')) return;
   if(!confirm('Rimuovere la protezione? Chiunque abbia il link potrà accedere senza PIN.')) return;
   pin = null;
   clearUnlocked();
-  persist();
+  await persist();
   document.getElementById('settingsPanel').classList.remove('show');
 });
 
@@ -1069,7 +1192,7 @@ function renderPeopleChips(){
   box.innerHTML = persone.map((p,i)=>{
     const used = state.some(e=>e.figlia===p);
     return `<span class="chip"><span class="sw" style="background:${colorOf(p)}"></span>${p}
-      <button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button></span>`;
+      ${isAdmin() ? `<button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button>` : ''}</span>`;
   }).join('');
 
   const legend = document.getElementById('legendDots');
@@ -1084,6 +1207,7 @@ function renderPeopleChips(){
 }
 
 function addPerson(){
+  if(!requireAdmin('aggiungere una persona')) return;
   const input = document.getElementById('newPersonName');
   const name = input.value.trim();
   if(!name) return;
@@ -1096,6 +1220,7 @@ document.getElementById('addPersonBtn').addEventListener('click', addPerson);
 document.getElementById('newPersonName').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addPerson(); } });
 
 function removePerson(name){
+  if(!requireAdmin('rimuovere una persona')) return;
   if(state.some(e=>e.figlia===name)){ alert('Questa persona ha impegni sul calendario: elimina prima quelli, poi puoi rimuoverla.'); return; }
   persone = persone.filter(p=>p!==name);
   renderPeopleChips(); render(); persist();
@@ -1137,6 +1262,7 @@ function buildCalendarSkeleton(dates){
 }
 
 function quickAdd(dayIdx, personName){
+  if(!requireAdmin('creare un impegno')) return;
   if(editModal && editModal.classList.contains('show')) cancelEdit();
   const f = document.getElementById('form');
   f.figlia.value = personName;
@@ -1158,10 +1284,10 @@ function renderAgenda(dates, weekEvents, conflicts){
           <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}</b>
           <small>${ev.figlia}${ev.responsabile?' · '+ev.responsabile:''}${ev.note?' · '+ev.note:''}</small>
         </span>
-        <span class="ag-actions">
+        ${isAdmin() ? `<span class="ag-actions">
           <button type="button" class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
           <button type="button" class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>
-        </span>
+        </span>` : ''}
       </div>`).join('') || '<div class="ag-empty">Nessun impegno</div>';
     return `<div class="ag-day">
       <div class="ag-day-head" style="background:${DAY_COLORS[i]}"><span>${DAY_NAMES[i]}</span><span>${ddmm(d)}</span></div>
@@ -1195,7 +1321,7 @@ function renderTodaySummary(){
   }
 
   box.innerHTML = todayEvents.map(ev => `
-    <div class="next-event" style="border-left-color:${activityColor(ev.attivita)}" onclick="startEdit(${ev.id})">
+    <div class="next-event" style="border-left-color:${activityColor(ev.attivita)}" ${isAdmin() ? `onclick="startEdit(${ev.id})"` : }>
       <div class="time">${ev.oraInizio} → ${ev.oraFine}</div>
       <div class="who">${ev.figlia}</div>
       <div class="activity-banner" style="background:${activityColor(ev.attivita)}">${ev.attivita}${ev.ricorrente?' 🔁':''}${ev.tentativo?' ⚠️':''}</div>
@@ -1236,7 +1362,7 @@ function renderWeekAgenda(weekEvents, conflicts){
       const activityCol = activityColor(ev.attivita);
       const conflict = conflicts.has(ev.id);
       return `
-        <div class="agenda-row ${conflict?'agenda-conflict':''}" onclick="startEdit(${ev.id})">
+        <div class="agenda-row ${conflict?'agenda-conflict':''}" ${isAdmin() ? `onclick="startEdit(${ev.id})"` : }>
           <div class="agenda-time">${ev.oraInizio}<span>→</span>${ev.oraFine}</div>
           <div class="agenda-main">
             <div class="agenda-topline">
@@ -1303,7 +1429,7 @@ function render(){
       div.style.borderLeft=`5px solid ${colorOf(ev.figlia)}`;
       div.title=ev.note||'';
       div.innerHTML=`${ev.ricorrente?'<span class="rec-icon">🔁</span>':''}<b>${ev.attivita}</b><span class="who">${ev.figlia}</span>${ev.responsabile?`<span class="who">👤 ${ev.responsabile}</span>`:''}<span class="who">${ev.oraInizio}-${ev.oraFine}</span>`;
-      div.addEventListener('click',(e)=>{e.stopPropagation();startEdit(ev.id)});
+      if(isAdmin()) div.addEventListener('click',(e)=>{e.stopPropagation();startEdit(ev.id)});
       track.appendChild(div);
     });
   }
@@ -1335,15 +1461,20 @@ function render(){
       <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
       <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
       <td>${ev.attivita}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
-      <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
-          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
+      <td>${isAdmin() ? `<button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
+          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>` : ''}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Nessun impegno in questa settimana</td></tr>';
 }
 
 async function persist(){
+  if(!isAdmin()){
+    console.warn('Persist bloccato: utente non autenticato come admin.');
+    return false;
+  }
   document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
   await syncPush();
+  return true;
 }
 
 const editModal = document.getElementById('editModal');
@@ -1374,10 +1505,18 @@ document.getElementById('editModalClose').addEventListener('click', cancelEdit);
 editModal.addEventListener('click', e=>{ if(e.target===editModal) cancelEdit(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && editModal.classList.contains('show')) cancelEdit(); });
 
-function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
+async function removeEvent(id){
+  if(!requireAdmin('eliminare un impegno')) return;
+  if(!confirm('Eliminare questo impegno?')) return;
+  state = state.filter(e=>e.id!==id);
+  if(editingId===id) cancelEdit();
+  render();
+  await persist();
+}
 window.removeEvent = removeEvent;
 
 function startEdit(id){
+  if(!requireAdmin('modificare un impegno')) return;
   const ev = state.find(e=>e.id===id); if(!ev) return;
   editingId = id;
   const f = document.getElementById('form');
@@ -1409,8 +1548,9 @@ function cancelEdit(){
 }
 document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
-document.getElementById('form').addEventListener('submit', function(e){
+document.getElementById('form').addEventListener('submit', async function(e){
   e.preventDefault();
+  if(!requireAdmin('salvare un impegno')) return;
   const fd = new FormData(e.target);
   const ricorrente = fd.get('ricorrente')==='on';
   const data = fd.get('data');
