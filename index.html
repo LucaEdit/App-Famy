@@ -477,6 +477,7 @@
       <input type="password" id="lockInput" inputmode="numeric" placeholder="PIN" maxlength="12">
       <div class="lock-error" id="lockError"></div>
       <button type="button" id="lockSubmit">Sblocca</button>
+      <button type="button" id="lockAdminBtn" class="ghost" style="margin-top:10px;width:100%;">🔑 Accedi come amministratore</button>
     </div>
   </div>
 
@@ -1037,6 +1038,13 @@ document.getElementById('lockSubmit').addEventListener('click', ()=>{
 });
 document.getElementById('lockInput').addEventListener('keydown', e=>{
   if(e.key==='Enter') document.getElementById('lockSubmit').click();
+});
+
+// Dal blocco PIN l'amministratore può entrare direttamente con email/password.
+document.getElementById('lockAdminBtn').addEventListener('click', ()=>{
+  hideLock();
+  openSettings();
+  setTimeout(()=>document.getElementById('adminEmail')?.focus(), 50);
 });
 
 // ---- Login / pannello amministratore ----
