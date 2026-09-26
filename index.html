@@ -478,6 +478,15 @@
       <div class="lock-error" id="lockError"></div>
       <button type="button" id="lockSubmit">Sblocca</button>
       <button type="button" id="lockAdminBtn" class="ghost" style="margin-top:10px;width:100%;">🔑 Accedi come amministratore</button>
+      <div id="lockAdminBox" style="display:none;text-align:left;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+        <label style="display:block;font-size:.74rem;font-weight:700;margin-bottom:5px;">Email amministratore</label>
+        <input type="email" id="lockAdminEmail" autocomplete="username" placeholder="email amministratore" style="text-align:left;letter-spacing:0;font-size:.9rem;">
+        <label style="display:block;font-size:.74rem;font-weight:700;margin:10px 0 5px;">Password</label>
+        <input type="password" id="lockAdminPassword" autocomplete="current-password" placeholder="Password" style="text-align:left;letter-spacing:0;font-size:.9rem;">
+        <div class="lock-error" id="lockAdminError" style="margin-top:6px;"></div>
+        <button type="button" id="lockAdminLogin">Accedi</button>
+        <button type="button" id="lockAdminReset" class="ghost" style="margin-top:8px;">Recupera password</button>
+      </div>
     </div>
   </div>
 
@@ -1042,9 +1051,52 @@ document.getElementById('lockInput').addEventListener('keydown', e=>{
 
 // Dal blocco PIN l'amministratore può entrare direttamente con email/password.
 document.getElementById('lockAdminBtn').addEventListener('click', ()=>{
-  hideLock();
-  openSettings();
-  setTimeout(()=>document.getElementById('adminEmail')?.focus(), 50);
+  const box = document.getElementById('lockAdminBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('lockAdminError').textContent = '';
+  if(box.style.display === 'block') setTimeout(()=>document.getElementById('lockAdminEmail')?.focus(), 50);
+});
+
+document.getElementById('lockAdminLogin').addEventListener('click', async ()=>{
+  const email = document.getElementById('lockAdminEmail').value.trim();
+  const password = document.getElementById('lockAdminPassword').value;
+  const msg = document.getElementById('lockAdminError');
+  msg.style.color = '#c0392b';
+  msg.textContent = '';
+  if(!email || !password){ msg.textContent='Inserisci email e password.'; return; }
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+    msg.style.color = '#166534';
+    msg.textContent = 'Accesso effettuato.';
+    setTimeout(()=>hideLock(), 150);
+  }catch(err){
+    console.error('Firebase Auth:', err);
+    const code = err && err.code ? err.code : '';
+    if(code === 'auth/operation-not-allowed') msg.textContent = 'Accesso email/password non abilitato in Firebase Authentication.';
+    else if(code === 'auth/user-not-found' || code === 'auth/invalid-credential') msg.textContent = 'Email o password non corrette.';
+    else if(code === 'auth/wrong-password') msg.textContent = 'Password non corretta.';
+    else if(code === 'auth/invalid-email') msg.textContent = 'Email non valida.';
+    else msg.textContent = 'Accesso non riuscito (' + code + ').';
+  }
+});
+
+document.getElementById('lockAdminPassword').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('lockAdminLogin').click();
+});
+
+document.getElementById('lockAdminReset').addEventListener('click', async ()=>{
+  const email = document.getElementById('lockAdminEmail').value.trim();
+  const msg = document.getElementById('lockAdminError');
+  msg.style.color = '#c0392b';
+  if(!email){ msg.textContent='Inserisci prima l’email amministratore.'; return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    msg.style.color='#166534';
+    msg.textContent='Email di recupero inviata. Controlla anche la posta indesiderata.';
+  }catch(err){
+    console.error('Firebase password reset:', err);
+    msg.textContent='Recupero non riuscito (' + (err.code || '') + ').';
+  }
 });
 
 // ---- Login / pannello amministratore ----
