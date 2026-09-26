@@ -891,6 +891,7 @@ const auth = firebase.auth();
 const dbRef = firebase.database().ref('impegniCalendario/state');
 let applyingRemote = false;
 let firstSnapshot = true;
+let firebaseReady = false;
 let currentAdmin = null;
 
 function isAdmin(){
@@ -928,15 +929,25 @@ function initSync(){
     const data = snap.val();
     if(!data){
       // primo avvio: nessun dato online ancora, carico i dati locali come base
-      if(firstSnapshot && isAdmin()){ dbRef.set({persone, pin, eventi: state}); }
+      if(firstSnapshot){
+        firebaseReady = true;
+        // Non sovrascrivere i dati Firebase con i dati locali.
+        // Se il database è realmente vuoto, inizializzalo solo se l'admin è autenticato.
+        if(isAdmin()){
+          dbRef.set({persone, pin, eventi: state});
+        }
+      }
       firstSnapshot = false;
+      checkLock();
       return;
     }
     firstSnapshot = false;
+    firebaseReady = true;
     applyingRemote = true;
     persone = data.persone || persone;
     state = data.eventi || state;
-    pin = data.pin ?? pin;
+    pin = data.pin ?? null;
+    if(!pin) clearUnlocked();
     nextId = Math.max(0, ...state.map(e=>e.id), nextId) + 1;
     document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
     renderPeopleChips(); render(); checkLock();
@@ -991,12 +1002,32 @@ function showLock(){
 }
 function hideLock(){ document.getElementById('lockOverlay').style.display = 'none'; }
 function checkLock(){
-  if(isAdmin() || !pin || isUnlocked()){ hideLock(); return; }
+  if(isAdmin()){
+    hideLock();
+    return;
+  }
+
+  // Prima aspettiamo il primo dato Firebase: il PIN potrebbe essere ancora null
+  // solo perché il caricamento non è terminato.
+  if(!firebaseReady){
+    return;
+  }
+
+  if(!pin){
+    hideLock();
+    return;
+  }
+
+  if(isUnlocked()){
+    hideLock();
+    return;
+  }
+
   showLock();
 }
 document.getElementById('lockSubmit').addEventListener('click', ()=>{
   const val = document.getElementById('lockInput').value.trim();
-  if(val === pin){
+  if(String(val) === String(pin)){
     setUnlocked();
     hideLock();
     document.getElementById('lockError').textContent='';
