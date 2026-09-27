@@ -424,6 +424,11 @@
   .calendar-pane .cal-wrap{position:relative;}
   .calendar-pane .cal-wrap::-webkit-scrollbar{height:7px;}
 }
+.admin-only{display:none;}
+body.is-admin .admin-only{display:block;}
+body.is-admin .addPerson.admin-only{display:flex;}
+.readonly-badge{color:var(--muted);font-size:.72rem;white-space:nowrap;background:var(--card);border:1px solid var(--line);padding:7px 10px;border-radius:999px;}
+body.is-admin .readonly-badge{display:none;}
 </style>
 </head>
 
@@ -438,8 +443,9 @@
     </div>
     <div class="header-actions">
       <span id="syncStatus" class="sync-pill">🔄 Connessione...</span>
+      <span class="readonly-badge" id="readonlyBadge">👁️ Sola visualizzazione</span>
       <button type="button" class="gear" id="refreshBtn" title="Aggiorna dati">↻</button>
-      <button type="button" class="gear" id="openSettings" title="Impostazioni protezione">⚙️</button>
+      <button type="button" class="gear" id="openSettings" title="Amministrazione">🔑</button>
     </div>
   </header>
 
@@ -454,21 +460,39 @@
   </div>
 
   <div class="settings-panel" id="settingsPanel">
-    <div class="settings-box">
-      <h2>Protezione con PIN</h2>
-      <div class="row" id="pinCurrentRow" style="display:none;">
-        <label>PIN attuale</label>
-        <input type="password" id="pinCurrent" inputmode="numeric" placeholder="PIN attuale">
+    <div class="settings-box" id="adminLoginBox">
+      <h2>Accesso amministratore</h2>
+      <p style="font-size:.8rem;color:var(--muted);margin:-8px 0 14px;">Solo l'amministratore può aggiungere/modificare impegni, gestire le persone e il PIN. Chi ha solo il PIN può esclusivamente visualizzare.</p>
+      <div class="row">
+        <label>Email</label>
+        <input type="email" id="adminEmail" placeholder="la tua email">
       </div>
+      <div class="row">
+        <label>Password</label>
+        <input type="password" id="adminPassword" placeholder="password">
+      </div>
+      <div class="settings-msg" id="adminMsg"></div>
+      <div class="close-row">
+        <a href="#" id="forgotPasswordLink" style="font-size:.78rem;color:var(--muted);align-self:center;margin-right:auto;">Password dimenticata?</a>
+        <button type="button" id="adminLoginBtn">Accedi</button>
+        <button type="button" class="ghost" id="closeSettings">Chiudi</button>
+      </div>
+    </div>
+
+    <div class="settings-box" id="adminPanelBox" style="display:none;">
+      <h2>Pannello amministratore</h2>
       <div class="row">
         <label id="pinNewLabel">Imposta un nuovo PIN</label>
         <input type="password" id="pinNew" inputmode="numeric" placeholder="Nuovo PIN (min 4 cifre)">
       </div>
       <div class="settings-msg" id="settingsMsg"></div>
       <div class="close-row">
-        <button type="button" class="ghost" id="removePinBtn">Rimuovi protezione</button>
-        <button type="button" id="savePinBtn">Salva</button>
-        <button type="button" class="ghost" id="closeSettings">Chiudi</button>
+        <button type="button" class="ghost" id="removePinBtn">Rimuovi PIN</button>
+        <button type="button" id="savePinBtn">Salva PIN</button>
+      </div>
+      <div class="close-row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
+        <button type="button" class="ghost" id="adminLogoutBtn">Esci da amministratore</button>
+        <button type="button" class="ghost" id="closeSettings2">Chiudi</button>
       </div>
     </div>
   </div>
@@ -527,7 +551,7 @@
       <small>Il colore identifica la persona</small>
     </div>
     <div class="people-row" id="peopleChips"></div>
-    <div class="addPerson">
+    <div class="addPerson admin-only">
       <input type="text" id="newPersonName" placeholder="es. Veronica, Roberta, tata...">
       <button type="button" id="addPersonBtn">+ Aggiungi persona</button>
     </div>
@@ -543,7 +567,7 @@
     </div>
   </div>
 
-  <section class="card" id="newEventSection">
+  <section class="card admin-only" id="newEventSection">
     <div class="section-title">
       <h2 id="formTitle">Nuovo impegno</h2>
       <small>Puoi creare impegni singoli o ricorrenti</small>
@@ -641,6 +665,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script id="app-data" type="application/json">
 {
@@ -814,6 +839,8 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref('impegniCalendario/state');
+const auth = firebase.auth();
+let isAdmin = false;
 let applyingRemote = false;
 let firstSnapshot = true;
 
@@ -893,24 +920,68 @@ document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==
 
 // ---- Pannello impostazioni ----
 function openSettings(){
-  document.getElementById('pinCurrentRow').style.display = pin ? 'block' : 'none';
-  document.getElementById('pinNewLabel').textContent = pin ? 'Nuovo PIN' : 'Imposta un nuovo PIN';
-  document.getElementById('pinCurrent').value='';
-  document.getElementById('pinNew').value='';
-  document.getElementById('settingsMsg').textContent='';
-  document.getElementById('removePinBtn').style.display = pin ? 'inline-block' : 'none';
+  if(isAdmin){
+    document.getElementById('adminLoginBox').style.display = 'none';
+    document.getElementById('adminPanelBox').style.display = 'block';
+    document.getElementById('pinNew').value='';
+    document.getElementById('settingsMsg').textContent='';
+  } else {
+    document.getElementById('adminLoginBox').style.display = 'block';
+    document.getElementById('adminPanelBox').style.display = 'none';
+    document.getElementById('adminEmail').value='';
+    document.getElementById('adminPassword').value='';
+    document.getElementById('adminMsg').textContent='';
+  }
   document.getElementById('settingsPanel').classList.add('show');
 }
+function closeSettingsPanel(){ document.getElementById('settingsPanel').classList.remove('show'); }
 document.getElementById('openSettings').addEventListener('click', openSettings);
 document.getElementById('refreshBtn').addEventListener('click', ()=>syncPull(true));
-document.getElementById('closeSettings').addEventListener('click', ()=>document.getElementById('settingsPanel').classList.remove('show'));
+document.getElementById('closeSettings').addEventListener('click', closeSettingsPanel);
+document.getElementById('closeSettings2').addEventListener('click', closeSettingsPanel);
+
+document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('adminMsg');
+  if(!email || !pass){ msg.textContent = 'Inserisci email e password.'; msg.style.color='#c0392b'; return; }
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    msg.style.color='var(--muted)'; msg.textContent='Accesso effettuato.';
+    setTimeout(openSettings, 300);
+  }catch(err){
+    msg.style.color='#c0392b';
+    msg.textContent = 'Accesso non riuscito: email o password errati.';
+  }
+});
+document.getElementById('forgotPasswordLink').addEventListener('click', async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById('adminEmail').value.trim();
+  const msg = document.getElementById('adminMsg');
+  if(!email){ msg.textContent = 'Scrivi prima la tua email qui sopra, poi clicca di nuovo.'; msg.style.color='#c0392b'; return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    msg.style.color='var(--muted)';
+    msg.textContent = 'Email di reset inviata: controlla la posta.';
+  }catch(err){
+    msg.style.color='#c0392b';
+    msg.textContent = "Impossibile inviare l'email: verifica che sia quella registrata.";
+  }
+});
+document.getElementById('adminLogoutBtn').addEventListener('click', async ()=>{
+  await auth.signOut();
+  closeSettingsPanel();
+});
+
+auth.onAuthStateChanged(user=>{
+  isAdmin = !!user;
+  document.body.classList.toggle('is-admin', isAdmin);
+  if(typeof renderPeopleChips==='function') renderPeopleChips();
+  if(typeof render==='function') render();
+});
 
 document.getElementById('savePinBtn').addEventListener('click', ()=>{
   const msg = document.getElementById('settingsMsg');
-  if(pin){
-    const cur = document.getElementById('pinCurrent').value.trim();
-    if(cur !== pin){ msg.textContent = 'PIN attuale errato.'; msg.style.color='#c0392b'; return; }
-  }
   const nw = document.getElementById('pinNew').value.trim();
   if(nw.length < 4){ msg.textContent = 'Il PIN deve avere almeno 4 caratteri.'; msg.style.color='#c0392b'; return; }
   pin = nw;
@@ -918,7 +989,7 @@ document.getElementById('savePinBtn').addEventListener('click', ()=>{
   persist();
   msg.style.color = 'var(--muted)';
   msg.textContent = 'PIN salvato.';
-  setTimeout(()=>document.getElementById('settingsPanel').classList.remove('show'), 700);
+  setTimeout(closeSettingsPanel, 700);
 });
 
 document.getElementById('removePinBtn').addEventListener('click', ()=>{
@@ -926,7 +997,7 @@ document.getElementById('removePinBtn').addEventListener('click', ()=>{
   pin = null;
   clearUnlocked();
   persist();
-  document.getElementById('settingsPanel').classList.remove('show');
+  closeSettingsPanel();
 });
 
 function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
@@ -1019,7 +1090,7 @@ function renderPeopleChips(){
   box.innerHTML = persone.map((p,i)=>{
     const used = state.some(e=>e.figlia===p);
     return `<span class="chip"><span class="sw" style="background:${colorOf(p)}"></span>${p}
-      <button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button></span>`;
+      ${isAdmin?`<button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button>`:''}</span>`;
   }).join('');
 
   const legend = document.getElementById('legendDots');
@@ -1034,6 +1105,7 @@ function renderPeopleChips(){
 }
 
 function addPerson(){
+  if(!isAdmin) return;
   const input = document.getElementById('newPersonName');
   const name = input.value.trim();
   if(!name) return;
@@ -1087,6 +1159,7 @@ function buildCalendarSkeleton(dates){
 }
 
 function quickAdd(dayIdx, personName){
+  if(!isAdmin) return;
   if(editModal && editModal.classList.contains('show')) cancelEdit();
   const f = document.getElementById('form');
   f.figlia.value = personName;
@@ -1108,7 +1181,7 @@ function renderAgenda(dates, weekEvents, conflicts){
           <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}</b>
           <small>${ev.figlia}${ev.responsabile?' · '+ev.responsabile:''}${ev.note?' · '+ev.note:''}</small>
         </span>
-        <span class="ag-actions">
+        <span class="ag-actions admin-only" style="display:${isAdmin?'flex':'none'};">
           <button type="button" class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
           <button type="button" class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>
         </span>
@@ -1285,8 +1358,8 @@ function render(){
       <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
       <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
       <td>${ev.attivita}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
-      <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
-          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
+      <td>${isAdmin?`<button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
+          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>`:''}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Nessun impegno in questa settimana</td></tr>';
 }
@@ -1324,10 +1397,15 @@ document.getElementById('editModalClose').addEventListener('click', cancelEdit);
 editModal.addEventListener('click', e=>{ if(e.target===editModal) cancelEdit(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && editModal.classList.contains('show')) cancelEdit(); });
 
-function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
+function removeEvent(id){
+  if(!isAdmin) return;
+  if(!confirm('Vuoi eliminare questo impegno?')) return;
+  state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist();
+}
 window.removeEvent = removeEvent;
 
 function startEdit(id){
+  if(!isAdmin) return;
   const ev = state.find(e=>e.id===id); if(!ev) return;
   editingId = id;
   const f = document.getElementById('form');
@@ -1361,6 +1439,7 @@ document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
 document.getElementById('form').addEventListener('submit', function(e){
   e.preventDefault();
+  if(!isAdmin) return;
   const fd = new FormData(e.target);
   const ricorrente = fd.get('ricorrente')==='on';
   const data = fd.get('data');
