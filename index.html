@@ -195,6 +195,63 @@
   tr.conflict-row{background:#fff1f0}
   .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.66rem;font-weight:800;color:#fff}
 
+
+/* ===== TO-DO LIST FAMILIARE ===== */
+.todo-card{margin-top:16px}
+.todo-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.todo-filters{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.todo-filter{padding:7px 10px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line);font-size:.72rem;font-weight:700;cursor:pointer}
+.todo-filter.active{background:#edf3ff;color:var(--primary);border-color:#b9cdf8}
+.todo-list{display:flex;flex-direction:column;gap:8px}
+.todo-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;border:1px solid var(--line);border-left:5px solid var(--todo-color,#2563eb);border-radius:12px;padding:11px 12px;background:var(--card);cursor:pointer}
+.todo-item:hover{background:#f8fafc}
+.todo-check{width:20px;height:20px;margin-top:2px;accent-color:var(--primary);cursor:pointer}
+.todo-main{min-width:0}
+.todo-title{font-weight:800;font-size:.9rem;line-height:1.25;word-break:break-word}
+.todo-item.done .todo-title{text-decoration:line-through;color:var(--muted)}
+.todo-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.todo-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:999px;background:#eef2f7;border:1px solid #dbe2ea;color:#334155;font-size:.66rem;font-weight:750}
+.todo-priority-alta{background:#fff1f0;color:#b42318;border-color:#ffd4d1}.todo-priority-media{background:#fff8e1;color:#9a6700;border-color:#ffe4a8}.todo-priority-bassa{background:#edf8f1;color:#18794e;border-color:#ccebd8}
+.todo-attachments{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.todo-file{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:.66rem;color:#334155;text-decoration:none;max-width:240px}
+.todo-file span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.todo-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.todo-actions button{padding:6px 9px;font-size:.68rem}
+.todo-empty{padding:22px;text-align:center;color:var(--muted);font-size:.82rem;border:1px dashed var(--line);border-radius:11px}
+.todo-modal{position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:95;display:none;align-items:center;justify-content:center;padding:16px}
+.todo-modal.show{display:flex}
+.todo-modal-box{background:var(--card);width:min(720px,100%);max-height:92vh;overflow:auto;border-radius:18px;box-shadow:0 20px 60px rgba(15,23,42,.25);border:1px solid var(--line)}
+.todo-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.todo-modal-head h2{margin:0;font-size:1.05rem}
+.todo-close{background:transparent!important;color:var(--muted)!important;font-size:1.4rem!important;padding:3px 8px!important}
+.todo-form{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:11px;padding:16px}
+.todo-form .full{grid-column:1/-1}
+.todo-form textarea{width:100%;min-height:80px;resize:vertical;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:.86rem}
+.todo-file-input{border:1px dashed #b8c4d6;padding:10px;border-radius:10px;background:#f8fafc}
+.todo-pending-files{display:flex;flex-direction:column;gap:5px;margin-top:7px}
+.todo-pending-file{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;background:#f8fafc;border:1px solid var(--line);border-radius:7px;font-size:.7rem}
+.todo-pending-file button{padding:3px 6px;font-size:.62rem}
+.todo-modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;padding:0 16px 16px}
+.todo-progress{font-size:.7rem;color:var(--muted);min-height:1em;padding:0 16px 10px}
+@media(max-width:760px){
+  /* Sul telefono manteniamo il vero calendario settimanale: si scorre orizzontalmente. */
+  .calendar-focus .cal-desktop{display:block;min-height:0}
+  .calendar-focus .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+  .calendar-focus .cal{min-width:1610px;grid-template-columns:68px repeat(7,220px)}
+  .calendar-focus .day-head{font-size:1rem;padding:12px 5px}
+  .calendar-focus .ev{font-size:.76rem;padding:7px 7px}
+  .calendar-focus .ev b{font-size:.84rem}
+  .calendar-focus .ev .who{font-size:.7rem}
+  .todo-form{grid-template-columns:1fr 1fr}
+  .todo-form .full{grid-column:1/-1}
+}
+@media(max-width:480px){
+  .todo-form{grid-template-columns:1fr}
+  .todo-form .full{grid-column:1}
+  .todo-item{grid-template-columns:auto minmax(0,1fr)}
+  .todo-actions{grid-column:2;justify-content:flex-start}
+}
+
   /* Lock/settings */
   .lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
   .lock-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 22px;max-width:360px;width:100%;text-align:center;box-shadow:var(--shadow)}
@@ -424,11 +481,58 @@
   .calendar-pane .cal-wrap{position:relative;}
   .calendar-pane .cal-wrap::-webkit-scrollbar{height:7px;}
 }
-.admin-only{display:none;}
-body.is-admin .admin-only{display:block;}
-body.is-admin .addPerson.admin-only{display:flex;}
-.readonly-badge{color:var(--muted);font-size:.72rem;white-space:nowrap;background:var(--card);border:1px solid var(--line);padding:7px 10px;border-radius:999px;}
-body.is-admin .readonly-badge{display:none;}
+
+/* ===== V12: CALENDARIO A COLONNE FISSE ===== */
+.calendar-pane .cal-wrap{
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:auto;
+}
+.calendar-pane .cal{
+  display:grid!important;
+  grid-template-columns:70px repeat(7,220px)!important;
+  width:1610px!important;
+  min-width:1610px!important;
+  max-width:none!important;
+}
+.calendar-pane .day-head{
+  font-size:1.12rem!important;
+  padding:14px 8px!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+}
+.calendar-pane .day-head small{font-size:.80rem!important;}
+.calendar-pane .time-cell{font-size:.82rem!important;}
+.calendar-pane .ev{
+  font-size:.84rem!important;
+  line-height:1.22!important;
+  padding:8px 9px!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+.calendar-pane .ev b{font-size:.94rem!important;line-height:1.08!important;}
+.calendar-pane .ev .who{font-size:.77rem!important;line-height:1.15!important;white-space:normal!important;}
+@media(max-width:760px){
+  .calendar-pane .cal-wrap{
+    overflow-x:scroll!important;
+    overflow-y:hidden!important;
+    width:100%!important;
+  }
+  .calendar-pane .cal{
+    display:grid!important;
+    grid-template-columns:58px repeat(7,220px)!important;
+    width:1598px!important;
+    min-width:1598px!important;
+  }
+  .calendar-pane .day-head{font-size:1rem!important;padding:13px 7px!important;}
+  .calendar-pane .day-head small{font-size:.76rem!important;}
+  .calendar-pane .ev{font-size:.82rem!important;padding:7px 8px!important;}
+  .calendar-pane .ev b{font-size:.90rem!important;}
+  .calendar-pane .ev .who{font-size:.75rem!important;}
+}
 </style>
 </head>
 
@@ -443,9 +547,8 @@ body.is-admin .readonly-badge{display:none;}
     </div>
     <div class="header-actions">
       <span id="syncStatus" class="sync-pill">🔄 Connessione...</span>
-      <span class="readonly-badge" id="readonlyBadge">👁️ Sola visualizzazione</span>
       <button type="button" class="gear" id="refreshBtn" title="Aggiorna dati">↻</button>
-      <button type="button" class="gear" id="openSettings" title="Amministrazione">🔑</button>
+      <button type="button" class="gear" id="openSettings" title="Impostazioni protezione">⚙️</button>
     </div>
   </header>
 
@@ -460,39 +563,21 @@ body.is-admin .readonly-badge{display:none;}
   </div>
 
   <div class="settings-panel" id="settingsPanel">
-    <div class="settings-box" id="adminLoginBox">
-      <h2>Accesso amministratore</h2>
-      <p style="font-size:.8rem;color:var(--muted);margin:-8px 0 14px;">Solo l'amministratore può aggiungere/modificare impegni, gestire le persone e il PIN. Chi ha solo il PIN può esclusivamente visualizzare.</p>
-      <div class="row">
-        <label>Email</label>
-        <input type="email" id="adminEmail" placeholder="la tua email">
+    <div class="settings-box">
+      <h2>Protezione con PIN</h2>
+      <div class="row" id="pinCurrentRow" style="display:none;">
+        <label>PIN attuale</label>
+        <input type="password" id="pinCurrent" inputmode="numeric" placeholder="PIN attuale">
       </div>
-      <div class="row">
-        <label>Password</label>
-        <input type="password" id="adminPassword" placeholder="password">
-      </div>
-      <div class="settings-msg" id="adminMsg"></div>
-      <div class="close-row">
-        <a href="#" id="forgotPasswordLink" style="font-size:.78rem;color:var(--muted);align-self:center;margin-right:auto;">Password dimenticata?</a>
-        <button type="button" id="adminLoginBtn">Accedi</button>
-        <button type="button" class="ghost" id="closeSettings">Chiudi</button>
-      </div>
-    </div>
-
-    <div class="settings-box" id="adminPanelBox" style="display:none;">
-      <h2>Pannello amministratore</h2>
       <div class="row">
         <label id="pinNewLabel">Imposta un nuovo PIN</label>
         <input type="password" id="pinNew" inputmode="numeric" placeholder="Nuovo PIN (min 4 cifre)">
       </div>
       <div class="settings-msg" id="settingsMsg"></div>
       <div class="close-row">
-        <button type="button" class="ghost" id="removePinBtn">Rimuovi PIN</button>
-        <button type="button" id="savePinBtn">Salva PIN</button>
-      </div>
-      <div class="close-row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
-        <button type="button" class="ghost" id="adminLogoutBtn">Esci da amministratore</button>
-        <button type="button" class="ghost" id="closeSettings2">Chiudi</button>
+        <button type="button" class="ghost" id="removePinBtn">Rimuovi protezione</button>
+        <button type="button" id="savePinBtn">Salva</button>
+        <button type="button" class="ghost" id="closeSettings">Chiudi</button>
       </div>
     </div>
   </div>
@@ -545,13 +630,84 @@ body.is-admin .readonly-badge{display:none;}
   <div class="card agenda-mobile" id="agenda" style="display:none;"></div>
 </section>
 
+
+  <section class="card todo-card">
+    <div class="section-title">
+      <div>
+        <h2>✅ To-Do List familiare</h2>
+        <small>Attività da fare, scadenze e documenti allegati</small>
+      </div>
+      <button type="button" id="addTodoBtn">+ Nuova attività</button>
+    </div>
+    <div class="todo-toolbar">
+      <div class="todo-filters" id="todoFilters">
+        <button type="button" class="todo-filter active" data-filter="da-fare">Da fare</button>
+        <button type="button" class="todo-filter" data-filter="tutte">Tutte</button>
+        <button type="button" class="todo-filter" data-filter="completate">Completate</button>
+      </div>
+      <div class="sub" id="todoCount"></div>
+    </div>
+    <div class="todo-list" id="todoList"></div>
+  </section>
+
+  <div class="todo-modal" id="todoModal" aria-hidden="true">
+    <div class="todo-modal-box" role="dialog" aria-modal="true" aria-labelledby="todoModalTitle">
+      <div class="todo-modal-head">
+        <h2 id="todoModalTitle">✅ Nuova attività</h2>
+        <button type="button" class="todo-close" id="todoClose" aria-label="Chiudi">×</button>
+      </div>
+      <form class="todo-form" id="todoForm">
+        <div class="form-field full">
+          <label>Attività *</label>
+          <input type="text" name="titolo" required placeholder="es. Comprare quaderni per Carola">
+        </div>
+        <div class="form-field">
+          <label>Persona</label>
+          <select name="persona" id="todoPersona"></select>
+        </div>
+        <div class="form-field">
+          <label>Scadenza</label>
+          <input type="date" name="scadenza">
+        </div>
+        <div class="form-field">
+          <label>Ora (facoltativa)</label>
+          <input type="time" name="ora">
+        </div>
+        <div class="form-field">
+          <label>Categoria</label>
+          <input type="text" name="categoria" list="todoCategoryList" placeholder="Scuola, Casa, Sport...">
+          <datalist id="todoCategoryList"><option>Scuola</option><option>Casa</option><option>Sport</option><option>Documenti</option><option>Salute</option><option>Spesa</option><option>Altro</option></datalist>
+        </div>
+        <div class="form-field">
+          <label>Priorità</label>
+          <select name="priorita"><option value="bassa">Bassa</option><option value="media" selected>Media</option><option value="alta">Alta</option></select>
+        </div>
+        <div class="form-field full">
+          <label>Note</label>
+          <textarea name="note" placeholder="Dettagli, indicazioni, luogo..." ></textarea>
+        </div>
+        <div class="form-field full">
+          <label>Allegati</label>
+          <input class="todo-file-input" id="todoFiles" type="file" multiple accept="*/*">
+          <div class="form-hint">Puoi allegare PDF, Word, Excel, immagini, ZIP, documenti, audio, video e qualsiasi altro tipo di file disponibile sul dispositivo.</div>
+          <div class="todo-pending-files" id="todoPendingFiles"></div>
+        </div>
+        <div class="todo-modal-actions full">
+          <button type="button" class="ghost" id="todoCancel">Annulla</button>
+          <button type="submit" id="todoSave">Salva attività</button>
+        </div>
+        <div class="todo-progress full" id="todoProgress"></div>
+      </form>
+    </div>
+  </div>
+
   <section class="card">
     <div class="section-title">
       <h2>Persone sul calendario</h2>
       <small>Il colore identifica la persona</small>
     </div>
     <div class="people-row" id="peopleChips"></div>
-    <div class="addPerson admin-only">
+    <div class="addPerson">
       <input type="text" id="newPersonName" placeholder="es. Veronica, Roberta, tata...">
       <button type="button" id="addPersonBtn">+ Aggiungi persona</button>
     </div>
@@ -567,7 +723,7 @@ body.is-admin .readonly-badge{display:none;}
     </div>
   </div>
 
-  <section class="card admin-only" id="newEventSection">
+  <section class="card" id="newEventSection">
     <div class="section-title">
       <h2 id="formTitle">Nuovo impegno</h2>
       <small>Puoi creare impegni singoli o ricorrenti</small>
@@ -665,7 +821,6 @@ body.is-admin .readonly-badge{display:none;}
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script id="app-data" type="application/json">
 {
@@ -810,7 +965,8 @@ body.is-admin .readonly-badge{display:none;}
    "tentativo": false
   }
  ],
- "pin": null
+ "pin": null,
+ "todo": []
 }
 </script>
 
@@ -824,6 +980,10 @@ const raw = JSON.parse(document.getElementById('app-data').textContent);
 let persone = raw.persone;
 let state = raw.eventi;
 let pin = raw.pin || null;
+let todos = Array.isArray(raw.todo) ? raw.todo : [];
+let todoEditingId = null;
+let todoFilter = "da-fare";
+let todoPendingFiles = [];
 let nextId = Math.max(0, ...state.map(e=>e.id)) + 1;
 let editingId = null;
 
@@ -839,8 +999,6 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref('impegniCalendario/state');
-const auth = firebase.auth();
-let isAdmin = false;
 let applyingRemote = false;
 let firstSnapshot = true;
 
@@ -850,7 +1008,7 @@ function initSync(){
     const data = snap.val();
     if(!data){
       // primo avvio: nessun dato online ancora, carico i dati locali come base
-      if(firstSnapshot){ dbRef.set({persone, pin, eventi: state}); }
+      if(firstSnapshot){ dbRef.set({persone, pin, eventi: state, todo: todos}); }
       firstSnapshot = false;
       return;
     }
@@ -859,9 +1017,10 @@ function initSync(){
     persone = data.persone || persone;
     state = data.eventi || state;
     pin = data.pin ?? pin;
+    todos = Array.isArray(data.todo) ? data.todo : todos;
     nextId = Math.max(0, ...state.map(e=>e.id), nextId) + 1;
-    document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
-    renderPeopleChips(); render(); checkLock();
+    document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state, todo: todos});
+    renderPeopleChips(); render(); renderTodo(); checkLock();
     if(el) el.textContent = '☁️ Sincronizzato';
     applyingRemote = false;
   }, (err)=>{
@@ -874,7 +1033,7 @@ async function syncPush(){
   if(applyingRemote) return; // evita di riscrivere ciò che è appena arrivato dal server
   const el = document.getElementById('syncStatus');
   try{
-    await dbRef.set({persone, pin, eventi: state});
+    await dbRef.set({persone, pin, eventi: state, todo: todos});
     if(el) el.textContent = '☁️ Salvato e sincronizzato';
   }catch(err){
     console.warn('Salvataggio online fallito:', err);
@@ -920,68 +1079,24 @@ document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==
 
 // ---- Pannello impostazioni ----
 function openSettings(){
-  if(isAdmin){
-    document.getElementById('adminLoginBox').style.display = 'none';
-    document.getElementById('adminPanelBox').style.display = 'block';
-    document.getElementById('pinNew').value='';
-    document.getElementById('settingsMsg').textContent='';
-  } else {
-    document.getElementById('adminLoginBox').style.display = 'block';
-    document.getElementById('adminPanelBox').style.display = 'none';
-    document.getElementById('adminEmail').value='';
-    document.getElementById('adminPassword').value='';
-    document.getElementById('adminMsg').textContent='';
-  }
+  document.getElementById('pinCurrentRow').style.display = pin ? 'block' : 'none';
+  document.getElementById('pinNewLabel').textContent = pin ? 'Nuovo PIN' : 'Imposta un nuovo PIN';
+  document.getElementById('pinCurrent').value='';
+  document.getElementById('pinNew').value='';
+  document.getElementById('settingsMsg').textContent='';
+  document.getElementById('removePinBtn').style.display = pin ? 'inline-block' : 'none';
   document.getElementById('settingsPanel').classList.add('show');
 }
-function closeSettingsPanel(){ document.getElementById('settingsPanel').classList.remove('show'); }
 document.getElementById('openSettings').addEventListener('click', openSettings);
 document.getElementById('refreshBtn').addEventListener('click', ()=>syncPull(true));
-document.getElementById('closeSettings').addEventListener('click', closeSettingsPanel);
-document.getElementById('closeSettings2').addEventListener('click', closeSettingsPanel);
-
-document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
-  const email = document.getElementById('adminEmail').value.trim();
-  const pass = document.getElementById('adminPassword').value;
-  const msg = document.getElementById('adminMsg');
-  if(!email || !pass){ msg.textContent = 'Inserisci email e password.'; msg.style.color='#c0392b'; return; }
-  try{
-    await auth.signInWithEmailAndPassword(email, pass);
-    msg.style.color='var(--muted)'; msg.textContent='Accesso effettuato.';
-    setTimeout(openSettings, 300);
-  }catch(err){
-    msg.style.color='#c0392b';
-    msg.textContent = 'Accesso non riuscito: email o password errati.';
-  }
-});
-document.getElementById('forgotPasswordLink').addEventListener('click', async (e)=>{
-  e.preventDefault();
-  const email = document.getElementById('adminEmail').value.trim();
-  const msg = document.getElementById('adminMsg');
-  if(!email){ msg.textContent = 'Scrivi prima la tua email qui sopra, poi clicca di nuovo.'; msg.style.color='#c0392b'; return; }
-  try{
-    await auth.sendPasswordResetEmail(email);
-    msg.style.color='var(--muted)';
-    msg.textContent = 'Email di reset inviata: controlla la posta.';
-  }catch(err){
-    msg.style.color='#c0392b';
-    msg.textContent = "Impossibile inviare l'email: verifica che sia quella registrata.";
-  }
-});
-document.getElementById('adminLogoutBtn').addEventListener('click', async ()=>{
-  await auth.signOut();
-  closeSettingsPanel();
-});
-
-auth.onAuthStateChanged(user=>{
-  isAdmin = !!user;
-  document.body.classList.toggle('is-admin', isAdmin);
-  if(typeof renderPeopleChips==='function') renderPeopleChips();
-  if(typeof render==='function') render();
-});
+document.getElementById('closeSettings').addEventListener('click', ()=>document.getElementById('settingsPanel').classList.remove('show'));
 
 document.getElementById('savePinBtn').addEventListener('click', ()=>{
   const msg = document.getElementById('settingsMsg');
+  if(pin){
+    const cur = document.getElementById('pinCurrent').value.trim();
+    if(cur !== pin){ msg.textContent = 'PIN attuale errato.'; msg.style.color='#c0392b'; return; }
+  }
   const nw = document.getElementById('pinNew').value.trim();
   if(nw.length < 4){ msg.textContent = 'Il PIN deve avere almeno 4 caratteri.'; msg.style.color='#c0392b'; return; }
   pin = nw;
@@ -989,7 +1104,7 @@ document.getElementById('savePinBtn').addEventListener('click', ()=>{
   persist();
   msg.style.color = 'var(--muted)';
   msg.textContent = 'PIN salvato.';
-  setTimeout(closeSettingsPanel, 700);
+  setTimeout(()=>document.getElementById('settingsPanel').classList.remove('show'), 700);
 });
 
 document.getElementById('removePinBtn').addEventListener('click', ()=>{
@@ -997,7 +1112,7 @@ document.getElementById('removePinBtn').addEventListener('click', ()=>{
   pin = null;
   clearUnlocked();
   persist();
-  closeSettingsPanel();
+  document.getElementById('settingsPanel').classList.remove('show');
 });
 
 function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
@@ -1084,13 +1199,109 @@ function findConflicts(list){
   return c;
 }
 
+
+// ===== TO-DO LIST =====
+function escapeHtml(v){
+  return String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+}
+function formatTodoDate(v){
+  if(!v) return '';
+  const d=parseDate(v); if(!d || isNaN(d)) return v;
+  return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function todoColor(t){
+  if(t.priorita==='alta') return '#dc2626';
+  if(t.priorita==='media') return '#d97706';
+  return '#2563eb';
+}
+function todoFileSize(n){
+  if(n<1024) return n+' B'; if(n<1024*1024) return (n/1024).toFixed(0)+' KB'; return (n/1024/1024).toFixed(1)+' MB';
+}
+function todoFileIcon(name){
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  if(['jpg','jpeg','png','gif','webp','heic','svg'].includes(ext)) return '🖼️';
+  if(ext==='pdf') return '📕';
+  if(['doc','docx','odt','rtf'].includes(ext)) return '📘';
+  if(['xls','xlsx','csv','ods'].includes(ext)) return '📊';
+  if(['ppt','pptx','odp'].includes(ext)) return '📙';
+  if(['zip','rar','7z','tar','gz'].includes(ext)) return '🗜️';
+  if(['mp3','wav','m4a','ogg'].includes(ext)) return '🎵';
+  if(['mp4','mov','avi','mkv','webm'].includes(ext)) return '🎬';
+  return '📎';
+}
+function renderTodo(){
+  const box=document.getElementById('todoList'); if(!box) return;
+  let list=[...todos].sort((a,b)=>{
+    if(a.completato!==b.completato) return a.completato?1:-1;
+    const da=a.scadenza||'9999-12-31', db=b.scadenza||'9999-12-31';
+    return da.localeCompare(db) || (a.ora||'99:99').localeCompare(b.ora||'99:99');
+  });
+  if(todoFilter==='da-fare') list=list.filter(t=>!t.completato);
+  if(todoFilter==='completate') list=list.filter(t=>t.completato);
+  const openCount=todos.filter(t=>!t.completato).length;
+  document.getElementById('todoCount').textContent=`${openCount} da fare · ${todos.length} totali`;
+  box.innerHTML=list.length ? list.map(t=>{
+    const attachments=(t.allegati||[]).map((f,i)=>`<a class="todo-file" href="${f.data}" download="${escapeHtml(f.name)}" onclick="event.stopPropagation()" title="Scarica ${escapeHtml(f.name)}"><span>${todoFileIcon(f.name)} ${escapeHtml(f.name)} · ${todoFileSize(f.size||0)}</span></a>`).join('');
+    return `<div class="todo-item ${t.completato?'done':''}" style="--todo-color:${todoColor(t)}" data-id="${t.id}">
+      <input class="todo-check" type="checkbox" ${t.completato?'checked':''} aria-label="Completa attività" onclick="event.stopPropagation();toggleTodo(${t.id})">
+      <div class="todo-main" onclick="editTodo(${t.id})">
+        <div class="todo-title">${escapeHtml(t.titolo)}</div>
+        <div class="todo-meta">
+          ${t.persona?`<span class="todo-tag">👤 ${escapeHtml(t.persona)}</span>`:''}
+          ${t.scadenza?`<span class="todo-tag">📅 ${formatTodoDate(t.scadenza)}</span>`:''}
+          ${t.ora?`<span class="todo-tag">🕐 ${escapeHtml(t.ora)}</span>`:''}
+          ${t.categoria?`<span class="todo-tag">🏷️ ${escapeHtml(t.categoria)}</span>`:''}
+          <span class="todo-tag todo-priority-${escapeHtml(t.priorita||'media')}">● ${escapeHtml(t.priorita||'media')}</span>
+        </div>
+        ${t.note?`<div class="todo-meta"><span class="sub">${escapeHtml(t.note)}</span></div>`:''}
+        ${attachments?`<div class="todo-attachments">${attachments}</div>`:''}
+      </div>
+      <div class="todo-actions">
+        <button type="button" class="secondary" onclick="event.stopPropagation();editTodo(${t.id})">Modifica</button>
+        <button type="button" class="secondary" onclick="event.stopPropagation();deleteTodo(${t.id})">Elimina</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="todo-empty">Nessuna attività in questa vista.</div>';
+}
+function openTodoModal(id=null){
+  todoEditingId=id;
+  const modal=document.getElementById('todoModal'), f=document.getElementById('todoForm');
+  f.reset(); todoPendingFiles=[]; renderPendingTodoFiles();
+  const sel=document.getElementById('todoPersona'); sel.innerHTML='<option value="">Nessuna</option>'+persone.map(p=>`<option>${escapeHtml(p)}</option>`).join('');
+  if(id!==null){
+    const t=todos.find(x=>x.id===id); if(!t) return;
+    f.titolo.value=t.titolo||''; sel.value=t.persona||''; f.scadenza.value=t.scadenza||''; f.ora.value=t.ora||''; f.categoria.value=t.categoria||''; f.priorita.value=t.priorita||'media'; f.note.value=t.note||'';
+    todoPendingFiles=[...(t.allegati||[])]; renderPendingTodoFiles();
+    document.getElementById('todoModalTitle').textContent='✏️ Modifica attività';
+    document.getElementById('todoSave').textContent='Salva modifiche';
+  }else{
+    document.getElementById('todoModalTitle').textContent='✅ Nuova attività';
+    document.getElementById('todoSave').textContent='Salva attività';
+  }
+  document.getElementById('todoProgress').textContent='';
+  modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+  setTimeout(()=>f.titolo.focus(),50);
+}
+function closeTodoModal(){ const m=document.getElementById('todoModal'); m.classList.remove('show'); m.setAttribute('aria-hidden','true'); document.body.style.overflow=''; todoEditingId=null; todoPendingFiles=[]; }
+function editTodo(id){openTodoModal(id)} window.editTodo=editTodo;
+function toggleTodo(id){const t=todos.find(x=>x.id===id); if(!t)return; t.completato=!t.completato; persist(); renderTodo();}
+window.toggleTodo=toggleTodo;
+function deleteTodo(id){ if(!confirm('Eliminare questa attività?')) return; todos=todos.filter(x=>x.id!==id); persist(); renderTodo(); }
+window.deleteTodo=deleteTodo;
+function renderPendingTodoFiles(){
+  const box=document.getElementById('todoPendingFiles'); if(!box)return;
+  box.innerHTML=todoPendingFiles.map((f,i)=>`<div class="todo-pending-file"><span>${todoFileIcon(f.name)} ${escapeHtml(f.name)} · ${todoFileSize(f.size||0)}</span><button type="button" class="secondary" onclick="removePendingTodoFile(${i})">Rimuovi</button></div>`).join('');
+}
+function removePendingTodoFile(i){todoPendingFiles.splice(i,1);renderPendingTodoFiles();} window.removePendingTodoFile=removePendingTodoFile;
+function readTodoFile(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve({name:file.name,size:file.size,type:file.type||'application/octet-stream',data:r.result});r.onerror=reject;r.readAsDataURL(file);});}
+
 function renderPeopleChips(){
   document.documentElement.style.setProperty('--daymin', Math.max(200, persone.length*55)+'px');
   const box = document.getElementById('peopleChips');
   box.innerHTML = persone.map((p,i)=>{
     const used = state.some(e=>e.figlia===p);
     return `<span class="chip"><span class="sw" style="background:${colorOf(p)}"></span>${p}
-      ${isAdmin?`<button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button>`:''}</span>`;
+      <button type="button" title="${used?'Non eliminabile: ha impegni sul calendario':'Rimuovi'}" onclick="removePerson('${p.replace(/'/g,"\\'")}')" ${used?'disabled style="opacity:.3;cursor:not-allowed;"':''}>×</button></span>`;
   }).join('');
 
   const legend = document.getElementById('legendDots');
@@ -1105,7 +1316,6 @@ function renderPeopleChips(){
 }
 
 function addPerson(){
-  if(!isAdmin) return;
   const input = document.getElementById('newPersonName');
   const name = input.value.trim();
   if(!name) return;
@@ -1159,7 +1369,6 @@ function buildCalendarSkeleton(dates){
 }
 
 function quickAdd(dayIdx, personName){
-  if(!isAdmin) return;
   if(editModal && editModal.classList.contains('show')) cancelEdit();
   const f = document.getElementById('form');
   f.figlia.value = personName;
@@ -1181,7 +1390,7 @@ function renderAgenda(dates, weekEvents, conflicts){
           <b>${ev.attivita} ${ev.ricorrente?'🔁':''} ${ev.tentativo?'⚠️':''}</b>
           <small>${ev.figlia}${ev.responsabile?' · '+ev.responsabile:''}${ev.note?' · '+ev.note:''}</small>
         </span>
-        <span class="ag-actions admin-only" style="display:${isAdmin?'flex':'none'};">
+        <span class="ag-actions">
           <button type="button" class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
           <button type="button" class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>
         </span>
@@ -1358,14 +1567,14 @@ function render(){
       <td>${DAY_NAMES[ev.weekdayIdx]}${ev.ricorrente?' 🔁':''}</td>
       <td>${ev.oraInizio}-${ev.oraFine}${ev.tentativo?' <small style="color:var(--muted)">(da conf.)</small>':''}</td>
       <td>${ev.attivita}</td><td>${ev.responsabile||'-'}</td><td>${ev.note||'-'}</td>
-      <td>${isAdmin?`<button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
-          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button>`:''}</td>
+      <td><button class="secondary" onclick="startEdit(${ev.id})">Modifica</button>
+          <button class="secondary" onclick="removeEvent(${ev.id})">Elimina</button></td>
     </tr>`;
   }).join('') || '<tr><td colspan="7" style="color:var(--muted)">Nessun impegno in questa settimana</td></tr>';
 }
 
 async function persist(){
-  document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state});
+  document.getElementById('app-data').textContent = JSON.stringify({persone, pin, eventi: state, todo: todos});
   await syncPush();
 }
 
@@ -1397,15 +1606,10 @@ document.getElementById('editModalClose').addEventListener('click', cancelEdit);
 editModal.addEventListener('click', e=>{ if(e.target===editModal) cancelEdit(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && editModal.classList.contains('show')) cancelEdit(); });
 
-function removeEvent(id){
-  if(!isAdmin) return;
-  if(!confirm('Vuoi eliminare questo impegno?')) return;
-  state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist();
-}
+function removeEvent(id){ state = state.filter(e=>e.id!==id); if(editingId===id) cancelEdit(); render(); persist(); }
 window.removeEvent = removeEvent;
 
 function startEdit(id){
-  if(!isAdmin) return;
   const ev = state.find(e=>e.id===id); if(!ev) return;
   editingId = id;
   const f = document.getElementById('form');
@@ -1439,7 +1643,6 @@ document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
 
 document.getElementById('form').addEventListener('submit', function(e){
   e.preventDefault();
-  if(!isAdmin) return;
   const fd = new FormData(e.target);
   const ricorrente = fd.get('ricorrente')==='on';
   const data = fd.get('data');
@@ -1473,8 +1676,33 @@ document.getElementById('prevWeek').addEventListener('click', ()=>{ currentWeekS
 document.getElementById('nextWeek').addEventListener('click', ()=>{ currentWeekStart.setDate(currentWeekStart.getDate()+7); render(); });
 document.getElementById('todayBtn').addEventListener('click', ()=>{ currentWeekStart = mondayOf(new Date()); render(); });
 
+
+document.getElementById('addTodoBtn').addEventListener('click',()=>openTodoModal());
+document.getElementById('todoClose').addEventListener('click',closeTodoModal);
+document.getElementById('todoCancel').addEventListener('click',closeTodoModal);
+document.getElementById('todoModal').addEventListener('click',e=>{if(e.target.id==='todoModal')closeTodoModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape' && document.getElementById('todoModal').classList.contains('show'))closeTodoModal();});
+document.querySelectorAll('.todo-filter').forEach(btn=>btn.addEventListener('click',()=>{todoFilter=btn.dataset.filter;document.querySelectorAll('.todo-filter').forEach(b=>b.classList.toggle('active',b===btn));renderTodo();}));
+document.getElementById('todoFiles').addEventListener('change',async function(){
+  const files=[...this.files];
+  for(const file of files){
+    if(file.size>15*1024*1024){alert(`Il file "${file.name}" supera 15 MB e non è stato aggiunto.`);continue;}
+    try{todoPendingFiles.push(await readTodoFile(file));}catch(err){alert(`Impossibile leggere "${file.name}".`);}
+  }
+  this.value=''; renderPendingTodoFiles();
+});
+document.getElementById('todoForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const fd=new FormData(e.target); const titolo=(fd.get('titolo')||'').trim(); if(!titolo)return;
+  const existing=todoEditingId!==null?todos.find(x=>x.id===todoEditingId):null;
+  const payload={titolo,persona:(fd.get('persona')||'').trim(),scadenza:fd.get('scadenza')||'',ora:fd.get('ora')||'',categoria:(fd.get('categoria')||'').trim(),priorita:fd.get('priorita')||'media',note:(fd.get('note')||'').trim(),completato:existing?!!existing.completato:false,allegati:todoPendingFiles};
+  if(existing){Object.assign(existing,payload);}else{todos.push(Object.assign({id:Date.now()},payload));}
+  document.getElementById('todoProgress').textContent='Salvataggio...';
+  await persist(); renderTodo(); closeTodoModal();
+});
 renderPeopleChips();
 render();
+renderTodo();
 checkLock();
 initSync();
 </script>
